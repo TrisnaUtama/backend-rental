@@ -3,17 +3,28 @@
 	"version": "1.0.50",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "bun run --watch src/index.ts",
+		"dev": "NODE_ENV=development bun run --watch src/index.ts",
+		"prod": "bun run src/index.ts",
 		"lint:format": "bunx biome format src --fix",
 		"lint:check": "bunx biome lint src",
 		"prepare": "husky"
 	},
 	"dependencies": {
-		"elysia": "latest"
+		"@elysiajs/cors": "^1.2.0",
+		"@elysiajs/swagger": "^1.2.0",
+		"@prisma/client": "^6.6.0",
+		"@types/nodemailer": "^6.4.17",
+		"elysia": "latest",
+		"inversify": "^7.5.1",
+		"moment-timezone": "^0.5.48",
+		"prisma": "^6.6.0",
+		"reflect-metadata": "^0.2.2",
+		"winston": "^3.17.0"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
-		"bun-types": "latest"
+		"bun-types": "latest",
+		"husky": "^9.1.7"
 	},
 	"module": "src/index.js"
 }
