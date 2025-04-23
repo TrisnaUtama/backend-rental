@@ -78,12 +78,12 @@ export class AuthService {
 			}
 
 			if (code !== payload.otp_code) {
-        throw new Error("Invalid OTP Code");
+				throw new Error("Invalid OTP Code");
 			}
-      
-      if (payload.expiry_time.getTime() < time_comparation) {
-        throw new Error("Expired OTP Code");
-      }
+
+			if (payload.expiry_time.getTime() < time_comparation) {
+				throw new Error("Expired OTP Code");
+			}
 
 			const verified_account: UpdateUser = {
 				is_verified: true,
