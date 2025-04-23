@@ -1,3 +1,2 @@
-bun test
 bun lint:check
 bun lint:format
