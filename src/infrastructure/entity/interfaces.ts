@@ -22,3 +22,10 @@ export interface IOTP {
 	update: (id: string, data: UpdateOTP) => Promise<OTPs>;
 	delete: (id: string) => Promise<void>;
 }
+
+export interface IJwtPayload {
+	user_id: string;
+	role: string | null;
+	iat?: number;
+	exp?: number;
+}

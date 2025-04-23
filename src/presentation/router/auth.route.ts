@@ -1,7 +1,11 @@
-import { Elysia, t } from "elysia";
+import { Elysia, error, t } from "elysia";
 import { authService } from "../../application/instances";
 import { StandardResponse } from "../../infrastructure/utils/response/standard-error";
 import { GlobalErrorHandler } from "../../infrastructure/utils/response/global-error-handler";
+import {
+	ACCESS_TOKEN_EXP,
+	REFRESH_TOKEN_EXP,
+} from "../../infrastructure/utils/constant";
 
 export const authRouter = new Elysia({ prefix: "/v1" })
 	.post(
@@ -67,6 +71,69 @@ export const authRouter = new Elysia({ prefix: "/v1" })
 			body: t.Object({
 				code: t.String(),
 				user_id: t.String(),
+			}),
+		},
+	)
+	.post(
+		"/resend-otp",
+		async ({ body, set }) => {
+			try {
+				await authService.sendOtp(body.id, body.email);
+				set.status = 201;
+				return StandardResponse.success("succesfully resend otp code");
+			} catch (error) {
+				set.status = 500;
+				return GlobalErrorHandler.handleError(error, set);
+			}
+		},
+		{
+			body: t.Object({
+				email: t.String(),
+				id: t.String(),
+			}),
+		},
+	)
+	.post(
+		"/sign-in",
+		async ({ body, set, cookie: { access_token, refresh_token } }) => {
+			try {
+				const login_user = await authService.signIn(body.email, body.password);
+
+				if (!login_user) {
+					set.status = 401;
+					return StandardResponse.error("Error while trying to login !");
+				}
+
+				access_token.set({
+					value: login_user.access_token,
+					httpOnly: true,
+					maxAge: ACCESS_TOKEN_EXP,
+					path: "/",
+				});
+
+				refresh_token.set({
+					value: login_user.refresh_token,
+					httpOnly: true,
+					maxAge: REFRESH_TOKEN_EXP,
+					path: "/",
+				});
+				set.status = 200;
+
+				return StandardResponse.login(
+					login_user.user,
+					login_user.access_token,
+					login_user.refresh_token,
+					"Successfuly Login",
+				);
+			} catch (error) {
+				set.status = 500;
+				return GlobalErrorHandler.handleError(error, set);
+			}
+		},
+		{
+			body: t.Object({
+				email: t.String({ format: "email", error: "Invalid Email Format" }),
+				password: t.String({ minLength: 2, error: "Invalid Password Format" }),
 			}),
 		},
 	);

@@ -1,10 +1,9 @@
 export class StandardResponse {
-	static success<T>(data: T, message = "Success", meta: any = null) {
+	static success<T>(data: T, message = "Success") {
 		return {
 			success: true,
 			message,
 			data,
-			meta,
 		};
 	}
 
@@ -18,6 +17,21 @@ export class StandardResponse {
 			message,
 			statusCode,
 			errors,
+		};
+	}
+
+	static login<T>(
+		data: T,
+		access_token: string,
+		refresh_token: string,
+		message = "Success",
+	) {
+		return {
+			success: true,
+			message,
+			data,
+			access_token,
+			refresh_token,
 		};
 	}
 }

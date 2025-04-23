@@ -13,6 +13,13 @@ import type { ILogger } from "../../infrastructure/entity/interfaces";
 import type { HashService } from "../../infrastructure/utils/hashed_password";
 import type { ErrorHandler } from "../../infrastructure/entity/error";
 import { UserDTO } from "../dtos/userDTO";
+import { authService } from "../instances";
+import { signJwt } from "../../infrastructure/utils/jwt";
+import {
+	ACCESS_TOKEN_EXP,
+	REFRESH_TOKEN_EXP,
+} from "../../infrastructure/utils/constant";
+import { StandardResponse } from "../../infrastructure/utils/response/standard-error";
 
 @injectable()
 export class AuthService {
@@ -63,6 +70,53 @@ export class AuthService {
 
 			this.sendOtp(new_account.id, new_account.email);
 			return new UserDTO(new_account).fromEntity();
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
+
+	async signIn(email: string, password: string) {
+		try {
+			const get_payload = await this.userRepo.getOne(email);
+
+			if (!get_payload) {
+				this.logger.error("Invalid Credentials !");
+				throw new Error("Invalid Credentials !");
+			}
+
+			const compare_password = await Bun.password.verify(
+				password,
+				get_payload.password,
+				"bcrypt",
+			);
+
+			if (!compare_password) {
+				this.logger.error("Invalid Credentials !");
+				throw new Error("Invalid Credentials !");
+			}
+
+			if (!get_payload.is_verified) {
+				this.logger.info("Your account not verified !");
+				throw new Error("Your account not verified !");
+			}
+
+			const payload = {
+				user_id: get_payload.id,
+				role: get_payload.role,
+			};
+
+			const access_token = signJwt(payload, ACCESS_TOKEN_EXP);
+			const refresh_token = signJwt(payload, REFRESH_TOKEN_EXP);
+
+			const login_customer = await this.userRepo.update(payload.user_id, {
+				refresh_token: refresh_token,
+			});
+
+			return {
+				access_token,
+				refresh_token,
+				user: new UserDTO(login_customer).fromEntity(),
+			};
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
 		}

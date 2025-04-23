@@ -31,11 +31,11 @@ export class UserRepository implements IUser {
 		}
 	}
 
-	async getOne(id: string) {
+	async getOne(idOrEmail: string) {
 		try {
 			const user = await this.prisma.users.findFirst({
 				where: {
-					id,
+					OR: [{ id: idOrEmail }, { email: idOrEmail }],
 				},
 			});
 			return user;
