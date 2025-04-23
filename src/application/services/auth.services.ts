@@ -13,13 +13,11 @@ import type { ILogger } from "../../infrastructure/entity/interfaces";
 import type { HashService } from "../../infrastructure/utils/hashed_password";
 import type { ErrorHandler } from "../../infrastructure/entity/error";
 import { UserDTO } from "../dtos/userDTO";
-import { authService } from "../instances";
 import { signJwt } from "../../infrastructure/utils/jwt";
 import {
 	ACCESS_TOKEN_EXP,
 	REFRESH_TOKEN_EXP,
 } from "../../infrastructure/utils/constant";
-import { StandardResponse } from "../../infrastructure/utils/response/standard-error";
 
 @injectable()
 export class AuthService {
