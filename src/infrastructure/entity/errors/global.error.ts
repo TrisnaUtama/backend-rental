@@ -16,10 +16,12 @@ export class ErrorHandler {
 			this.logger.error(error.message);
 			throw error;
 		}
+
 		if (error instanceof Error) {
 			this.logger.error(error.message);
 			throw error;
 		}
+
 		this.logger.error(error as string);
 		throw new Error(error as string);
 	}

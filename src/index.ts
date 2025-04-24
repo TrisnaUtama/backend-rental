@@ -3,6 +3,7 @@ import { authRouter } from "./presentation/router/auth.route";
 import swagger from "@elysiajs/swagger";
 import cors from "@elysiajs/cors";
 import { userRoute } from "./presentation/router/user.route";
+import { notificationRoute } from "./presentation/router/notification.route";
 
 const app = new Elysia();
 app
@@ -19,7 +20,7 @@ app
 			path: "/docs",
 		}),
 	)
-	.group("/api", (app) => app.use(authRouter).use(userRoute))
+	.group("/api", (app) => app.use(authRouter).use(userRoute).use(notificationRoute))
 
 	.listen(8000);
 

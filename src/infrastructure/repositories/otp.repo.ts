@@ -19,7 +19,7 @@ export class OtpRepository implements IOTP {
 
 	async getAll() {
 		try {
-			const otps = this.prisma.oTPs.findMany();
+			const otps = await this.prisma.oTPs.findMany();
 			return otps;
 		} catch (error) {
 			this.error_handler.handleRepositoryError(error);
@@ -28,7 +28,7 @@ export class OtpRepository implements IOTP {
 
 	async getOne(id: string) {
 		try {
-			const otp = this.prisma.oTPs.findFirst({
+			const otp = await this.prisma.oTPs.findFirst({
 				where: {
 					user_id: id,
 				},
@@ -41,7 +41,7 @@ export class OtpRepository implements IOTP {
 
 	async create(data: CreateOTP) {
 		try {
-			const otp = this.prisma.oTPs.create({
+			const otp = await this.prisma.oTPs.create({
 				data,
 			});
 			return otp;
@@ -52,7 +52,7 @@ export class OtpRepository implements IOTP {
 
 	async update(id: string, data: UpdateOTP) {
 		try {
-			const updatedOtp = this.prisma.oTPs.update({
+			const updatedOtp = await this.prisma.oTPs.update({
 				where: {
 					id,
 				},
@@ -67,7 +67,7 @@ export class OtpRepository implements IOTP {
 
 	async delete(id: string) {
 		try {
-			this.prisma.oTPs.delete({
+			await this.prisma.oTPs.delete({
 				where: {
 					id,
 				},

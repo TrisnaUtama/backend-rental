@@ -15,6 +15,11 @@ enum Roles {
   CUSTOMER
 }
 
+enum Notification_Type {
+  PROMO
+  REMINDER
+}
+
 model OTPs {
   id      String   @id @default(cuid())
   user_id     String
@@ -39,5 +44,31 @@ model Users {
   refresh_token String?
 
   otp           OTPs[]
+  notification_broadcast Notification_Broadcast[]
+}
+
+model Notifications {
+  id String @id @default(cuid())
+  title String
+  message String
+  type Notification_Type
+  status Boolean
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  
+  notification_broadcast Notification_Broadcast[]
+}
+
+model Notification_Broadcast {
+  id String @id @default(cuid())
+  notification_id String
+  user_id String
+
+  read_at DateTime
+  sent_at DateTime
+
+  notification Notifications @relation(fields: [notification_id], references: [id])
+  user Users @relation(fields: [user_id], references: [id])
 }
 

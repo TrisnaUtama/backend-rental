@@ -1,4 +1,4 @@
-import type { OTPs, Users } from "@prisma/client";
+import type { OTPs, Users, Notifications } from "@prisma/client";
 
 export const TYPES = {
 	//utils
@@ -11,10 +11,12 @@ export const TYPES = {
 	//repo
 	userRepo: Symbol.for("UserRepository"),
 	otpRepo: Symbol.for("OtpRepository"),
+	notificationRepo: Symbol.for("NotificationRepository"),
 
 	//  services
 	authService: Symbol.for("AuthService"),
 	userService: Symbol.for("UserService"),
+	notificationService: Symbol.for("NotificationService"),
 };
 
 // CREATES //
@@ -30,8 +32,14 @@ export type CreateUser = Omit<
 	| "year_of_experiences"
 >;
 
+export type CreateNotification = Omit<
+	Notifications,
+	"id" | "created_at" | "updated_at"
+>;
+
 export type CreateOTP = Omit<OTPs, "id" | "created_at" | "updated_at">;
 
 // UPDATES //
 export type UpdateUser = Partial<Users>;
 export type UpdateOTP = Partial<OTPs>;
+export type UpdateNotification = Partial<Notifications>;

@@ -25,21 +25,18 @@ export class AuthService {
 	private userRepo: UserRepository;
 	private otpRepo: OtpRepository;
 	private hashed: HashService;
-	private logger: ILogger;
 	private errorHandler: ErrorHandler;
 	private emailService: EmailService;
 
 	constructor(
 		@inject(TYPES.userRepo) userRepo: UserRepository,
 		@inject(TYPES.otpRepo) otpRepo: OtpRepository,
-		@inject(TYPES.logger) logger: ILogger,
 		@inject(TYPES.hashed_password) hashed: HashService,
 		@inject(TYPES.error_handler) errorHandler: ErrorHandler,
 		@inject(TYPES.email) emailService: EmailService,
 	) {
 		this.userRepo = userRepo;
 		this.otpRepo = otpRepo;
-		this.logger = logger;
 		this.hashed = hashed;
 		this.errorHandler = errorHandler;
 		this.emailService = emailService;

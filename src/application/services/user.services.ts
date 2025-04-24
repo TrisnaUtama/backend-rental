@@ -12,6 +12,7 @@ import { UserDTO } from "../dtos/userDTO";
 import { NotFoundError } from "../../infrastructure/utils/response/not-found.error";
 import { BadRequestError } from "../../infrastructure/utils/response/bad-request.error";
 
+@injectable()
 export class UserService {
 	private userRepo: UserRepository;
 	private hashed: HashService;
