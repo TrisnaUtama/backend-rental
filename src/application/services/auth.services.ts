@@ -86,7 +86,7 @@ export class AuthService {
 				get_payload.password,
 				"bcrypt",
 			);
-			
+
 			if (!compare_password) {
 				throw new BadRequestError("Invalid Credentials !");
 			}
