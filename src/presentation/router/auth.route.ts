@@ -1,4 +1,4 @@
-import { Elysia, error, t } from "elysia";
+import { Elysia, t } from "elysia";
 import { authService } from "../../application/instances";
 import { StandardResponse } from "../../infrastructure/utils/response/standard-error";
 import { GlobalErrorHandler } from "../../infrastructure/utils/response/global-error-handler";
@@ -58,7 +58,7 @@ export const authRouter = new Elysia({ prefix: "/v1" })
 
 				set.status = 405;
 				if (!verify)
-					return StandardResponse.error("Invalid OTP code !", set.status);
+					throw StandardResponse.error("Invalid OTP code !", set.status);
 
 				set.status = 200;
 				return StandardResponse.success("", "account succesfully verified");
@@ -101,7 +101,7 @@ export const authRouter = new Elysia({ prefix: "/v1" })
 
 				if (!login_user) {
 					set.status = 401;
-					return StandardResponse.error("Error while trying to login !");
+					throw StandardResponse.error("Error while trying to login !");
 				}
 
 				access_token.set({

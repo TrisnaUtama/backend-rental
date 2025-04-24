@@ -14,6 +14,7 @@ export const TYPES = {
 
 	//  services
 	authService: Symbol.for("AuthService"),
+	userService: Symbol.for("UserService"),
 };
 
 // CREATES //

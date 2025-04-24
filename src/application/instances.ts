@@ -6,10 +6,11 @@ import { UserRepository } from "../infrastructure/repositories/user.repo";
 import { AuthService } from "./services/auth.services";
 import type { ILogger, IOTP, IUser } from "../infrastructure/entity/interfaces";
 import type { PrismaClient } from "@prisma/client";
-import { ErrorHandler } from "../infrastructure/entity/error";
+import { ErrorHandler } from "../infrastructure/entity/errors/global.error";
 import { HashService } from "../infrastructure/utils/hashed_password";
 import { OtpRepository } from "../infrastructure/repositories/otp.repo";
 import { EmailService } from "../infrastructure/entity/email";
+import { UserService } from "./services/user.services";
 
 export const container = new Container();
 
@@ -24,6 +25,8 @@ container.bind<EmailService>(TYPES.email).to(EmailService);
 
 // services
 container.bind<AuthService>(AuthService).toSelf();
+container.bind<UserService>(UserService).toSelf();
 
 //instance
 export const authService = container.get<AuthService>(AuthService);
+export const userService = container.get<UserService>(UserService);

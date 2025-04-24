@@ -1,8 +1,8 @@
 import "reflect-metadata";
 import { injectable, inject } from "inversify";
-import type { ILogger } from "./interfaces";
+import type { ILogger } from "../interfaces";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { TYPES } from "./types";
+import { TYPES } from "../types";
 
 @injectable()
 export class ErrorHandler {
@@ -24,11 +24,12 @@ export class ErrorHandler {
 		throw new Error(error as string);
 	}
 
-	public handleServiceError(error: unknown): never {
+	public handleServiceError(error: unknown) {
 		if (error instanceof Error) {
 			this.logger.error(error.message);
 			throw error;
 		}
+
 		this.logger.error(error as string);
 		throw new Error(error as string);
 	}

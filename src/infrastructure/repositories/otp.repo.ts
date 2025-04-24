@@ -3,7 +3,7 @@ import { injectable, inject } from "inversify";
 import type { IOTP } from "../entity/interfaces";
 import type { PrismaClient } from "@prisma/client";
 import { type CreateOTP, TYPES, type UpdateOTP } from "../entity/types";
-import type { ErrorHandler } from "../entity/error";
+import type { ErrorHandler } from "../entity/errors/global.error";
 
 @injectable()
 export class OtpRepository implements IOTP {

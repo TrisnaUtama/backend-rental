@@ -11,13 +11,14 @@ import {
 import { type OTPs, Roles } from "@prisma/client";
 import type { ILogger } from "../../infrastructure/entity/interfaces";
 import type { HashService } from "../../infrastructure/utils/hashed_password";
-import type { ErrorHandler } from "../../infrastructure/entity/error";
+import type { ErrorHandler } from "../../infrastructure/entity/errors/global.error";
 import { UserDTO } from "../dtos/userDTO";
 import { signJwt } from "../../infrastructure/utils/jwt";
 import {
 	ACCESS_TOKEN_EXP,
 	REFRESH_TOKEN_EXP,
 } from "../../infrastructure/utils/constant";
+import { BadRequestError } from "../../infrastructure/utils/response/bad-request.error";
 
 @injectable()
 export class AuthService {
@@ -48,8 +49,7 @@ export class AuthService {
 		try {
 			const existing_user = await this.userRepo.getOne(payload.email);
 			if (existing_user) {
-				this.logger.warn("email already exsist !");
-				throw new Error("email already exsist !");
+				throw new BadRequestError("email already exist !");
 			}
 
 			const hashed_password = await this.hashed.hash(payload.password);
@@ -63,7 +63,7 @@ export class AuthService {
 			const new_account = await this.userRepo.create(new_payload);
 
 			if (!new_account) {
-				throw new Error("account cannot created");
+				throw new BadRequestError("account cannot created");
 			}
 
 			this.sendOtp(new_account.id, new_account.email);
@@ -78,8 +78,7 @@ export class AuthService {
 			const get_payload = await this.userRepo.getOne(email);
 
 			if (!get_payload) {
-				this.logger.error("Invalid Credentials !");
-				throw new Error("Invalid Credentials !");
+				throw new BadRequestError("Invalid Credentials !");
 			}
 
 			const compare_password = await Bun.password.verify(
@@ -87,15 +86,13 @@ export class AuthService {
 				get_payload.password,
 				"bcrypt",
 			);
-
+			
 			if (!compare_password) {
-				this.logger.error("Invalid Credentials !");
-				throw new Error("Invalid Credentials !");
+				throw new BadRequestError("Invalid Credentials !");
 			}
 
 			if (!get_payload.is_verified) {
-				this.logger.info("Your account not verified !");
-				throw new Error("Your account not verified !");
+				throw new BadRequestError("Your account not verified !");
 			}
 
 			const payload = {
@@ -126,15 +123,15 @@ export class AuthService {
 			const time_comparation = Date.now();
 
 			if (!payload) {
-				throw new Error("otp code not found");
+				throw new BadRequestError("otp code not found");
 			}
 
 			if (code !== payload.otp_code) {
-				throw new Error("Invalid OTP Code");
+				throw new BadRequestError("Invalid OTP Code");
 			}
 
 			if (payload.expiry_time.getTime() < time_comparation) {
-				throw new Error("Expired OTP Code");
+				throw new BadRequestError("Expired OTP Code");
 			}
 
 			const verified_account: UpdateUser = {
