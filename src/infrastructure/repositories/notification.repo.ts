@@ -24,7 +24,9 @@ export class NotificationRepository implements INotification {
 
 	async getAll() {
 		try {
-			const notifications = await this.prisma.notifications.findMany({where: {status: true}});
+			const notifications = await this.prisma.notifications.findMany({
+				where: { status: true },
+			});
 			return notifications;
 		} catch (error) {
 			this.errorHanlder.handleRepositoryError(error);
