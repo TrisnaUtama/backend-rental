@@ -4,13 +4,10 @@ import type { IJwtPayload } from "../../infrastructure/entity/interfaces";
 import type { UpdateUser } from "../../infrastructure/entity/types";
 import { Elysia, t } from "elysia";
 import { userService } from "../../application/instances";
-import { StandardResponse } from "../../infrastructure/utils/response/standard-error";
-import { GlobalErrorHandler } from "../../infrastructure/utils/response/global-error-handler";
+import { StandardResponse } from "../../infrastructure/utils/response/standard.response";
+import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.response";
 import { verifyJwt } from "../../infrastructure/utils/jwt";
-import { UnauthorizedError } from "../../infrastructure/utils/response/unauthorized";
-import { ForbiddenError } from "../../infrastructure/utils/response/forbidden.error";
-import { BadRequestError } from "../../infrastructure/utils/response/bad-request.error";
-import { NotFoundError } from "../../infrastructure/utils/response/not-found.error";
+import { response } from "../../application/instances";
 
 export const userRoute = new Elysia({ prefix: "/v1/users" })
 	.use(
@@ -22,21 +19,21 @@ export const userRoute = new Elysia({ prefix: "/v1/users" })
 	.derive(async ({ cookie: { access_token }, set }) => {
 		if (!access_token.value) {
 			set.status = 401;
-			throw new UnauthorizedError("Unauthorized");
+			throw response.unauthorized();
 		}
 		const jwtPayload: IJwtPayload = verifyJwt(access_token.value.toString());
 
 		if (!jwtPayload) {
 			set.status = 403;
-			throw new ForbiddenError("Forbidden");
+			throw response.forbidden();
 		}
 
 		const userId = jwtPayload.user_id;
-		if (!userId) throw new BadRequestError("invalid payload !");
+		if (!userId) throw response.badRequest("Invalid Payload !");
 		const user = await userService.getOne(userId.toString());
 		if (!user || !user.refresh_token) {
 			set.status = 403;
-			throw new ForbiddenError("Forbidden");
+			throw response.forbidden();
 		}
 
 		return {
@@ -47,11 +44,11 @@ export const userRoute = new Elysia({ prefix: "/v1/users" })
 		try {
 			const users = await userService.getAll();
 			if (!users) {
-				throw new BadRequestError("Something went wrong while retreived users");
+				throw response.badRequest("Something went wrong while retreived users");
 			}
 
 			if (users.length === 0) {
-				throw new NotFoundError("User is empty");
+				throw response.notFound("User is empty");
 			}
 			set.status = 200;
 			return StandardResponse.success(users, "Successfully retreived users");
@@ -65,7 +62,7 @@ export const userRoute = new Elysia({ prefix: "/v1/users" })
 			const user = await userService.getOne(params.id);
 
 			if (!user) {
-				throw new NotFoundError("User not found !");
+				throw response.notFound("User not found !");
 			}
 
 			set.status = 200;
@@ -90,7 +87,7 @@ export const userRoute = new Elysia({ prefix: "/v1/users" })
 
 				const new_account = await userService.create(payload);
 				if (!new_account) {
-					throw new BadRequestError("Error while creating user data");
+					throw response.badRequest("Error while creating user data");
 				}
 
 				set.status = 201;
@@ -152,7 +149,7 @@ export const userRoute = new Elysia({ prefix: "/v1/users" })
 
 				const updated_user = await userService.update(params.id, payload);
 				if (!updated_user) {
-					throw new BadRequestError("Error while updating user data");
+					throw response.badRequest("Error while updating user data");
 				}
 				set.status = 201;
 				return StandardResponse.success(

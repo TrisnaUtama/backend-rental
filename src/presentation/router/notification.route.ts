@@ -4,24 +4,23 @@ import type {
 	UpdateNotification,
 } from "../../infrastructure/entity/types";
 import { notificationService } from "../../application/instances";
-import { StandardResponse } from "../../infrastructure/utils/response/standard-error";
-import { GlobalErrorHandler } from "../../infrastructure/utils/response/global-error-handler";
+import { StandardResponse } from "../../infrastructure/utils/response/standard.response";
+import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.response";
 import { Notification_Type } from "@prisma/client";
-import { NotFoundError } from "../../infrastructure/utils/response/not-found.error";
-import { BadRequestError } from "../../infrastructure/utils/response/bad-request.error";
+import { response } from "../../application/instances";
 
 export const notificationRoute = new Elysia({ prefix: "/v1/notifications" })
 	.get("/", async ({ set }) => {
 		try {
 			const notifications = await notificationService.getAll();
 			if (!notifications) {
-				throw new BadRequestError(
+				throw response.badRequest(
 					"Somethig went wrong while retreived notifications",
 				);
 			}
 
 			if (notifications.length === 0) {
-				throw new NotFoundError("Notifications is empty !");
+				throw response.notFound("Notifications is empty !");
 			}
 
 			set.status = 200;
@@ -37,7 +36,7 @@ export const notificationRoute = new Elysia({ prefix: "/v1/notifications" })
 		try {
 			const notification = await notificationService.getOne(params.id);
 			if (!notification) {
-				throw new BadRequestError(
+				throw response.badRequest(
 					"Something went wrong while retreived notification",
 				);
 			}
@@ -65,7 +64,7 @@ export const notificationRoute = new Elysia({ prefix: "/v1/notifications" })
 
 				const notification = await notificationService.create(payload);
 				if (!notification) {
-					throw new BadRequestError("Error while creating notification !");
+					throw response.badRequest("Error while creating notification !");
 				}
 				set.status = 200;
 				return StandardResponse.success(
@@ -101,7 +100,7 @@ export const notificationRoute = new Elysia({ prefix: "/v1/notifications" })
 					params.id,
 				);
 				if (!existing_notification) {
-					throw new NotFoundError("Error while retreiving Notification");
+					throw response.badRequest("Error while retreiving Notification");
 				}
 
 				const payload: UpdateNotification = {
@@ -115,7 +114,7 @@ export const notificationRoute = new Elysia({ prefix: "/v1/notifications" })
 					payload,
 				);
 				if (!updated_notification) {
-					throw new BadRequestError("Error while updating notification !");
+					throw response.badRequest("Error while updating notification !");
 				}
 
 				return StandardResponse.success(

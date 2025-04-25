@@ -7,25 +7,31 @@ import {
 	type UpdateNotification,
 } from "../../infrastructure/entity/types";
 import type { ErrorHandler } from "../../infrastructure/entity/errors/global.error";
-import { NotFoundError } from "../../infrastructure/utils/response/not-found.error";
-import { BadRequestError } from "../../infrastructure/utils/response/bad-request.error";
+import type { Http } from "../../infrastructure/utils/response/http.response";
 
 @injectable()
 export class NotificationService {
 	private notificationRepo: NotificationRepository;
 	private errorHandler: ErrorHandler;
+	private response: Http;
 
 	constructor(
 		@inject(TYPES.notificationRepo) notificationRepo: NotificationRepository,
-		@inject(TYPES.error_handler) errorHandler: ErrorHandler,
+		@inject(TYPES.errorHandler) errorHandler: ErrorHandler,
+		@inject(TYPES.http) response: Http,
 	) {
 		this.notificationRepo = notificationRepo;
 		this.errorHandler = errorHandler;
+		this.response = response;
 	}
 
 	async getAll() {
 		try {
-			return await this.notificationRepo.getAll();
+			const notifications = await this.notificationRepo.getAll();
+			if (notifications.length === 0) {
+				throw this.response.badRequest("Notifications is empty !");
+			}
+			return notifications;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
 		}
@@ -33,7 +39,11 @@ export class NotificationService {
 
 	async getOne(id: string) {
 		try {
-			return await this.notificationRepo.getOne(id);
+			const notification = await this.notificationRepo.getOne(id);
+			if (!notification) {
+				throw this.response.notFound("Notification not found !");
+			}
+			return notification;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
 		}
@@ -43,7 +53,7 @@ export class NotificationService {
 		try {
 			const new_notification = await this.notificationRepo.create(payload);
 			if (!new_notification) {
-				throw new BadRequestError("Error while creating notification");
+				throw this.response.badRequest("Error while creating notification");
 			}
 			return new_notification;
 		} catch (error) {
@@ -55,7 +65,7 @@ export class NotificationService {
 		try {
 			const notification = await this.notificationRepo.getOne(id);
 			if (!notification) {
-				throw new NotFoundError("Notification not found");
+				throw this.response.notFound("Notification not found");
 			}
 
 			const updated_notification = await this.notificationRepo.update(

@@ -8,24 +8,26 @@ import {
 } from "../../infrastructure/entity/types";
 import type { HashService } from "../../infrastructure/utils/hashed_password";
 import type { ErrorHandler } from "../../infrastructure/entity/errors/global.error";
+import type { Http } from "../../infrastructure/utils/response/http.response";
 import { UserDTO } from "../dtos/userDTO";
-import { NotFoundError } from "../../infrastructure/utils/response/not-found.error";
-import { BadRequestError } from "../../infrastructure/utils/response/bad-request.error";
 
 @injectable()
 export class UserService {
 	private userRepo: UserRepository;
 	private hashed: HashService;
 	private error: ErrorHandler;
+	private response: Http;
 
 	constructor(
 		@inject(TYPES.userRepo) userRepo: UserRepository,
 		@inject(TYPES.hashed_password) hashed: HashService,
-		@inject(TYPES.error_handler) error: ErrorHandler,
+		@inject(TYPES.errorHandler) error: ErrorHandler,
+		@inject(TYPES.http) response: Http,
 	) {
 		this.userRepo = userRepo;
 		this.hashed = hashed;
 		this.error = error;
+		this.response = response;
 	}
 
 	async getAll() {
@@ -48,7 +50,7 @@ export class UserService {
 		try {
 			const existing_user = await this.userRepo.getOne(payload.email);
 			if (existing_user) {
-				throw new BadRequestError("email already exist !");
+				throw this.response.badRequest("email already exist !");
 			}
 
 			const hashed_password = await this.hashed.hash(payload.password);
@@ -60,7 +62,7 @@ export class UserService {
 
 			const create_staff = await this.userRepo.create(new_payload);
 			if (!create_staff) {
-				throw new BadRequestError("account cannot created");
+				throw this.response.badRequest("account cannot created");
 			}
 
 			return new UserDTO(create_staff).fromEntity();
@@ -73,7 +75,7 @@ export class UserService {
 		try {
 			const get_user = await this.userRepo.getOne(id);
 			if (!get_user) {
-				throw new NotFoundError("User not found !");
+				throw this.response.notFound("User not found !");
 			}
 
 			const hashed_password = await this.hashed.hash(
@@ -95,6 +97,11 @@ export class UserService {
 	async delete(id: string) {
 		try {
 			const deleted_user = await this.userRepo.update(id, { status: false });
+			if (!deleted_user) {
+				throw this.response.badRequest(
+					"Error while trying to delete user account !",
+				);
+			}
 			return deleted_user;
 		} catch (error) {
 			this.error.handleServiceError(error);

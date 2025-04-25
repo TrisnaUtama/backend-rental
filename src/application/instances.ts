@@ -18,6 +18,7 @@ import { EmailService } from "../infrastructure/entity/email";
 import { UserService } from "./services/user.services";
 import { NotificationService } from "./services/notification.services";
 import { NotificationRepository } from "../infrastructure/repositories/notification.repo";
+import { Http } from "../infrastructure/utils/response/http.response";
 
 export const container = new Container();
 
@@ -26,10 +27,11 @@ container.bind<ILogger>(TYPES.logger).to(Logger);
 container.bind<PrismaClient>(TYPES.prisma).toConstantValue(prisma);
 container.bind<IUser>(TYPES.userRepo).to(UserRepository);
 container.bind<IOTP>(TYPES.otpRepo).to(OtpRepository);
+container.bind<Http>(TYPES.http).to(Http);
 container
 	.bind<INotification>(TYPES.notificationRepo)
 	.to(NotificationRepository);
-container.bind<ErrorHandler>(TYPES.error_handler).to(ErrorHandler);
+container.bind<ErrorHandler>(TYPES.errorHandler).to(ErrorHandler);
 container.bind<HashService>(TYPES.hashed_password).to(HashService);
 container.bind<EmailService>(TYPES.email).to(EmailService);
 
@@ -37,8 +39,10 @@ container.bind<EmailService>(TYPES.email).to(EmailService);
 container.bind<AuthService>(AuthService).toSelf();
 container.bind<UserService>(UserService).toSelf();
 container.bind<NotificationService>(NotificationService).toSelf();
+container.bind<Http>(Http).toSelf();
 
 //instance
+export const response = container.get<Http>(Http);
 export const authService = container.get<AuthService>(AuthService);
 export const userService = container.get<UserService>(UserService);
 export const notificationService =

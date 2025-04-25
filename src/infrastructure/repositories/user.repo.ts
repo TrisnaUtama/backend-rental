@@ -10,7 +10,7 @@ export class UserRepository implements IUser {
 	private prisma: PrismaClient;
 	private error_handler: ErrorHandler;
 	constructor(
-		@inject(TYPES.error_handler) error_handler: ErrorHandler,
+		@inject(TYPES.errorHandler) error_handler: ErrorHandler,
 		@inject(TYPES.prisma) prisma: PrismaClient,
 	) {
 		this.prisma = prisma;

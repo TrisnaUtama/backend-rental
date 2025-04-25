@@ -12,14 +12,14 @@ import type { ErrorHandler } from "../entity/errors/global.error";
 @injectable()
 export class NotificationRepository implements INotification {
 	private prisma: PrismaClient;
-	private errorHanlder: ErrorHandler;
+	private errorHandlder: ErrorHandler;
 
 	constructor(
-		@inject(TYPES.error_handler) errorHandler: ErrorHandler,
+		@inject(TYPES.errorHandler) errorHandler: ErrorHandler,
 		@inject(TYPES.prisma) prisma: PrismaClient,
 	) {
 		this.prisma = prisma;
-		this.errorHanlder = errorHandler;
+		this.errorHandlder = errorHandler;
 	}
 
 	async getAll() {
@@ -29,7 +29,7 @@ export class NotificationRepository implements INotification {
 			});
 			return notifications;
 		} catch (error) {
-			this.errorHanlder.handleRepositoryError(error);
+			this.errorHandlder.handleRepositoryError(error);
 		}
 	}
 
@@ -43,7 +43,7 @@ export class NotificationRepository implements INotification {
 
 			return notification;
 		} catch (error) {
-			this.errorHanlder.handleRepositoryError(error);
+			this.errorHandlder.handleRepositoryError(error);
 		}
 	}
 
@@ -54,7 +54,7 @@ export class NotificationRepository implements INotification {
 			});
 			return new_notification;
 		} catch (error) {
-			this.errorHanlder.handleRepositoryError(error);
+			this.errorHandlder.handleRepositoryError(error);
 		}
 	}
 
@@ -66,7 +66,7 @@ export class NotificationRepository implements INotification {
 			});
 			return update_notification;
 		} catch (error) {
-			this.errorHanlder.handleRepositoryError(error);
+			this.errorHandlder.handleRepositoryError(error);
 		}
 	}
 
@@ -74,7 +74,7 @@ export class NotificationRepository implements INotification {
 		try {
 			await this.prisma.notifications.delete({ where: { id } });
 		} catch (error) {
-			this.errorHanlder.handleRepositoryError(error);
+			this.errorHandlder.handleRepositoryError(error);
 		}
 	}
 }

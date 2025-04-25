@@ -5,8 +5,9 @@ export const TYPES = {
 	logger: Symbol.for("Logger"),
 	prisma: Symbol.for("PrismaClient"),
 	hashed_password: Symbol.for("HashService"),
-	error_handler: Symbol.for("ErrorHandler"),
+	errorHandler: Symbol.for("ErrorHandler"),
 	email: Symbol.for("EmailService"),
+	http: Symbol.for("Http"),
 
 	//repo
 	userRepo: Symbol.for("UserRepository"),
