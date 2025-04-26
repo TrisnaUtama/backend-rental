@@ -9,7 +9,9 @@ import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.r
 import { verifyJwt } from "../../infrastructure/utils/jwt";
 import { response } from "../../application/instances";
 
-export const userRoute = new Elysia({ prefix: "/v1/users" })
+export const userRoute = new Elysia({ prefix: "/v1/users", detail: {
+	tags : ["USER"]
+} } )
 	.use(
 		jwt({
 			name: `${process.env.JWT_NAME}`,
@@ -31,7 +33,7 @@ export const userRoute = new Elysia({ prefix: "/v1/users" })
 		const userId = jwtPayload.user_id;
 		if (!userId) throw response.badRequest("Invalid Payload !");
 		const user = await userService.getOne(userId.toString());
-		if (!user || !user.refresh_token) {
+		if (!user || !user.refresh_token || user.role !== "ADMIN_OPERATIONAL") {
 			set.status = 403;
 			throw response.forbidden();
 		}

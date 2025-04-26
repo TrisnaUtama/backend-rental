@@ -28,7 +28,6 @@ export class ErrorHandler {
 
 	public handleServiceError(error: unknown): never {
 		if (error instanceof Error) {
-			this.logger.error(error.message);
 			throw error;
 		}
 

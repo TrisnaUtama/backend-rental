@@ -20,6 +20,38 @@ enum Notification_Type {
   REMINDER
 }
 
+enum Vehicle_status {
+  RENTED
+  MAINTENANCE
+  AVAILABLE
+  DISABLE
+}
+
+enum Transmition {
+  MANUAL
+  AUTOMATIC
+}
+
+enum Vehicle_Types {
+  CITY_CAR
+  HATCHBACK
+  SEDAN
+  SUV
+  MPV
+  MINIVAN
+  PICKUP
+  DOUBLE_CABIN
+  LUXURY
+  ELECTRIC_CAR
+}
+
+enum Fuel {
+  PERTALITE
+  PERTAMAX
+  DEXLITE
+  PERTAMAX_TURBO
+}
+
 model OTPs {
   id      String   @id @default(cuid())
   user_id     String
@@ -73,3 +105,22 @@ model Notification_Broadcast {
   user Users @relation(fields: [user_id], references: [id])
 }
 
+model Vehicles {
+  id String @id @default(cuid())
+  name String
+  type Vehicle_Types
+  transmition Transmition
+  status Vehicle_status
+  fuel Fuel
+  brand String
+  capacity String
+  kilometer String
+  year Int
+  price_per_day Decimal
+  image_url String[]
+  description String
+  color String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

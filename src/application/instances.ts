@@ -11,6 +11,7 @@ import type {
 	INotificationBroadcast,
 	IOTP,
 	IUser,
+	IVehicles,
 } from "../infrastructure/entity/interfaces";
 import type { PrismaClient } from "@prisma/client";
 import { ErrorHandler } from "../infrastructure/entity/errors/global.error";
@@ -22,6 +23,14 @@ import { NotificationService } from "./services/notification.services";
 import { NotificationRepository } from "../infrastructure/repositories/notification.repo";
 import { Http } from "../infrastructure/utils/response/http.response";
 import { prisma } from "../infrastructure/utils/prisma";
+import { VehicleService } from "./services/vehicle.services";
+import { VehicleRepository } from "../infrastructure/repositories/vehicle.repo";
+import {
+	BadRequestError,
+	ForbiddenError,
+	UnauthorizedError,
+} from "../infrastructure/utils/response/factory.response";
+import { NotFoundError } from "elysia";
 
 export const container = new Container();
 
@@ -37,6 +46,7 @@ container
 container
 	.bind<INotificationBroadcast>(TYPES.broadcastRepo)
 	.to(BroadcastRepository);
+container.bind<IVehicles>(TYPES.vehicleRepo).to(VehicleRepository);
 container.bind<ErrorHandler>(TYPES.errorHandler).to(ErrorHandler);
 container.bind<HashService>(TYPES.hashed_password).to(HashService);
 container.bind<EmailService>(TYPES.email).to(EmailService);
@@ -46,6 +56,7 @@ container.bind<AuthService>(AuthService).toSelf();
 container.bind<UserService>(UserService).toSelf();
 container.bind<NotificationService>(NotificationService).toSelf();
 container.bind<BroadcastService>(BroadcastService).toSelf();
+container.bind<VehicleService>(VehicleService).toSelf();
 container.bind<Http>(Http).toSelf();
 
 //instance
@@ -56,3 +67,4 @@ export const notificationService =
 	container.get<NotificationService>(NotificationService);
 export const braodcastService =
 	container.get<BroadcastService>(BroadcastService);
+export const vehicleService = container.get<VehicleService>(VehicleService);

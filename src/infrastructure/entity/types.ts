@@ -3,6 +3,7 @@ import type {
 	Users,
 	Notifications,
 	Notification_Broadcast,
+	Vehicles,
 } from "@prisma/client";
 
 export const TYPES = {
@@ -13,18 +14,24 @@ export const TYPES = {
 	errorHandler: Symbol.for("ErrorHandler"),
 	email: Symbol.for("EmailService"),
 	http: Symbol.for("Http"),
+	badRequest: Symbol.for("BadRequest"),
+	notFoundError: Symbol.for("NotFoundError"),
+	unauthorizedError: Symbol.for("UnautorizedError"),
+	forbiddenError: Symbol.for("ForbiddenError"),
 
 	//repo
 	userRepo: Symbol.for("UserRepository"),
 	otpRepo: Symbol.for("OtpRepository"),
 	notificationRepo: Symbol.for("NotificationRepository"),
 	broadcastRepo: Symbol.for("BroadcastRepository"),
+	vehicleRepo: Symbol.for("VehicleRepository"),
 
 	//  services
 	authService: Symbol.for("AuthService"),
 	userService: Symbol.for("UserService"),
 	notificationService: Symbol.for("NotificationService"),
 	broadcastService: Symbol.for("BroadcastService"),
+	vehicleService: Symbol.for("VehicleService"),
 };
 
 // CREATES //
@@ -47,9 +54,11 @@ export type CreateNotification = Omit<
 export type CreateNotificationBroadcast = Omit<Notification_Broadcast, "id">;
 
 export type CreateOTP = Omit<OTPs, "id" | "created_at" | "updated_at">;
+export type CreateVehicle = Omit<Vehicles, "id" | "created_at" | "updated_at">;
 
 // UPDATES //
 export type UpdateUser = Partial<Users>;
 export type UpdateOTP = Partial<OTPs>;
 export type UpdateNotification = Partial<Notifications>;
 export type UpdateNotificationBroadcast = Partial<Notification_Broadcast>;
+export type UpdateVehicle = Partial<Vehicles>;
