@@ -3,6 +3,7 @@ import type {
 	OTPs,
 	Notifications,
 	Notification_Broadcast,
+	Vehicles,
 } from "@prisma/client";
 import type {
 	CreateOTP,
@@ -13,6 +14,8 @@ import type {
 	UpdateNotification,
 	CreateNotificationBroadcast,
 	UpdateNotificationBroadcast,
+	CreateVehicle,
+	UpdateVehicle,
 } from "./types";
 
 // utils
@@ -68,5 +71,13 @@ export interface INotificationBroadcast {
 		id: string,
 		payload: UpdateNotificationBroadcast,
 	) => Promise<Notification_Broadcast>;
+	delete: (id: string) => Promise<void>;
+}
+
+export interface IVehicles {
+	getAll: () => Promise<Vehicles[]>;
+	getOne: (id: string) => Promise<Vehicles | null>;
+	create: (payload: CreateVehicle) => Promise<Vehicles | null>;
+	update: (id: string, payload: UpdateVehicle) => Promise<Vehicles>;
 	delete: (id: string) => Promise<void>;
 }

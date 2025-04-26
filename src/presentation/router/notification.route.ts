@@ -1,8 +1,6 @@
-import { BroadcastService } from "./../../application/services/broadcast.services";
 import { Elysia, t } from "elysia";
 import type {
 	CreateNotification,
-	CreateNotificationBroadcast,
 	UpdateNotification,
 } from "../../infrastructure/entity/types";
 import { notificationService } from "../../application/instances";
@@ -12,7 +10,9 @@ import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.r
 import { Notification_Type } from "@prisma/client";
 import { response } from "../../application/instances";
 
-export const notificationRoute = new Elysia({ prefix: "/v1/notifications" })
+export const notificationRoute = new Elysia({ prefix: "/v1/notifications", detail: {
+	tags : ["NOTIFICATION"]
+}  })
 	.get("/", async ({ set }) => {
 		try {
 			const notifications = await notificationService.getAll();
