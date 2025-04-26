@@ -161,7 +161,7 @@ export class AuthService {
 			if (!otp) await this.otpRepo.create(otpData);
 			if (otp) await this.otpRepo.update(otp.id, otpData);
 
-			await this.emailService.notify(randomCode, emailRecepient);
+			await this.emailService.send_otp(randomCode.toString(), emailRecepient);
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
 		}

@@ -1,9 +1,12 @@
+import { BroadcastService } from "./../../application/services/broadcast.services";
 import { Elysia, t } from "elysia";
 import type {
 	CreateNotification,
+	CreateNotificationBroadcast,
 	UpdateNotification,
 } from "../../infrastructure/entity/types";
 import { notificationService } from "../../application/instances";
+import { braodcastService } from "../../application/instances";
 import { StandardResponse } from "../../infrastructure/utils/response/standard.response";
 import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.response";
 import { Notification_Type } from "@prisma/client";
@@ -88,6 +91,35 @@ export const notificationRoute = new Elysia({ prefix: "/v1/notifications" })
 				}),
 				type: t.Enum(Notification_Type, {
 					error: "notification type must be at least picked",
+				}),
+			}),
+		},
+	)
+	.post(
+		"/broadcast",
+		async ({ body, set }) => {
+			try {
+				const notification = await braodcastService.broadcastToAll(
+					body.notification_id,
+				);
+				if (!notification) {
+					throw response.badRequest("Error while creating notification !");
+				}
+				set.status = 200;
+				return StandardResponse.success(
+					notification,
+					"Successfuly creating notification",
+				);
+			} catch (error) {
+				set.status = 500;
+				return GlobalErrorHandler.handleError(error, set);
+			}
+		},
+		{
+			body: t.Object({
+				notification_id: t.String({
+					minLength: 5,
+					error: "id must be filled",
 				}),
 			}),
 		},

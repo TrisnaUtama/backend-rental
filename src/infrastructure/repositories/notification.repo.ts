@@ -35,7 +35,7 @@ export class NotificationRepository implements INotification {
 
 	async getOne(id: string) {
 		try {
-			const notification = await this.prisma.notifications.findFirst({
+			const notification = await this.prisma.notifications.findUnique({
 				where: {
 					id,
 				},
