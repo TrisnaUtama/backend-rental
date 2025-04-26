@@ -84,7 +84,7 @@ export class EmailService {
 		try {
 			for (const notif of notifToSend) {
 				const html = await loadTemplate("broadcast", replacement);
-				const user = await this.userRepo.getOne(notif.user_id)
+				const user = await this.userRepo.getOne(notif.user_id);
 
 				const mailOptions = {
 					from: `"Bintang Transport Service" <no-reply@bintangtransportservice.club>`,

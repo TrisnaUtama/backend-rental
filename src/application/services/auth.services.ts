@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { injectable, inject } from "inversify";
-import type { EmailService } from "./../../infrastructure/entity/email";
+import type { EmailService } from "../../infrastructure/entity/email";
 import type { UserRepository } from "../../infrastructure/repositories/user.repo";
 import type { OtpRepository } from "../../infrastructure/repositories/otp.repo";
 import {
