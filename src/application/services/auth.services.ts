@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { injectable, inject } from "inversify";
-import type { EmailService } from "./../../infrastructure/entity/email";
+import type { EmailService } from "../../infrastructure/entity/email";
 import type { UserRepository } from "../../infrastructure/repositories/user.repo";
 import type { OtpRepository } from "../../infrastructure/repositories/otp.repo";
 import {
@@ -9,7 +9,6 @@ import {
 	type UpdateUser,
 } from "../../infrastructure/entity/types";
 import { type OTPs, Roles } from "@prisma/client";
-import type { ILogger } from "../../infrastructure/entity/interfaces";
 import type { HashService } from "../../infrastructure/utils/hashed_password";
 import type { ErrorHandler } from "../../infrastructure/entity/errors/global.error";
 import { UserDTO } from "../dtos/userDTO";
@@ -18,7 +17,7 @@ import {
 	ACCESS_TOKEN_EXP,
 	REFRESH_TOKEN_EXP,
 } from "../../infrastructure/utils/constant";
-import { BadRequestError } from "../../infrastructure/utils/response/bad-request.error";
+import type { Http } from "../../infrastructure/utils/response/http.response";
 
 @injectable()
 export class AuthService {
@@ -27,26 +26,29 @@ export class AuthService {
 	private hashed: HashService;
 	private errorHandler: ErrorHandler;
 	private emailService: EmailService;
+	private response: Http;
 
 	constructor(
 		@inject(TYPES.userRepo) userRepo: UserRepository,
 		@inject(TYPES.otpRepo) otpRepo: OtpRepository,
 		@inject(TYPES.hashed_password) hashed: HashService,
-		@inject(TYPES.error_handler) errorHandler: ErrorHandler,
+		@inject(TYPES.errorHandler) errorHandler: ErrorHandler,
 		@inject(TYPES.email) emailService: EmailService,
+		@inject(TYPES.http) response: Http,
 	) {
 		this.userRepo = userRepo;
 		this.otpRepo = otpRepo;
 		this.hashed = hashed;
 		this.errorHandler = errorHandler;
 		this.emailService = emailService;
+		this.response = response;
 	}
 
 	async signUp(payload: CreateUser) {
 		try {
 			const existing_user = await this.userRepo.getOne(payload.email);
 			if (existing_user) {
-				throw new BadRequestError("email already exist !");
+				throw this.response.badRequest("email already exist !");
 			}
 
 			const hashed_password = await this.hashed.hash(payload.password);
@@ -60,7 +62,7 @@ export class AuthService {
 			const new_account = await this.userRepo.create(new_payload);
 
 			if (!new_account) {
-				throw new BadRequestError("account cannot created");
+				throw this.response.badRequest("account cannot created");
 			}
 
 			this.sendOtp(new_account.id, new_account.email);
@@ -75,7 +77,7 @@ export class AuthService {
 			const get_payload = await this.userRepo.getOne(email);
 
 			if (!get_payload) {
-				throw new BadRequestError("Invalid Credentials !");
+				throw this.response.badRequest("Invalid Credentials !");
 			}
 
 			const compare_password = await Bun.password.verify(
@@ -85,11 +87,11 @@ export class AuthService {
 			);
 
 			if (!compare_password) {
-				throw new BadRequestError("Invalid Credentials !");
+				throw this.response.badRequest("Invalid Credentials !");
 			}
 
 			if (!get_payload.is_verified) {
-				throw new BadRequestError("Your account not verified !");
+				throw this.response.badRequest("Your account not verified !");
 			}
 
 			const payload = {
@@ -120,15 +122,15 @@ export class AuthService {
 			const time_comparation = Date.now();
 
 			if (!payload) {
-				throw new BadRequestError("otp code not found");
+				throw this.response.badRequest("otp code not found");
 			}
 
 			if (code !== payload.otp_code) {
-				throw new BadRequestError("Invalid OTP Code");
+				throw this.response.badRequest("Invalid OTP Code");
 			}
 
 			if (payload.expiry_time.getTime() < time_comparation) {
-				throw new BadRequestError("Expired OTP Code");
+				throw this.response.badRequest("Expired OTP Code");
 			}
 
 			const verified_account: UpdateUser = {
@@ -138,7 +140,7 @@ export class AuthService {
 
 			return true;
 		} catch (error) {
-			return this.errorHandler.handleServiceError(error);
+			this.errorHandler.handleServiceError(error);
 		}
 	}
 
@@ -159,7 +161,7 @@ export class AuthService {
 			if (!otp) await this.otpRepo.create(otpData);
 			if (otp) await this.otpRepo.update(otp.id, otpData);
 
-			await this.emailService.notify(randomCode, emailRecepient);
+			await this.emailService.send_otp(randomCode.toString(), emailRecepient);
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
 		}

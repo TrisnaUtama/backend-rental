@@ -20,7 +20,9 @@ app
 			path: "/docs",
 		}),
 	)
-	.group("/api", (app) => app.use(authRouter).use(userRoute).use(notificationRoute))
+	.group("/api", (app) =>
+		app.use(authRouter).use(userRoute).use(notificationRoute),
+	)
 
 	.listen(8000);
 

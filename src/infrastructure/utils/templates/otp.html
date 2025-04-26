@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your OTP Code | Bintang Transport Service</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #f7f9fc;
+      color: #333;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+      padding: 30px 20px;
+      text-align: center;
+      color: white;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    .content {
+      padding: 30px;
+    }
+    .otp-container {
+      background: #f1f8e9;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 25px 0;
+      text-align: center;
+    }
+    .otp-code {
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #2E7D32;
+      margin: 15px 0;
+    }
+    .expiry-note {
+      color: #666;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    .button {
+      display: inline-block;
+      background: #4CAF50;
+      color: white;
+      text-decoration: none;
+      padding: 12px 25px;
+      border-radius: 5px;
+      font-weight: 500;
+      margin: 20px 0;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px;
+      background: #f5f5f5;
+      font-size: 12px;
+      color: #777;
+    }
+    .logo {
+      max-width: 180px;
+      margin-bottom: 20px;
+    }
+    .divider {
+      height: 1px;
+      background: #eee;
+      margin: 25px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <h1>Your Verification Code</h1>
+    </div>
+    
+    <div class="content">
+      <p>Hello,</p>
+      <p>We received a request to verify your account. Please use the following One-Time Password (OTP):</p>
+      
+      <div class="otp-container">
+        <div class="otp-code">{{CODE}}</div>
+        <div class="expiry-note">Valid for 5 minutes only</div>
+      </div>
+      
+      <p>For security reasons, please do not share this code with anyone. If you didn't request this code, you can safely ignore this email.</p>
+      
+      <div class="divider"></div>
+      
+      <p>Need help? Contact our support team at <a href="mailto:support@bintangtransportservice.club">support@bintangtransportservice.club</a></p>
+    </div>
+    
+    <div class="footer">
+      <p>© 2025 Bintang Transport Service. All rights reserved.</p>
+      <p>Jl. Toyaning No. 15, Kedonganan, Bali, Indonesia</p>
+    </div>
+  </div>
+</body>
+</html>

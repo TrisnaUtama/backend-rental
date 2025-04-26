@@ -64,9 +64,10 @@ model Notification_Broadcast {
   id String @id @default(cuid())
   notification_id String
   user_id String
+  status Boolean
 
-  read_at DateTime
-  sent_at DateTime
+  read_at DateTime?
+  sent_at DateTime?
 
   notification Notifications @relation(fields: [notification_id], references: [id])
   user Users @relation(fields: [user_id], references: [id])
