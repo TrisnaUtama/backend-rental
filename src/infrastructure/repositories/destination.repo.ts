@@ -1,12 +1,16 @@
 import "reflect-metadata";
 import { injectable, inject } from "inversify";
-import type { ILogger, IVehicles } from "../entity/interfaces";
-import type { PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient } from "@prisma/client";
 import type { ErrorHandler } from "../entity/errors/global.error";
-import { type CreateVehicle, TYPES, type UpdateVehicle } from "../entity/types";
+import type { IDestinations } from "../entity/interfaces";
+import {
+	TYPES,
+	type CreateDestination,
+	type UpdateDestination,
+} from "../entity/types";
 
 @injectable()
-export class VehicleRepository implements IVehicles {
+export class DestinationRepository implements IDestinations {
 	private prisma: PrismaClient;
 	private errorHandler: ErrorHandler;
 
@@ -20,17 +24,9 @@ export class VehicleRepository implements IVehicles {
 
 	async getAll() {
 		try {
-			return await this.prisma.vehicles.findMany();
-		} catch (error) {
-			this.errorHandler.handleRepositoryError(error);
-		}
-	}
-
-	async getOne(id: string) {
-		try {
-			return await this.prisma.vehicles.findUnique({
-				where: {
-					id,
+			return await this.prisma.destinations.findMany({
+				include: {
+					destination_fasilities: true,
 				},
 			});
 		} catch (error) {
@@ -38,19 +34,30 @@ export class VehicleRepository implements IVehicles {
 		}
 	}
 
-	async create(payload: CreateVehicle) {
+	async getOne(id: string) {
 		try {
-			return await this.prisma.vehicles.create({
-				data: payload,
-			});
+			return await this.prisma.destinations.findUnique({ where: { id } });
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
 		}
 	}
 
-	async update(id: string, payload: UpdateVehicle) {
+	async create(payload: CreateDestination, tx?: Prisma.TransactionClient) {
 		try {
-			return await this.prisma.vehicles.update({
+			const client = tx || this.prisma;
+			return await client.destinations.create({ data: payload });
+		} catch (error) {
+			this.errorHandler.handleRepositoryError(error);
+		}
+	}
+
+	async update(
+		id: string,
+		payload: UpdateDestination,
+		tx?: Prisma.TransactionClient,
+	) {
+		try {
+			return await this.prisma.destinations.update({
 				where: { id },
 				data: payload,
 			});

@@ -47,9 +47,8 @@ export class AuthService {
 	async signUp(payload: CreateUser) {
 		try {
 			const existing_user = await this.userRepo.getOne(payload.email);
-			if (existing_user) {
+			if (existing_user)
 				throw this.response.badRequest("email already exist !");
-			}
 
 			const hashed_password = await this.hashed.hash(payload.password);
 			const new_payload = {
@@ -61,9 +60,8 @@ export class AuthService {
 
 			const new_account = await this.userRepo.create(new_payload);
 
-			if (!new_account) {
+			if (!new_account)
 				throw this.response.badRequest("account cannot created");
-			}
 
 			this.sendOtp(new_account.id, new_account.email);
 			return new UserDTO(new_account).fromEntity();
@@ -76,9 +74,7 @@ export class AuthService {
 		try {
 			const get_payload = await this.userRepo.getOne(email);
 
-			if (!get_payload) {
-				throw this.response.badRequest("Invalid Credentials !");
-			}
+			if (!get_payload) throw this.response.badRequest("Invalid Credentials !");
 
 			const compare_password = await Bun.password.verify(
 				password,
@@ -86,13 +82,11 @@ export class AuthService {
 				"bcrypt",
 			);
 
-			if (!compare_password) {
+			if (!compare_password)
 				throw this.response.badRequest("Invalid Credentials !");
-			}
 
-			if (!get_payload.is_verified) {
+			if (!get_payload.is_verified)
 				throw this.response.badRequest("Your account not verified !");
-			}
 
 			const payload = {
 				user_id: get_payload.id,
@@ -121,17 +115,13 @@ export class AuthService {
 			const payload = await this.otpRepo.getOne(userId);
 			const time_comparation = Date.now();
 
-			if (!payload) {
-				throw this.response.badRequest("otp code not found");
-			}
+			if (!payload) throw this.response.badRequest("otp code not found");
 
-			if (code !== payload.otp_code) {
+			if (code !== payload.otp_code)
 				throw this.response.badRequest("Invalid OTP Code");
-			}
 
-			if (payload.expiry_time.getTime() < time_comparation) {
+			if (payload.expiry_time.getTime() < time_comparation)
 				throw this.response.badRequest("Expired OTP Code");
-			}
 
 			const verified_account: UpdateUser = {
 				is_verified: true,

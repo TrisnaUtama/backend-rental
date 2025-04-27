@@ -8,9 +8,12 @@ import {
 } from "../../infrastructure/utils/constant";
 import { response } from "../../application/instances";
 
-export const authRouter = new Elysia({ prefix: "/v1", detail: {
-	tags : ["AUTH"]
-} })
+export const authRouter = new Elysia({
+	prefix: "/v1",
+	detail: {
+		tags: ["AUTH"],
+	},
+})
 	.post(
 		"/sign-up",
 		async ({ body, set }) => {

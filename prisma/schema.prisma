@@ -84,7 +84,7 @@ model Notifications {
   title String
   message String
   type Notification_Type
-  status Boolean
+  status Boolean  @default(true)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -96,7 +96,7 @@ model Notification_Broadcast {
   id String @id @default(cuid())
   notification_id String
   user_id String
-  status Boolean
+  status Boolean @default(true)
 
   read_at DateTime?
   sent_at DateTime?
@@ -123,4 +123,60 @@ model Vehicles {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  travel_packages Travel_Packages[]
+}
+
+model Destinations {
+  id String @id @default(cuid())
+  name String
+  open_hour String
+  description String
+  image_urls String[]
+  latitude String
+  longitude String
+  status Boolean @default(true)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  destination_fasilities Destination_Fasilities[]
+  travel_package_destinations Travel_Packages_Destinations[]
+}
+
+model Travel_Packages_Destinations {
+  id String @id @default(cuid())
+  travel_package_id String 
+  destination_id String
+
+  travel_packages Travel_Packages @relation(fields: [travel_package_id], references: [id])
+  destination Destinations @relation(fields: [destination_id], references: [id])
+}
+
+model Travel_Packages {
+  id String @id @default(cuid())
+  vehicle_id String
+  name String
+  price Decimal
+  duration Int
+  description String
+  status Boolean @default(true)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  vehicles Vehicles @relation(fields: [vehicle_id], references: [id])
+  travel_package_destinations Travel_Packages_Destinations[]
+  }
+
+model Destination_Fasilities {
+  id String @id @default(cuid())
+  destination_id String
+  name String
+  status Boolean @default(true)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  destination Destinations @relation(fields: [destination_id], references: [id])
 }

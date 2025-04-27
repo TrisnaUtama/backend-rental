@@ -19,15 +19,13 @@ export class UserRepository implements IUser {
 
 	async getAll() {
 		try {
-			const users = await this.prisma.users.findMany({
+			return await this.prisma.users.findMany({
 				where: {
 					role: {
 						not: "SUPERADMIN",
 					},
 				},
 			});
-
-			return users;
 		} catch (error) {
 			this.error_handler.handleRepositoryError(error);
 		}
@@ -35,12 +33,11 @@ export class UserRepository implements IUser {
 
 	async getOne(idOrEmail: string) {
 		try {
-			const user = await this.prisma.users.findFirst({
+			return await this.prisma.users.findFirst({
 				where: {
 					OR: [{ id: idOrEmail }, { email: idOrEmail }],
 				},
 			});
-			return user;
 		} catch (error) {
 			this.error_handler.handleRepositoryError(error);
 		}
@@ -48,10 +45,9 @@ export class UserRepository implements IUser {
 
 	async create(payload: CreateUser) {
 		try {
-			const user = await this.prisma.users.create({
+			return await this.prisma.users.create({
 				data: payload,
 			});
-			return user;
 		} catch (error) {
 			this.error_handler.handleRepositoryError(error);
 		}
@@ -59,7 +55,7 @@ export class UserRepository implements IUser {
 
 	async update(id: string, data: UpdateUser) {
 		try {
-			const updatedUser = await this.prisma.users.update({
+			return await this.prisma.users.update({
 				where: {
 					id: id,
 				},
@@ -72,20 +68,6 @@ export class UserRepository implements IUser {
 					is_verified: data.is_verified,
 					year_of_experiences: data.year_of_experiences,
 					updated_at: new Date(),
-				},
-			});
-
-			return updatedUser;
-		} catch (error) {
-			this.error_handler.handleRepositoryError(error);
-		}
-	}
-
-	async delete(id: string) {
-		try {
-			await this.prisma.users.delete({
-				where: {
-					id,
 				},
 			});
 		} catch (error) {

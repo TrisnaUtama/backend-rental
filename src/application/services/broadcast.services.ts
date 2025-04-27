@@ -35,9 +35,8 @@ export class BroadcastService {
 	async getAll() {
 		try {
 			const broadcasts = await this.broadcastRepo.getAll();
-			if (broadcasts.length === 0) {
+			if (broadcasts.length === 0)
 				throw this.response.badRequest("Broadcast is empty !");
-			}
 
 			return broadcasts;
 		} catch (error) {
@@ -48,9 +47,8 @@ export class BroadcastService {
 	async getAllByNotifId(id: string) {
 		try {
 			const broadcastsById = await this.broadcastRepo.getAllByNotifId(id);
-			if (broadcastsById.length === 0) {
+			if (broadcastsById.length === 0)
 				throw this.response.notFound("Notification to broadcast not found !");
-			}
 			return broadcastsById;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
@@ -60,9 +58,7 @@ export class BroadcastService {
 	async getOne(id: string) {
 		try {
 			const broadcast = await this.broadcastRepo.getOne(id);
-			if (!broadcast) {
-				throw this.response.notFound("Broadcast not found !");
-			}
+			if (!broadcast) throw this.response.notFound("Broadcast not found !");
 			return broadcast;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
@@ -85,9 +81,8 @@ export class BroadcastService {
 		try {
 			const users = await this.userRepo.getAll();
 
-			if (!users) {
+			if (!users)
 				throw this.response.badRequest("error while retreived all user data");
-			}
 
 			const broadcast: CreateNotificationBroadcast[] = users.map((user) => ({
 				notification_id: id,
@@ -98,9 +93,9 @@ export class BroadcastService {
 			}));
 
 			const create_broadcast = await this.broadcastRepo.createMany(broadcast);
-			if (!create_broadcast) {
+			if (!create_broadcast)
 				this.response.badRequest("Error while creating broadcast notification");
-			}
+
 			await this.emailService.send_broadcast(id);
 			return create_broadcast;
 		} catch (error) {

@@ -10,9 +10,12 @@ import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.r
 import { Notification_Type } from "@prisma/client";
 import { response } from "../../application/instances";
 
-export const notificationRoute = new Elysia({ prefix: "/v1/notifications", detail: {
-	tags : ["NOTIFICATION"]
-}  })
+export const notificationRoute = new Elysia({
+	prefix: "/v1/notifications",
+	detail: {
+		tags: ["NOTIFICATION"],
+	},
+})
 	.get("/", async ({ set }) => {
 		try {
 			const notifications = await notificationService.getAll();

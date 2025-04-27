@@ -24,8 +24,7 @@ export class BroadcastRepository implements INotificationBroadcast {
 
 	async getAll() {
 		try {
-			const broadcasts = await this.prisma.notification_Broadcast.findMany();
-			return broadcasts;
+			return await this.prisma.notification_Broadcast.findMany();
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
 		}
@@ -45,12 +44,11 @@ export class BroadcastRepository implements INotificationBroadcast {
 
 	async getOne(id: string) {
 		try {
-			const broadcast = await this.prisma.notification_Broadcast.findUnique({
+			return await this.prisma.notification_Broadcast.findUnique({
 				where: {
 					id,
 				},
 			});
-			return broadcast;
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
 		}
@@ -58,11 +56,9 @@ export class BroadcastRepository implements INotificationBroadcast {
 
 	async create(payload: CreateNotificationBroadcast) {
 		try {
-			const create_broadcast = await this.prisma.notification_Broadcast.create({
+			return await this.prisma.notification_Broadcast.create({
 				data: payload,
 			});
-
-			return create_broadcast;
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
 		}
@@ -80,10 +76,10 @@ export class BroadcastRepository implements INotificationBroadcast {
 
 	async update(id: string, payload: UpdateNotificationBroadcast) {
 		try {
-			const updated_broadcast = await this.prisma.notification_Broadcast.update(
-				{ where: { id }, data: payload },
-			);
-			return updated_broadcast;
+			return await this.prisma.notification_Broadcast.update({
+				where: { id },
+				data: payload,
+			});
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
 		}
