@@ -94,10 +94,8 @@ export interface IFacilities {
 	getAllByIdDestination: (id: string) => Promise<Destination_Fasilities[]>;
 	getOne: (id: string) => Promise<Destination_Fasilities | null>;
 	createMany: (payload: CreateFacility[]) => Promise<{ count: number }>;
-	update: (
-		payload: UpdateFacility[]
-	) => Promise<Destination_Fasilities[]>;
+	update: (payload: UpdateFacility[]) => Promise<Destination_Fasilities[]>;
 	// updateMany: (
-    //     facilities: UpdateFacility[],
-    // ) => Promise<Destination_Fasilities[]>;
+	//     facilities: UpdateFacility[],
+	// ) => Promise<Destination_Fasilities[]>;
 }

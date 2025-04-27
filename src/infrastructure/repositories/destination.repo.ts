@@ -25,10 +25,10 @@ export class DestinationRepository implements IDestinations {
 	async getAll() {
 		try {
 			return await this.prisma.destinations.findMany({
-                include: {
-                    destination_fasilities: true, 
-                },
-            });
+				include: {
+					destination_fasilities: true,
+				},
+			});
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
 		}
@@ -51,7 +51,11 @@ export class DestinationRepository implements IDestinations {
 		}
 	}
 
-	async update(id: string, payload: UpdateDestination, tx?:Prisma.TransactionClient) {
+	async update(
+		id: string,
+		payload: UpdateDestination,
+		tx?: Prisma.TransactionClient,
+	) {
 		try {
 			return await this.prisma.destinations.update({
 				where: { id },

@@ -8,7 +8,7 @@ import {
 	type UpdateDestination,
 	type CreateFacility,
 	TYPES,
-    type UpdateFacility,
+	type UpdateFacility,
 } from "../../infrastructure/entity/types";
 import type { FacilityRepository } from "../../infrastructure/repositories/facility.repo";
 import type { Prisma, PrismaClient } from "@prisma/client";
@@ -61,52 +61,61 @@ export class DestinationService {
 	}
 
 	async create(payload_x: CreateDestination, payload_y: CreateFacility[]) {
-        try {
-            const result = await this.prisma.$transaction(async (tx) => {
-                const destination = await this.destinationRepo.create(payload_x, tx);
-                if (!destination) {
-                    throw this.response.badRequest("Error while creating destination!");
-                }
-    
-                const payload_facilities = payload_y.map((facility) => ({
-                    ...facility,
-                    destination_id: destination.id,  
-                }));
-    
-                await this.facilityRepo.createMany(payload_facilities, tx);
-                
-                return destination; 
-            });
-    
-            return result;
-        } catch (error) {
-            this.errorHandler.handleServiceError(error);
-        }
-    }
-    
-    
+		try {
+			const result = await this.prisma.$transaction(async (tx) => {
+				const destination = await this.destinationRepo.create(payload_x, tx);
+				if (!destination) {
+					throw this.response.badRequest("Error while creating destination!");
+				}
 
-	async update(id: string, payload: UpdateDestination, facilitiesPayload: UpdateFacility[], tx?: Prisma.TransactionClient) {
-        try {
-            const result = await this.prisma.$transaction(async (tx) => {
-                const updatedDestination = await this.destinationRepo.update(id, payload, tx);
-            if (!updatedDestination) {
-                throw new Error("Error while updating destination!");
-            }
+				const payload_facilities = payload_y.map((facility) => ({
+					...facility,
+					destination_id: destination.id,
+				}));
 
-            const updatedFacilities = await this.facilityRepo.update(facilitiesPayload, tx);
-            if (!updatedFacilities) {
-                throw new Error("Error while updating facilities!");
-            }
-    
-                return updatedDestination;
-            });
-            return result;
-        } catch (error) {
-            this.errorHandler.handleServiceError(error);
-        }
-    }
-    
+				await this.facilityRepo.createMany(payload_facilities, tx);
+
+				return destination;
+			});
+
+			return result;
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
+
+	async update(
+		id: string,
+		payload: UpdateDestination,
+		facilitiesPayload: UpdateFacility[],
+		tx?: Prisma.TransactionClient,
+	) {
+		try {
+			const result = await this.prisma.$transaction(async (tx) => {
+				const updatedDestination = await this.destinationRepo.update(
+					id,
+					payload,
+					tx,
+				);
+				if (!updatedDestination) {
+					throw new Error("Error while updating destination!");
+				}
+
+				const updatedFacilities = await this.facilityRepo.update(
+					facilitiesPayload,
+					tx,
+				);
+				if (!updatedFacilities) {
+					throw new Error("Error while updating facilities!");
+				}
+
+				return updatedDestination;
+			});
+			return result;
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
 
 	async delete(id: string) {
 		try {

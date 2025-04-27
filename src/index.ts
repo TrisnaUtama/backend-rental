@@ -23,7 +23,12 @@ app
 		}),
 	)
 	.group("/api", (app) =>
-		app.use(authRouter).use(userRoute).use(notificationRoute).use(vehicleRoute).use(destinationRoute),
+		app
+			.use(authRouter)
+			.use(userRoute)
+			.use(notificationRoute)
+			.use(vehicleRoute)
+			.use(destinationRoute),
 	)
 
 	.listen(8000);

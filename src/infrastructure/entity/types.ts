@@ -64,7 +64,7 @@ export type CreateDestination = Omit<
 >;
 export type CreateFacility = Omit<
 	Destination_Fasilities,
-	"id"  |  "created_at" | "updated_at"
+	"id" | "created_at" | "updated_at"
 >;
 
 // UPDATES //
