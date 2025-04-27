@@ -24,10 +24,9 @@ export class NotificationRepository implements INotification {
 
 	async getAll() {
 		try {
-			const notifications = await this.prisma.notifications.findMany({
+			return await this.prisma.notifications.findMany({
 				where: { status: true },
 			});
-			return notifications;
 		} catch (error) {
 			this.errorHandlder.handleRepositoryError(error);
 		}
@@ -35,13 +34,11 @@ export class NotificationRepository implements INotification {
 
 	async getOne(id: string) {
 		try {
-			const notification = await this.prisma.notifications.findUnique({
+			return await this.prisma.notifications.findUnique({
 				where: {
 					id,
 				},
 			});
-
-			return notification;
 		} catch (error) {
 			this.errorHandlder.handleRepositoryError(error);
 		}
@@ -49,10 +46,9 @@ export class NotificationRepository implements INotification {
 
 	async create(payload: CreateNotification) {
 		try {
-			const new_notification = await this.prisma.notifications.create({
+			return await this.prisma.notifications.create({
 				data: payload,
 			});
-			return new_notification;
 		} catch (error) {
 			this.errorHandlder.handleRepositoryError(error);
 		}
@@ -60,19 +56,10 @@ export class NotificationRepository implements INotification {
 
 	async update(id: string, payload: UpdateNotification) {
 		try {
-			const update_notification = await this.prisma.notifications.update({
+			return await this.prisma.notifications.update({
 				where: { id },
 				data: payload,
 			});
-			return update_notification;
-		} catch (error) {
-			this.errorHandlder.handleRepositoryError(error);
-		}
-	}
-
-	async delete(id: string) {
-		try {
-			await this.prisma.notifications.delete({ where: { id } });
 		} catch (error) {
 			this.errorHandlder.handleRepositoryError(error);
 		}

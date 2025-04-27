@@ -5,28 +5,29 @@ import cors from "@elysiajs/cors";
 import { userRoute } from "./presentation/router/user.route";
 import { notificationRoute } from "./presentation/router/notification.route";
 import { vehicleRoute } from "./presentation/router/vehicle.route";
+import { destinationRoute } from "./presentation/router/destination.route";
 
 const app = new Elysia();
 app
-  .use(
-    cors({
-      origin: "http://localhost:3000",
-      methods: ["GET", "POST", "PATCH", "DELETE"],
-      allowedHeaders: ["Content-Type", "Authorization"],
-      credentials: true,
-    })
-  )
-  .use(
-    swagger({
-      path: "/docs",
-    })
-  )
-  .group("/api", (app) =>
-    app.use(authRouter).use(userRoute).use(notificationRoute).use(vehicleRoute)
-  )
+	.use(
+		cors({
+			origin: "http://localhost:3000",
+			methods: ["GET", "POST", "PATCH", "DELETE"],
+			allowedHeaders: ["Content-Type", "Authorization"],
+			credentials: true,
+		}),
+	)
+	.use(
+		swagger({
+			path: "/docs",
+		}),
+	)
+	.group("/api", (app) =>
+		app.use(authRouter).use(userRoute).use(notificationRoute).use(vehicleRoute).use(destinationRoute),
+	)
 
-  .listen(8000);
+	.listen(8000);
 
 console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
+	`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
 );

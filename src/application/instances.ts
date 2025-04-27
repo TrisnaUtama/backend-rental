@@ -6,6 +6,8 @@ import { Logger } from "../infrastructure/entity/logger";
 import { UserRepository } from "../infrastructure/repositories/user.repo";
 import { AuthService } from "./services/auth.services";
 import type {
+	IDestinations,
+	IFacilities,
 	ILogger,
 	INotification,
 	INotificationBroadcast,
@@ -31,6 +33,9 @@ import {
 	UnauthorizedError,
 } from "../infrastructure/utils/response/factory.response";
 import { NotFoundError } from "elysia";
+import { DestinationService } from "./services/destination.services";
+import { DestinationRepository } from "../infrastructure/repositories/destination.repo";
+import { FacilityRepository } from "../infrastructure/repositories/facility.repo";
 
 export const container = new Container();
 
@@ -47,6 +52,8 @@ container
 	.bind<INotificationBroadcast>(TYPES.broadcastRepo)
 	.to(BroadcastRepository);
 container.bind<IVehicles>(TYPES.vehicleRepo).to(VehicleRepository);
+container.bind<IDestinations>(TYPES.destinationRepo).to(DestinationRepository);
+container.bind<IFacilities>(TYPES.facilityRepo).to(FacilityRepository);
 container.bind<ErrorHandler>(TYPES.errorHandler).to(ErrorHandler);
 container.bind<HashService>(TYPES.hashed_password).to(HashService);
 container.bind<EmailService>(TYPES.email).to(EmailService);
@@ -57,6 +64,7 @@ container.bind<UserService>(UserService).toSelf();
 container.bind<NotificationService>(NotificationService).toSelf();
 container.bind<BroadcastService>(BroadcastService).toSelf();
 container.bind<VehicleService>(VehicleService).toSelf();
+container.bind<DestinationService>(DestinationService).toSelf();
 container.bind<Http>(Http).toSelf();
 
 //instance
@@ -68,3 +76,5 @@ export const notificationService =
 export const braodcastService =
 	container.get<BroadcastService>(BroadcastService);
 export const vehicleService = container.get<VehicleService>(VehicleService);
+export const destinationService =
+	container.get<DestinationService>(DestinationService);

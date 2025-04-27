@@ -18,7 +18,6 @@ export class ErrorHandler {
 		}
 
 		if (error instanceof Error) {
-			this.logger.error(error.message);
 			throw error;
 		}
 

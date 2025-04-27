@@ -4,6 +4,8 @@ import type {
 	Notifications,
 	Notification_Broadcast,
 	Vehicles,
+	Destinations,
+	Destination_Fasilities,
 } from "@prisma/client";
 import type {
 	CreateOTP,
@@ -16,6 +18,10 @@ import type {
 	UpdateNotificationBroadcast,
 	CreateVehicle,
 	UpdateVehicle,
+	CreateDestination,
+	UpdateDestination,
+	CreateFacility,
+	UpdateFacility,
 } from "./types";
 
 // utils
@@ -38,7 +44,6 @@ export interface IUser {
 	getOne: (id: string) => Promise<Users | null>;
 	create: (payload: CreateUser) => Promise<Users | null>;
 	update: (id: string, payload: UpdateUser) => Promise<Users>;
-	delete: (id: string) => Promise<void>;
 }
 
 export interface IOTP {
@@ -46,7 +51,6 @@ export interface IOTP {
 	getOne: (id: string) => Promise<OTPs | null>;
 	create: (payload: CreateOTP) => Promise<OTPs | null>;
 	update: (id: string, payload: UpdateOTP) => Promise<OTPs>;
-	delete: (id: string) => Promise<void>;
 }
 
 export interface INotification {
@@ -54,7 +58,6 @@ export interface INotification {
 	getOne: (id: string) => Promise<Notifications | null>;
 	create: (payload: CreateNotification) => Promise<Notifications | null>;
 	update: (id: string, payload: UpdateNotification) => Promise<Notifications>;
-	delete: (id: string) => Promise<void>;
 }
 
 export interface INotificationBroadcast {
@@ -71,7 +74,6 @@ export interface INotificationBroadcast {
 		id: string,
 		payload: UpdateNotificationBroadcast,
 	) => Promise<Notification_Broadcast>;
-	delete: (id: string) => Promise<void>;
 }
 
 export interface IVehicles {
@@ -79,5 +81,23 @@ export interface IVehicles {
 	getOne: (id: string) => Promise<Vehicles | null>;
 	create: (payload: CreateVehicle) => Promise<Vehicles | null>;
 	update: (id: string, payload: UpdateVehicle) => Promise<Vehicles>;
-	delete: (id: string) => Promise<void>;
+}
+
+export interface IDestinations {
+	getAll: () => Promise<Destinations[]>;
+	getOne: (id: string) => Promise<Destinations | null>;
+	create: (payload: CreateDestination) => Promise<Destinations | null>;
+	update: (id: string, payload: UpdateDestination) => Promise<Destinations>;
+}
+
+export interface IFacilities {
+	getAllByIdDestination: (id: string) => Promise<Destination_Fasilities[]>;
+	getOne: (id: string) => Promise<Destination_Fasilities | null>;
+	createMany: (payload: CreateFacility[]) => Promise<{ count: number }>;
+	update: (
+		payload: UpdateFacility[]
+	) => Promise<Destination_Fasilities[]>;
+	// updateMany: (
+    //     facilities: UpdateFacility[],
+    // ) => Promise<Destination_Fasilities[]>;
 }

@@ -32,7 +32,12 @@ export class UserService {
 
 	async getAll() {
 		try {
-			return await this.userRepo.getAll();
+			const users = await this.userRepo.getAll();
+			if (!users)
+				throw this.response.badRequest("Error while retreived users !");
+			if (users.length === 0) throw this.response.notFound("Users is empty !");
+
+			return users;
 		} catch (error) {
 			this.error.handleServiceError(error);
 		}
@@ -40,7 +45,11 @@ export class UserService {
 
 	async getOne(id: string) {
 		try {
-			return await this.userRepo.getOne(id);
+			const user = await this.userRepo.getOne(id);
+			if (!user)
+				throw this.response.badRequest("Error while retreived users !");
+
+			return user;
 		} catch (error) {
 			this.error.handleServiceError(error);
 		}
@@ -49,9 +58,8 @@ export class UserService {
 	async create(payload: CreateUser) {
 		try {
 			const existing_user = await this.userRepo.getOne(payload.email);
-			if (existing_user) {
+			if (existing_user)
 				throw this.response.badRequest("email already exist !");
-			}
 
 			const hashed_password = await this.hashed.hash(payload.password);
 			const new_payload = {
@@ -61,9 +69,8 @@ export class UserService {
 			};
 
 			const create_staff = await this.userRepo.create(new_payload);
-			if (!create_staff) {
+			if (!create_staff)
 				throw this.response.badRequest("account cannot created");
-			}
 
 			return new UserDTO(create_staff).fromEntity();
 		} catch (error) {
@@ -74,9 +81,7 @@ export class UserService {
 	async update(id: string, payload: UpdateUser) {
 		try {
 			const get_user = await this.userRepo.getOne(id);
-			if (!get_user) {
-				throw this.response.notFound("User not found !");
-			}
+			if (!get_user) throw this.response.notFound("User not found !");
 
 			const hashed_password = await this.hashed.hash(
 				payload.password as string,
@@ -97,11 +102,11 @@ export class UserService {
 	async delete(id: string) {
 		try {
 			const deleted_user = await this.userRepo.update(id, { status: false });
-			if (!deleted_user) {
+			if (!deleted_user)
 				throw this.response.badRequest(
 					"Error while trying to delete user account !",
 				);
-			}
+
 			return deleted_user;
 		} catch (error) {
 			this.error.handleServiceError(error);

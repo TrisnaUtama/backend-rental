@@ -19,9 +19,12 @@ import type {
 	UpdateVehicle,
 } from "../../infrastructure/entity/types";
 
-export const vehicleRoute = new Elysia({ prefix: "/v1/vehicles" , detail: {
-	tags : ["VEHICLE"]
-} })
+export const vehicleRoute = new Elysia({
+	prefix: "/v1/vehicles",
+	detail: {
+		tags: ["VEHICLE"],
+	},
+})
 	.use(
 		jwt({
 			name: `${process.env.JWT_NAME}`,
@@ -122,7 +125,7 @@ export const vehicleRoute = new Elysia({ prefix: "/v1/vehicles" , detail: {
 					throw response.badRequest("Error while creating vehicle !");
 				}
 
-				set.status = 201
+				set.status = 201;
 				return StandardResponse.success(
 					create_vehicle,
 					"Successfuly creating new vehicle",
@@ -198,9 +201,12 @@ export const vehicleRoute = new Elysia({ prefix: "/v1/vehicles" , detail: {
 					description: body.description,
 				};
 
-				set.status = 201
+				set.status = 201;
 				const updated_vehicle = await vehicleService.update(params.id, payload);
-				return StandardResponse.success(updated_vehicle, "Successfully updated data vehicle");
+				return StandardResponse.success(
+					updated_vehicle,
+					"Successfully updated data vehicle",
+				);
 			} catch (error) {
 				set.status = 500;
 				return GlobalErrorHandler.handleError(error, set);

@@ -28,9 +28,8 @@ export class VehicleService {
 	async getAll() {
 		try {
 			const vehicles = await this.vehicleRepo.getAll();
-			if (vehicles.length === 0) {
+			if (vehicles.length === 0)
 				throw this.response.badRequest("Vehicle is empty !");
-			}
 
 			return vehicles;
 		} catch (error) {
@@ -42,9 +41,8 @@ export class VehicleService {
 		try {
 			const vehicle = await this.vehicleRepo.getOne(id);
 
-			if (!vehicle) {
+			if (!vehicle)
 				throw this.response.badRequest("Error while fetching vehicle");
-			}
 
 			return vehicle;
 		} catch (error) {
@@ -55,9 +53,8 @@ export class VehicleService {
 	async create(payload: CreateVehicle) {
 		try {
 			const created_vehicle = await this.vehicleRepo.create(payload);
-			if (!created_vehicle) {
+			if (!created_vehicle)
 				throw this.response.badRequest("Error while creating vehicle");
-			}
 
 			return created_vehicle;
 		} catch (error) {
@@ -69,14 +66,13 @@ export class VehicleService {
 		try {
 			const vehicle = await this.vehicleRepo.getOne(id);
 
-			if (!vehicle) {
+			if (!vehicle)
 				throw this.response.badRequest("Error while retreived vehicle");
-			}
 
 			const updated_vehicle = await this.vehicleRepo.update(id, payload);
-			if (!updated_vehicle) {
+			if (!updated_vehicle)
 				throw this.response.badRequest("Error while updating data vehicle !");
-			}
+
 			return updated_vehicle;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
@@ -86,9 +82,7 @@ export class VehicleService {
 	async delete(id: string) {
 		try {
 			const vehicle = await this.vehicleRepo.getOne(id);
-			if (!vehicle) {
-				throw this.response.notFound("Vehicle not found !");
-			}
+			if (!vehicle) throw this.response.notFound("Vehicle not found !");
 
 			await this.vehicleRepo.update(id, { ...vehicle, status: "DISABLE" });
 		} catch (error) {

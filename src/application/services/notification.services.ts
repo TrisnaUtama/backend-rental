@@ -28,9 +28,9 @@ export class NotificationService {
 	async getAll() {
 		try {
 			const notifications = await this.notificationRepo.getAll();
-			if (notifications.length === 0) {
+			if (notifications.length === 0)
 				throw this.response.badRequest("Notifications is empty !");
-			}
+
 			return notifications;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
@@ -40,9 +40,9 @@ export class NotificationService {
 	async getOne(id: string) {
 		try {
 			const notification = await this.notificationRepo.getOne(id);
-			if (!notification) {
+			if (!notification)
 				throw this.response.notFound("Notification not found !");
-			}
+
 			return notification;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
@@ -52,9 +52,9 @@ export class NotificationService {
 	async create(payload: CreateNotification) {
 		try {
 			const new_notification = await this.notificationRepo.create(payload);
-			if (!new_notification) {
+			if (!new_notification)
 				throw this.response.badRequest("Error while creating notification");
-			}
+
 			return new_notification;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
@@ -64,9 +64,7 @@ export class NotificationService {
 	async update(id: string, payload: UpdateNotification) {
 		try {
 			const notification = await this.notificationRepo.getOne(id);
-			if (!notification) {
-				throw this.response.notFound("Notification not found");
-			}
+			if (!notification) throw this.response.notFound("Notification not found");
 
 			const updated_notification = await this.notificationRepo.update(
 				id,
@@ -81,6 +79,8 @@ export class NotificationService {
 	async delete(id: string) {
 		try {
 			const notification = await this.notificationRepo.getOne(id);
+			if (!notification)
+				throw this.response.notFound("Notification not found !");
 			await this.notificationRepo.update(id, {
 				...notification,
 				status: false,

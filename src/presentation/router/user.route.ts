@@ -9,9 +9,12 @@ import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.r
 import { verifyJwt } from "../../infrastructure/utils/jwt";
 import { response } from "../../application/instances";
 
-export const userRoute = new Elysia({ prefix: "/v1/users", detail: {
-	tags : ["USER"]
-} } )
+export const userRoute = new Elysia({
+	prefix: "/v1/users",
+	detail: {
+		tags: ["USER"],
+	},
+})
 	.use(
 		jwt({
 			name: `${process.env.JWT_NAME}`,
