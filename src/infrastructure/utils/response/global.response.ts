@@ -12,6 +12,7 @@ export class GlobalErrorHandler {
 		}
 
 		set.status = 500;
+		logger.error(error);
 		return StandardResponse.error("Internal server error", 500);
 	}
 }

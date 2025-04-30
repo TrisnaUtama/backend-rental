@@ -57,7 +57,8 @@ export class DestinationRepository implements IDestinations {
 		tx?: Prisma.TransactionClient,
 	) {
 		try {
-			return await this.prisma.destinations.update({
+			const client = tx || this.prisma;
+			return await client.destinations.update({
 				where: { id },
 				data: payload,
 			});

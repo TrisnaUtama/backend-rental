@@ -148,6 +148,9 @@ model Travel_Packages_Destinations {
   id String @id @default(cuid())
   travel_package_id String 
   destination_id String
+  
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   travel_packages Travel_Packages @relation(fields: [travel_package_id], references: [id])
   destination Destinations @relation(fields: [destination_id], references: [id])
@@ -173,7 +176,7 @@ model Destination_Fasilities {
   id String @id @default(cuid())
   destination_id String
   name String
-  status Boolean @default(true)
+  status Boolean? @default(true)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

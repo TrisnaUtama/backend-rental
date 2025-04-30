@@ -6,6 +6,7 @@ import { userRoute } from "./presentation/router/user.route";
 import { notificationRoute } from "./presentation/router/notification.route";
 import { vehicleRoute } from "./presentation/router/vehicle.route";
 import { destinationRoute } from "./presentation/router/destination.route";
+import { travelRoute } from "./presentation/router/travel.route";
 
 const app = new Elysia();
 app
@@ -28,7 +29,8 @@ app
 			.use(userRoute)
 			.use(notificationRoute)
 			.use(vehicleRoute)
-			.use(destinationRoute),
+			.use(destinationRoute)
+			.use(travelRoute),
 	)
 
 	.listen(8000);
