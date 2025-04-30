@@ -11,7 +11,7 @@ import {
 	type UpdateFacility,
 } from "../../infrastructure/entity/types";
 import type { FacilityRepository } from "../../infrastructure/repositories/facility.repo";
-import type { Prisma, PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 
 @injectable()
 export class DestinationService {
@@ -86,26 +86,21 @@ export class DestinationService {
 
 	async update(
 		id: string,
-		payload: UpdateDestination,
-		facilitiesPayload: UpdateFacility[],
-		tx?: Prisma.TransactionClient,
+		payload_x: UpdateDestination,
+		payload_y: UpdateFacility[],
 	) {
 		try {
 			const result = await this.prisma.$transaction(async (tx) => {
 				const updatedDestination = await this.destinationRepo.update(
 					id,
-					payload,
+					payload_x,
 					tx,
 				);
-				if (!updatedDestination) {
+				if (!updatedDestination)
 					throw new Error("Error while updating destination!");
-				}
 
-				const updatedFacilities = await this.facilityRepo.update(
-					facilitiesPayload,
-					tx,
-				);
-				if (!updatedFacilities) {
+				const updated_acilities = await this.facilityRepo.update(payload_y, tx);
+				if (!updated_acilities) {
 					throw new Error("Error while updating facilities!");
 				}
 

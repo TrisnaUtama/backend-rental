@@ -6,6 +6,8 @@ import type {
 	Vehicles,
 	Destinations,
 	Destination_Fasilities,
+	Travel_Packages,
+	Travel_Packages_Destinations,
 } from "@prisma/client";
 import type {
 	CreateOTP,
@@ -22,6 +24,10 @@ import type {
 	UpdateDestination,
 	CreateFacility,
 	UpdateFacility,
+	CreateTravelPackage,
+	UpdateTravelPackage,
+	CreateTravelPackageDesination,
+	UpdateTravelPackageDestination,
 } from "./types";
 
 // utils
@@ -95,7 +101,24 @@ export interface IFacilities {
 	getOne: (id: string) => Promise<Destination_Fasilities | null>;
 	createMany: (payload: CreateFacility[]) => Promise<{ count: number }>;
 	update: (payload: UpdateFacility[]) => Promise<Destination_Fasilities[]>;
-	// updateMany: (
-	//     facilities: UpdateFacility[],
-	// ) => Promise<Destination_Fasilities[]>;
+}
+
+export interface ITravelPackages {
+	getAll: () => Promise<Travel_Packages[]>;
+	getOne: (id: string) => Promise<Travel_Packages | null>;
+	create: (payload: CreateTravelPackage) => Promise<Travel_Packages | null>;
+	update: (
+		id: string,
+		payload: UpdateTravelPackage,
+	) => Promise<Travel_Packages>;
+}
+export interface ITravelPackagesDestinations {
+	getAll: () => Promise<Travel_Packages_Destinations[]>;
+	getOne: (id: string) => Promise<Travel_Packages_Destinations | null>;
+	create: (
+		payload: CreateTravelPackageDesination[],
+	) => Promise<{ count: number }>;
+	update: (
+		payload: UpdateTravelPackageDestination[],
+	) => Promise<Travel_Packages_Destinations[]>;
 }

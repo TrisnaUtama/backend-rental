@@ -53,22 +53,13 @@ export class UserRepository implements IUser {
 		}
 	}
 
-	async update(id: string, data: UpdateUser) {
+	async update(id: string, payload: UpdateUser) {
 		try {
 			return await this.prisma.users.update({
 				where: {
 					id: id,
 				},
-				data: {
-					name: data.name,
-					email: data.email,
-					phone_number: data.phone_number,
-					status: data.status,
-					refresh_token: data.refresh_token,
-					is_verified: data.is_verified,
-					year_of_experiences: data.year_of_experiences,
-					updated_at: new Date(),
-				},
+				data: payload,
 			});
 		} catch (error) {
 			this.error_handler.handleRepositoryError(error);

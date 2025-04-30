@@ -12,6 +12,8 @@ import type {
 	INotification,
 	INotificationBroadcast,
 	IOTP,
+	ITravelPackages,
+	ITravelPackagesDestinations,
 	IUser,
 	IVehicles,
 } from "../infrastructure/entity/interfaces";
@@ -36,6 +38,9 @@ import { NotFoundError } from "elysia";
 import { DestinationService } from "./services/destination.services";
 import { DestinationRepository } from "../infrastructure/repositories/destination.repo";
 import { FacilityRepository } from "../infrastructure/repositories/facility.repo";
+import { TravelPackageRepository } from "../infrastructure/repositories/travelPack.repo";
+import { TravelPackageService } from "./services/travelPack.services";
+import { TravelPackagesDestinationsRepository } from "../infrastructure/repositories/travelPackDestination.repo";
 
 export const container = new Container();
 
@@ -53,6 +58,12 @@ container
 	.to(BroadcastRepository);
 container.bind<IVehicles>(TYPES.vehicleRepo).to(VehicleRepository);
 container.bind<IDestinations>(TYPES.destinationRepo).to(DestinationRepository);
+container
+	.bind<ITravelPackages>(TYPES.travelPackageRepo)
+	.to(TravelPackageRepository);
+container
+	.bind<ITravelPackagesDestinations>(TYPES.travelPackageDestinationRepo)
+	.to(TravelPackagesDestinationsRepository);
 container.bind<IFacilities>(TYPES.facilityRepo).to(FacilityRepository);
 container.bind<ErrorHandler>(TYPES.errorHandler).to(ErrorHandler);
 container.bind<HashService>(TYPES.hashed_password).to(HashService);
@@ -65,6 +76,7 @@ container.bind<NotificationService>(NotificationService).toSelf();
 container.bind<BroadcastService>(BroadcastService).toSelf();
 container.bind<VehicleService>(VehicleService).toSelf();
 container.bind<DestinationService>(DestinationService).toSelf();
+container.bind<TravelPackageService>(TravelPackageService).toSelf();
 container.bind<Http>(Http).toSelf();
 
 //instance
@@ -78,3 +90,5 @@ export const braodcastService =
 export const vehicleService = container.get<VehicleService>(VehicleService);
 export const destinationService =
 	container.get<DestinationService>(DestinationService);
+export const travelPackageService =
+	container.get<TravelPackageService>(TravelPackageService);

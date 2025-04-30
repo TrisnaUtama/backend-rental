@@ -6,6 +6,8 @@ import type {
 	Vehicles,
 	Destinations,
 	Destination_Fasilities,
+	Travel_Packages,
+	Travel_Packages_Destinations,
 } from "@prisma/client";
 
 export const TYPES = {
@@ -29,6 +31,10 @@ export const TYPES = {
 	vehicleRepo: Symbol.for("VehicleRepository"),
 	destinationRepo: Symbol.for("DestinationRepository"),
 	facilityRepo: Symbol.for("FacilityRepository"),
+	travelPackageRepo: Symbol.for("TravelPackageRepository"),
+	travelPackageDestinationRepo: Symbol.for(
+		"TravelPackageDestinationsRepository",
+	),
 
 	//  services
 	authService: Symbol.for("AuthService"),
@@ -66,6 +72,18 @@ export type CreateFacility = Omit<
 	Destination_Fasilities,
 	"id" | "created_at" | "updated_at"
 >;
+export type CreateTravelPackage = Omit<
+	Travel_Packages,
+	"id" | "created_at" | "updated_at" | "status"
+>;
+export type CreateTravelPackageDesination = Omit<
+	Travel_Packages_Destinations,
+	"id" | "created_at" | "updated_at" | "status"
+>;
+export type CreateTravelPackageDesinationInput = Omit<
+	Travel_Packages_Destinations,
+	"id" | "travel_package_id" | "created_at" | "updated_at" | "status"
+>;
 
 // UPDATES //
 export type UpdateUser = Partial<Users>;
@@ -75,3 +93,6 @@ export type UpdateNotificationBroadcast = Partial<Notification_Broadcast>;
 export type UpdateVehicle = Partial<Vehicles>;
 export type UpdateDestination = Partial<Destinations>;
 export type UpdateFacility = Partial<Destination_Fasilities>;
+export type UpdateTravelPackage = Partial<Travel_Packages>;
+export type UpdateTravelPackageDestination =
+	Partial<Travel_Packages_Destinations>;

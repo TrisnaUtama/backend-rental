@@ -1,16 +1,18 @@
 import "reflect-metadata";
 import { injectable, inject } from "inversify";
-import type { IFacilities } from "../entity/interfaces";
+import type { ITravelPackagesDestinations } from "../entity/interfaces";
 import type { ErrorHandler } from "../entity/errors/global.error";
 import type { Prisma, PrismaClient } from "@prisma/client";
 import {
 	TYPES,
-	type CreateFacility,
-	type UpdateFacility,
+	type CreateTravelPackageDesination,
+	type UpdateTravelPackageDestination,
 } from "../entity/types";
 
 @injectable()
-export class FacilityRepository implements IFacilities {
+export class TravelPackagesDestinationsRepository
+	implements ITravelPackagesDestinations
+{
 	private errorHandler: ErrorHandler;
 	private prisma: PrismaClient;
 
@@ -22,13 +24,9 @@ export class FacilityRepository implements IFacilities {
 		this.prisma = prisma;
 	}
 
-	async getAllByIdDestination(id: string) {
+	async getAll() {
 		try {
-			return await this.prisma.destination_Fasilities.findMany({
-				where: {
-					destination_id: id,
-				},
-			});
+			return await this.prisma.travel_Packages_Destinations.findMany({});
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
 		}
@@ -36,7 +34,7 @@ export class FacilityRepository implements IFacilities {
 
 	async getOne(id: string) {
 		try {
-			return await this.prisma.destination_Fasilities.findUnique({
+			return await this.prisma.travel_Packages_Destinations.findUnique({
 				where: { id },
 			});
 		} catch (error) {
@@ -44,16 +42,13 @@ export class FacilityRepository implements IFacilities {
 		}
 	}
 
-	async createMany(payload: CreateFacility[], tx?: Prisma.TransactionClient) {
+	async create(
+		payload: CreateTravelPackageDesination[],
+		tx?: Prisma.TransactionClient,
+	) {
 		try {
 			const client = tx || this.prisma;
-
-			// const updatedPayload = payload.map((facility) => ({
-			// 	...facility,
-			// 	destination_id: facility.destination_id,
-			// }));
-
-			return await client.destination_Fasilities.createMany({
+			return await client.travel_Packages_Destinations.createMany({
 				data: payload,
 			});
 		} catch (error) {
@@ -61,13 +56,16 @@ export class FacilityRepository implements IFacilities {
 		}
 	}
 
-	async update(payload: UpdateFacility[], tx?: Prisma.TransactionClient) {
+	async update(
+		payload: UpdateTravelPackageDestination[],
+		tx?: Prisma.TransactionClient,
+	) {
 		try {
 			const client = tx || this.prisma;
-			const updatePromises = payload.map((facility) =>
-				client.destination_Fasilities.update({
-					where: { id: facility.id },
-					data: facility,
+			const updatePromises = payload.map((travelPackDestination) =>
+				client.travel_Packages_Destinations.update({
+					where: { id: travelPackDestination.id },
+					data: travelPackDestination,
 				}),
 			);
 			return await Promise.all(updatePromises);
