@@ -27,7 +27,7 @@ enum Vehicle_status {
   DISABLE
 }
 
-enum Transmition {
+enum Transmission { 
   MANUAL
   AUTOMATIC
 }
@@ -49,137 +49,251 @@ enum Fuel {
   PERTALITE
   PERTAMAX
   DEXLITE
-  PERTAMAX_TURBO
+  PERTAMAXTURBO 
+}
+
+enum Booking_Status {
+  SUBMITTED
+  RECEIVED
+  REJECTED
+  CANCELED
+  REFUNDED
+}
+
+enum Promo_Status {
+  ACTIVE
+  EXPIRED
+  UNACTIVE
+  CANCELED
+}
+
+enum Payment_Method {
+  CASH
+  ONLINE
+}
+
+enum Payment_Status {
+  PENDING
+  PAID
+  FAILED
+  CANCELED
+}
+
+enum Discount_Type {
+  PERCENTAGE
+  FIXED
+}
+
+enum Travel_Status {
+  WAITING_FOR_CUSTOMER
+  ON_THE_WAY
+  ARRIVED_AT_DESTINATION
+  ONGOING_TRIP
+  COMPLETED
+  CANCELED
 }
 
 model OTPs {
-  id      String   @id @default(cuid())
+  id          String   @id @default(cuid())
   user_id     String
   otp_code    String
   expiry_time DateTime
   created_at  DateTime @default(now())
+  
   user        Users    @relation(fields: [user_id], references: [id])
 }
 
 model Users {
-  id            String    @id @default(cuid())
-  name          String
-  email         String    @unique
-  phone_number  String
-  password      String
-  is_verified   Boolean?
-  status        Boolean   @default(true)
-  role          Roles?
+  id               String   @id @default(cuid())
+  name             String
+  email            String   @unique
+  phone_number     String
+  password         String
+  is_verified      Boolean?
+  status           Boolean  @default(true)
+  role             Roles 
   year_of_experiences Int?
-  created_at    DateTime  @default(now())
-  updated_at    DateTime? @updatedAt
-  refresh_token String?
+  created_at       DateTime @default(now())
+  updated_at       DateTime? @updatedAt
+  deleted_at       DateTime? 
+  refresh_token    String?
 
-  otp           OTPs[]
+  otp              OTPs[]
   notification_broadcast Notification_Broadcast[]
+  bookings         Bookings[]
 }
 
 model Notifications {
-  id String @id @default(cuid())
-  title String
-  message String
-  type Notification_Type
-  status Boolean  @default(true)
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id          String   @id @default(cuid())
+  title       String
+  message     String
+  type        Notification_Type
+  status      Boolean @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  deleted_at  DateTime? 
   
   notification_broadcast Notification_Broadcast[]
 }
 
 model Notification_Broadcast {
-  id String @id @default(cuid())
+  id             String   @id @default(cuid())
   notification_id String
-  user_id String
-  status Boolean @default(true)
+  user_id        String
+  status         Boolean @default(true)
 
-  read_at DateTime?
-  sent_at DateTime?
+  read_at        DateTime?
+  sent_at        DateTime?
 
-  notification Notifications @relation(fields: [notification_id], references: [id])
-  user Users @relation(fields: [user_id], references: [id])
+  notification   Notifications @relation(fields: [notification_id], references: [id])
+  user           Users         @relation(fields: [user_id], references: [id])
 }
 
 model Vehicles {
-  id String @id @default(cuid())
-  name String
-  type Vehicle_Types
-  transmition Transmition
-  status Vehicle_status
-  fuel Fuel
-  brand String
-  capacity String
-  kilometer String
-  year Int
-  price_per_day Decimal
-  image_url String[]
-  description String
-  color String
+  id             String   @id @default(cuid())
+  name           String
+  type           Vehicle_Types
+  transmition    Transmission 
+  status         Vehicle_status
+  fuel           Fuel
+  brand          String
+  capacity       Int 
+  kilometer      Int 
+  year           Int
+  price_per_day  Decimal
+  image_url      String[]
+  description    String
+  color          String
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  deleted_at     DateTime? 
 
   travel_packages Travel_Packages[]
+  bookings        Bookings[]
 }
 
 model Destinations {
-  id String @id @default(cuid())
-  name String
-  open_hour String
-  description String
-  image_urls String[]
-  latitude String
-  longitude String
-  status Boolean @default(true)
+  id              String   @id @default(cuid())
+  name            String
+  open_hour       String
+  description     String
+  image_urls      String[]
+  latitude        String
+  longitude       String
+  status          Boolean @default(true)
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  deleted_at      DateTime? 
 
   destination_fasilities Destination_Fasilities[]
   travel_package_destinations Travel_Packages_Destinations[]
 }
 
 model Travel_Packages_Destinations {
-  id String @id @default(cuid())
+  id              String   @id @default(cuid())
   travel_package_id String 
-  destination_id String
+  destination_id  String
   
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  deleted_at      DateTime? 
 
   travel_packages Travel_Packages @relation(fields: [travel_package_id], references: [id])
-  destination Destinations @relation(fields: [destination_id], references: [id])
+  destination     Destinations @relation(fields: [destination_id], references: [id])
 }
 
 model Travel_Packages {
-  id String @id @default(cuid())
-  vehicle_id String
-  name String
-  price Decimal
-  duration Int
-  description String
-  status Boolean @default(true)
+  id              String   @id @default(cuid())
+  vehicle_id      String
+  name            String
+  price           Decimal
+  duration        Int // Corrected to Int (in hours or minutes)
+  description     String
+  status          Boolean @default(true)
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  deleted_at      DateTime? 
 
-  vehicles Vehicles @relation(fields: [vehicle_id], references: [id])
+  vehicles        Vehicles @relation(fields: [vehicle_id], references: [id])
   travel_package_destinations Travel_Packages_Destinations[]
-  }
+  bookings        Bookings[]
+}
 
 model Destination_Fasilities {
-  id String @id @default(cuid())
-  destination_id String
-  name String
-  status Boolean? @default(true)
+  id              String   @id @default(cuid())
+  destination_id  String
+  name            String
+  status          Boolean? @default(true)
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  deleted_at      DateTime? 
 
-  destination Destinations @relation(fields: [destination_id], references: [id])
+  destination     Destinations @relation(fields: [destination_id], references: [id])
 }
+
+model Bookings {
+  id              String   @id @default(cuid())
+  user_id         String
+  promo_id        String?
+  travel_package_id String?
+  vehicle_id      String?
+  status          Booking_Status @default(SUBMITTED)
+  start_date      DateTime
+  end_date        DateTime
+  total_price     Decimal?
+  card_id         String
+  licences_id     String
+  pick_up_at_airport Boolean
+  notes           String?
+
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  deleted_at      DateTime? 
+
+  users           Users @relation(fields: [user_id], references: [id])
+  promos          Promos? @relation(fields: [promo_id], references: [id])
+  travel_package  Travel_Packages? @relation(fields: [travel_package_id], references: [id])
+  vehicles        Vehicles? @relation(fields: [vehicle_id], references: [id])
+
+  Payments Payments[]
+}
+
+model Promos {
+  id              String   @id @default(cuid())
+  code            String
+  description     String 
+  discount_type   Discount_Type
+  discount_value  Decimal
+  start_date      DateTime
+  end_date        DateTime
+  min_booking_amount Decimal
+  max_discount    Decimal
+  status          Promo_Status @default(ACTIVE)
+  
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  deleted_at      DateTime? 
+
+  bookings        Bookings[]
+}
+
+model Payments {
+  id              String   @id @default(cuid())
+  booking_id      String
+  transaction_id  String
+  payment_method  Payment_Method
+  payment_status  Payment_Status @default(PENDING)
+  payment_date    DateTime?
+  total_amount    Decimal
+
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  deleted_at      DateTime?
+
+  booking         Bookings @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+}
+

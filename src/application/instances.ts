@@ -6,12 +6,15 @@ import { Logger } from "../infrastructure/entity/logger";
 import { UserRepository } from "../infrastructure/repositories/user.repo";
 import { AuthService } from "./services/auth.services";
 import type {
+	IBookings,
 	IDestinations,
 	IFacilities,
 	ILogger,
 	INotification,
 	INotificationBroadcast,
 	IOTP,
+	IPayments,
+	IPromos,
 	ITravelPackages,
 	ITravelPackagesDestinations,
 	IUser,
@@ -29,18 +32,18 @@ import { Http } from "../infrastructure/utils/response/http.response";
 import { prisma } from "../infrastructure/utils/prisma";
 import { VehicleService } from "./services/vehicle.services";
 import { VehicleRepository } from "../infrastructure/repositories/vehicle.repo";
-import {
-	BadRequestError,
-	ForbiddenError,
-	UnauthorizedError,
-} from "../infrastructure/utils/response/factory.response";
-import { NotFoundError } from "elysia";
 import { DestinationService } from "./services/destination.services";
 import { DestinationRepository } from "../infrastructure/repositories/destination.repo";
 import { FacilityRepository } from "../infrastructure/repositories/facility.repo";
 import { TravelPackageRepository } from "../infrastructure/repositories/travelPack.repo";
 import { TravelPackageService } from "./services/travelPack.services";
 import { TravelPackagesDestinationsRepository } from "../infrastructure/repositories/travelPackDestination.repo";
+import { PromoRepository } from "../infrastructure/repositories/promo.repo";
+import { PromoService } from "./services/promo.services";
+import { BookingRepository } from "../infrastructure/repositories/booking.repo";
+import { PaymentRepository } from "../infrastructure/repositories/payment.repo";
+import { BookingService } from "./services/booking.services";
+import { PaymentService } from "./services/payment.services";
 
 export const container = new Container();
 
@@ -64,6 +67,9 @@ container
 container
 	.bind<ITravelPackagesDestinations>(TYPES.travelPackageDestinationRepo)
 	.to(TravelPackagesDestinationsRepository);
+container.bind<IPromos>(TYPES.promoRepo).to(PromoRepository);
+container.bind<IBookings>(TYPES.bookingRepo).to(BookingRepository);
+container.bind<IPayments>(TYPES.paymentRepo).to(PaymentRepository);
 container.bind<IFacilities>(TYPES.facilityRepo).to(FacilityRepository);
 container.bind<ErrorHandler>(TYPES.errorHandler).to(ErrorHandler);
 container.bind<HashService>(TYPES.hashed_password).to(HashService);
@@ -77,6 +83,9 @@ container.bind<BroadcastService>(BroadcastService).toSelf();
 container.bind<VehicleService>(VehicleService).toSelf();
 container.bind<DestinationService>(DestinationService).toSelf();
 container.bind<TravelPackageService>(TravelPackageService).toSelf();
+container.bind<PromoService>(PromoService).toSelf();
+container.bind<BookingService>(BookingService).toSelf();
+container.bind<PaymentService>(PaymentService).toSelf();
 container.bind<Http>(Http).toSelf();
 
 //instance
@@ -92,3 +101,6 @@ export const destinationService =
 	container.get<DestinationService>(DestinationService);
 export const travelPackageService =
 	container.get<TravelPackageService>(TravelPackageService);
+export const promoService = container.get<PromoService>(PromoService);
+export const bookingService = container.get<BookingService>(BookingService);
+export const paymentService = container.get<PaymentService>(PaymentService);
