@@ -54,7 +54,7 @@ CREATE TABLE "Users" (
     "password" TEXT NOT NULL,
     "is_verified" BOOLEAN,
     "status" BOOLEAN NOT NULL DEFAULT true,
-    "role" "Roles" NOT NULL,
+    "role" "Roles",
     "year_of_experiences" INTEGER,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3),

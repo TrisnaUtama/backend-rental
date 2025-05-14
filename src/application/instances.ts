@@ -44,6 +44,7 @@ import { BookingRepository } from "../infrastructure/repositories/booking.repo";
 import { PaymentRepository } from "../infrastructure/repositories/payment.repo";
 import { BookingService } from "./services/booking.services";
 import { PaymentService } from "./services/payment.services";
+import { MidtransService } from "../infrastructure/entity/midtrans";
 
 export const container = new Container();
 
@@ -53,6 +54,7 @@ container.bind<PrismaClient>(TYPES.prisma).toConstantValue(prisma);
 container.bind<IUser>(TYPES.userRepo).to(UserRepository);
 container.bind<IOTP>(TYPES.otpRepo).to(OtpRepository);
 container.bind<Http>(TYPES.http).to(Http);
+container.bind<MidtransService>(TYPES.midtrans).to(MidtransService);
 container
 	.bind<INotification>(TYPES.notificationRepo)
 	.to(NotificationRepository);
@@ -87,9 +89,14 @@ container.bind<PromoService>(PromoService).toSelf();
 container.bind<BookingService>(BookingService).toSelf();
 container.bind<PaymentService>(PaymentService).toSelf();
 container.bind<Http>(Http).toSelf();
+container.bind<MidtransService>(MidtransService).toSelf();
+container.bind<Logger>(Logger).toSelf();
 
 //instance
+
 export const response = container.get<Http>(Http);
+export const logger = container.get<Logger>(Logger);
+export const midtrans = container.get<MidtransService>(MidtransService);
 export const authService = container.get<AuthService>(AuthService);
 export const userService = container.get<UserService>(UserService);
 export const notificationService =

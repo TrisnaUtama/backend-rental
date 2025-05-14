@@ -111,7 +111,7 @@ model Users {
   password         String
   is_verified      Boolean?
   status           Boolean  @default(true)
-  role             Roles 
+  role             Roles?
   year_of_experiences Int?
   created_at       DateTime @default(now())
   updated_at       DateTime? @updatedAt
@@ -209,7 +209,7 @@ model Travel_Packages {
   vehicle_id      String
   name            String
   price           Decimal
-  duration        Int // Corrected to Int (in hours or minutes)
+  duration        Int 
   description     String
   status          Boolean @default(true)
 
@@ -243,7 +243,7 @@ model Bookings {
   vehicle_id      String?
   status          Booking_Status @default(SUBMITTED)
   start_date      DateTime
-  end_date        DateTime
+  end_date        DateTime?
   total_price     Decimal?
   card_id         String
   licences_id     String

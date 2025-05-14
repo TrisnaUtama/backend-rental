@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import type { IJwtPayload } from "./../entity/interfaces";
+import { logger } from "../../application/instances";
 
 export const signJwt = (payload: IJwtPayload, expiresIn: number) => {
 	return jwt.sign(
@@ -14,7 +15,7 @@ export const decodeJwt = (token: string) => {
 		const decoded = jwt.decode(token, { complete: true });
 		return decoded;
 	} catch (error) {
-		console.error("Error decoding JWT:", error);
+		logger.error("Error decoding JWT");
 		throw new Error("Invalid JWT token");
 	}
 };
@@ -27,7 +28,7 @@ export const verifyJwt = (token: string): IJwtPayload => {
 		) as IJwtPayload;
 		return decoded;
 	} catch (error) {
-		console.error("Error verifying JWT:", error);
+		console.error("Error verifying JWT");
 		throw new Error("Invalid JWT token");
 	}
 };

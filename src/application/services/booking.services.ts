@@ -100,7 +100,7 @@ export class BookingService {
 					);
 				}
 
-				if (vehicleToBook.status !== Vehicle_status.AVAILABLE) {
+				if (vehicleToBook.status !== "AVAILABLE") {
 					return this.response.badRequest(
 						"Cannot book this vehicle: not available",
 					);
@@ -148,8 +148,8 @@ export class BookingService {
 
 				const start = new Date(start_date);
 
-				const durationMs = new Date(travelToBook.duration).getTime();
-				const end = new Date(start.getTime() + durationMs);
+				const durationInMs = travelToBook.duration * 60 * 60 * 1000;
+				const end = new Date(start.getTime() + durationInMs);
 
 				payload.start_date = start;
 				payload.end_date = end;

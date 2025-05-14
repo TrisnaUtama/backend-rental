@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { injectable, inject } from "inversify";
 import type { IUser } from "../entity/interfaces";
-import type { PrismaClient } from "@prisma/client";
+import { Roles, type PrismaClient } from "@prisma/client";
 import { TYPES, type CreateUser, type UpdateUser } from "../entity/types";
 import type { ErrorHandler } from "../entity/errors/global.error";
 
@@ -22,7 +22,7 @@ export class UserRepository implements IUser {
 			return await this.prisma.users.findMany({
 				where: {
 					role: {
-						not: "SUPERADMIN",
+						not: Roles.SUPERADMIN,
 					},
 				},
 			});

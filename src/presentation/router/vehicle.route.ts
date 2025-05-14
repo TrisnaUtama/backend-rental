@@ -10,7 +10,7 @@ import { response } from "../../application/instances";
 import {
 	Fuel,
 	Prisma,
-	Transmition,
+	Transmission,
 	Vehicle_status,
 	Vehicle_Types,
 } from "@prisma/client";
@@ -53,7 +53,7 @@ export const vehicleRoute = new Elysia({
 
 		if (
 			!user.refresh_token ||
-			(user.role !== "ADMIN_OPERATIONAL" && user.role !== "ADMIN_FINANCE")
+			(user.role !== "ADMIN_OPERATIONAL" && user.role !== "SUPERADMIN")
 		) {
 			set.status = 403;
 			throw response.forbidden();
@@ -118,6 +118,7 @@ export const vehicleRoute = new Elysia({
 					image_url: body.image_url,
 					color: body.color,
 					description: body.description,
+					deleted_at: null,
 				};
 
 				const create_vehicle = await vehicleService.create(payload);
@@ -142,22 +143,22 @@ export const vehicleRoute = new Elysia({
 					error: "Vehicle name must be atleast 5 character",
 				}),
 				type: t.Enum(Vehicle_Types, { error: "Vehicle must be 1 of the Type" }),
-				transmition: t.Enum(Transmition, {
+				transmition: t.Enum(Transmission, {
 					error: "Vehicle transmition must be atleast 1 of Transmition types",
 				}),
 				status: t.Enum(Vehicle_status, {
 					error: "Vehicle status must be atleast 1 of Status types",
 				}),
-				kilometer: t.String({
-					minLength: 3,
-					error: "Kilometer must be atleast 3 character",
+				kilometer: t.Number({
+					minimum: 100,
+					error: "Kilometer must be atleast filled",
 				}),
 				fuel: t.Enum(Fuel, { error: "Fuel must be atleast 1 of Fuel Type" }),
 				brand: t.String({
 					minLength: 5,
 					error: "Brand must be atleast 5 character",
 				}),
-				capacity: t.String({ minLength: 1, error: "Capcity must be filled" }),
+				capacity: t.Number({ minLength: 1, error: "Capcity must be filled" }),
 				year: t.Integer({ minimum: 1995, error: "Year atleast after 1995" }),
 				price_per_day: t.Integer({
 					minimum: 200000,
@@ -175,7 +176,7 @@ export const vehicleRoute = new Elysia({
 					},
 				),
 				color: t.String({
-					minLength: 5,
+					minLength: 3,
 					error: "Color must be atleast 5 character",
 				}),
 			}),
@@ -222,14 +223,14 @@ export const vehicleRoute = new Elysia({
 					type: t.Enum(Vehicle_Types, {
 						error: "Vehicle must be 1 of the Type",
 					}),
-					transmition: t.Enum(Transmition, {
+					transmition: t.Enum(Transmission, {
 						error: "Vehicle transmition must be atleast 1 of Transmition types",
 					}),
 					status: t.Enum(Vehicle_status, {
 						error: "Vehicle status must be atleast 1 of Status types",
 					}),
-					kilometer: t.String({
-						minLength: 3,
+					kilometer: t.Number({
+						minimum: 3,
 						error: "Kilometer must be atleast 3 character",
 					}),
 					fuel: t.Enum(Fuel, { error: "Fuel must be atleast 1 of Fuel Type" }),
@@ -237,7 +238,7 @@ export const vehicleRoute = new Elysia({
 						minLength: 5,
 						error: "Brand must be atleast 5 character",
 					}),
-					capacity: t.String({ minLength: 1, error: "Capcity must be filled" }),
+					capacity: t.Number({ minimum: 1, error: "Capcity must be filled" }),
 					year: t.Integer({ minimum: 1995, error: "Year atleast after 1995" }),
 					price_per_day: t.Integer({
 						minimum: 200000,
@@ -255,7 +256,7 @@ export const vehicleRoute = new Elysia({
 						},
 					),
 					color: t.String({
-						minLength: 5,
+						minLength: 3,
 						error: "Color must be atleast 5 character",
 					}),
 				}),

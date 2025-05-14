@@ -12,8 +12,9 @@ import type {
 	UpdateBooking,
 } from "../../infrastructure/entity/types";
 import { Decimal } from "@prisma/client/runtime/library";
+import { Booking_Status } from "@prisma/client";
 
-export const authRouter = new Elysia({
+export const bookingRoute = new Elysia({
 	prefix: "/v1/bookings",
 	detail: {
 		tags: ["BOOKING"],
@@ -31,12 +32,10 @@ export const authRouter = new Elysia({
 			throw response.unauthorized();
 		}
 		const jwtPayload: IJwtPayload = verifyJwt(access_token.value.toString());
-
 		if (!jwtPayload) {
 			set.status = 403;
 			throw response.forbidden();
 		}
-
 		const userId = jwtPayload.user_id;
 		if (!userId) throw response.badRequest("Invalid Payload !");
 		const user = await userService.getOne(userId.toString());
@@ -44,7 +43,6 @@ export const authRouter = new Elysia({
 			set.status = 403;
 			throw response.forbidden();
 		}
-
 		return {
 			user,
 		};
@@ -57,7 +55,6 @@ export const authRouter = new Elysia({
 					"Something went wrong while retreiving data Bookings",
 				);
 			}
-
 			if (bookings.length === 0) {
 				throw response.notFound("Bookings is empty");
 			}
@@ -122,10 +119,9 @@ export const authRouter = new Elysia({
 					pick_up_at_airport: body.pick_up_at_airport,
 					notes: body.notes || null,
 					start_date: body.start_date,
-					end_date: body.end_date,
+					end_date: body.end_date ?? null,
 					total_price: new Decimal(0),
 				};
-
 				const create_booking = await bookingService.create(payload);
 				set.status = 200;
 				return StandardResponse.success(
@@ -147,7 +143,7 @@ export const authRouter = new Elysia({
 				pick_up_at_airport: t.Boolean(),
 				notes: t.Optional(t.String()),
 				start_date: t.Date(),
-				end_date: t.Date(),
+				end_date: t.Optional(t.Union([t.Date(), t.Null()])),
 			}),
 		},
 	)
@@ -156,11 +152,9 @@ export const authRouter = new Elysia({
 		async ({ set, params, body, user }) => {
 			try {
 				const existing_booking = await bookingService.getOne(params.id);
-
 				if (!existing_booking) {
-					throw response.badRequest("Error while retreiving Booking");
+					throw response.badRequest("Error while retrieving Booking");
 				}
-
 				const payload: UpdateBooking = {
 					user_id: user.id,
 					promo_id: body.promo_id || null,
@@ -172,16 +166,41 @@ export const authRouter = new Elysia({
 					notes: body.notes || null,
 					start_date: body.start_date,
 					end_date: body.end_date,
+					status: body.status,
 				};
-
 				const update_booking = await bookingService.update(params.id, payload);
 				if (!update_booking) {
-					throw response.badRequest("Error while updating data booking !");
+					throw response.badRequest("Error while updating booking!");
 				}
-
+				// if (update_booking.status === "RECEIVED") {
+				//   const user_booking = await userService.getOne(update_booking.user_id);
+				//   const grossAmount = update_booking.total_price?.toNumber();
+				//   if (!grossAmount || grossAmount <= 0) {
+				//     throw response.badRequest("Invalid total price for Midtrans charge.");
+				//   }
+				//   const midtransPayload = {
+				//     payment_type: "bank_transfer",
+				//     transaction_details: {
+				//       order_id: `BOOKING-${params.id}-${Date.now()}`,
+				//       gross_amount: Math.round(grossAmount),
+				//     },
+				//     bank_transfer: {
+				//       bank: "bca",
+				//     },
+				//     customer_details: {
+				//       first_name: user_booking.name || "Customer",
+				//       email: user_booking.email || "user@example.com",
+				//     },
+				//   };
+				//   try {
+				//     const midtransResponse = await midtrans.charge(midtransPayload);
+				//   } catch (err: any) {
+				//     throw response.badRequest("Failed to process payment via Midtrans.");
+				//   }
+				// }
 				return StandardResponse.success(
 					update_booking,
-					"Successfuly updating data booking",
+					"Successfully updated booking",
 				);
 			} catch (error) {
 				set.status = 500;
@@ -200,6 +219,7 @@ export const authRouter = new Elysia({
 					notes: t.Optional(t.String()),
 					start_date: t.Date(),
 					end_date: t.Date(),
+					status: t.Enum(Booking_Status),
 				}),
 			),
 		},

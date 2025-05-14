@@ -105,7 +105,7 @@ export type CreateBooking = Omit<
 >;
 export type CreatePayment = Omit<
 	Payments,
-	"id" | "created_at" | "updated_at" | "payment_status"
+	"id" | "created_at" | "updated_at" | "payment_status" | "payment_method"
 >;
 
 // UPDATES //
