@@ -36,7 +36,11 @@ export const userRoute = new Elysia({
 		const userId = jwtPayload.user_id;
 		if (!userId) throw response.badRequest("Invalid Payload !");
 		const user = await userService.getOne(userId.toString());
-		if (!user || !user.refresh_token || user.role !== "ADMIN_OPERATIONAL") {
+		if (
+			!user ||
+			!user.refresh_token ||
+			(user.role !== "ADMIN_OPERATIONAL" && user.role !== "SUPERADMIN")
+		) {
 			set.status = 403;
 			throw response.forbidden();
 		}

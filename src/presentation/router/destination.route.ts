@@ -97,12 +97,14 @@ export const destinationRoute = new Elysia({
 					latitude: body.latitude,
 					longitude: body.longitude,
 					status: body.status ?? true,
+					deleted_at: null,
 				};
 
 				const payload_y = body.facilities.map((facility) => ({
 					destination_id: "",
 					name: facility.name,
 					status: facility.status ?? true,
+					deleted_at: null,
 				}));
 
 				const destination = await destinationService.create(

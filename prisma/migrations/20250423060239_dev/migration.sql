@@ -1,5 +1,0 @@
--- AlterTable
-ALTER TABLE "OTPs" ADD COLUMN     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
-
--- AlterTable
-ALTER TABLE "Users" ALTER COLUMN "year_of_experiences" DROP NOT NULL;

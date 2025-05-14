@@ -8,6 +8,9 @@ import type {
 	Destination_Fasilities,
 	Travel_Packages,
 	Travel_Packages_Destinations,
+	Promos,
+	Bookings,
+	Payments,
 } from "@prisma/client";
 
 export const TYPES = {
@@ -18,6 +21,7 @@ export const TYPES = {
 	errorHandler: Symbol.for("ErrorHandler"),
 	email: Symbol.for("EmailService"),
 	http: Symbol.for("Http"),
+	midtrans: Symbol.for("MidtransService"),
 	// badRequest: Symbol.for("BadRequest"),
 	// notFoundError: Symbol.for("NotFoundError"),
 	// unauthorizedError: Symbol.for("UnautorizedError"),
@@ -35,6 +39,9 @@ export const TYPES = {
 	travelPackageDestinationRepo: Symbol.for(
 		"TravelPackageDestinationsRepository",
 	),
+	promoRepo: Symbol.for("PromoRepository"),
+	bookingRepo: Symbol.for("BookingRepository"),
+	paymentRepo: Symbol.for("PaymentRepository"),
 
 	//  services
 	authService: Symbol.for("AuthService"),
@@ -43,6 +50,9 @@ export const TYPES = {
 	broadcastService: Symbol.for("BroadcastService"),
 	vehicleService: Symbol.for("VehicleService"),
 	destinationService: Symbol.for("DestinationService"),
+	promoService: Symbol.for("PromoService"),
+	bookingService: Symbol.for("BookingService"),
+	paymentService: Symbol.for("PaymentService"),
 };
 
 // CREATES //
@@ -55,11 +65,12 @@ export type CreateUser = Omit<
 	| "is_verified"
 	| "status"
 	| "role"
+	| "deleted_at"
 	| "year_of_experiences"
 >;
 export type CreateNotification = Omit<
 	Notifications,
-	"id" | "created_at" | "updated_at"
+	"id" | "created_at" | "updated_at" | "deleted_at"
 >;
 export type CreateNotificationBroadcast = Omit<Notification_Broadcast, "id">;
 export type CreateOTP = Omit<OTPs, "id" | "created_at" | "updated_at">;
@@ -84,6 +95,18 @@ export type CreateTravelPackageDesinationInput = Omit<
 	Travel_Packages_Destinations,
 	"id" | "travel_package_id" | "created_at" | "updated_at" | "status"
 >;
+export type CreatePromo = Omit<
+	Promos,
+	"id" | "created_at" | "updated_at" | "status"
+>;
+export type CreateBooking = Omit<
+	Bookings,
+	"id" | "created_at" | "updated_at" | "status" | "deleted_at"
+>;
+export type CreatePayment = Omit<
+	Payments,
+	"id" | "created_at" | "updated_at" | "payment_status" | "payment_method"
+>;
 
 // UPDATES //
 export type UpdateUser = Partial<Users>;
@@ -96,3 +119,6 @@ export type UpdateFacility = Partial<Destination_Fasilities>;
 export type UpdateTravelPackage = Partial<Travel_Packages>;
 export type UpdateTravelPackageDestination =
 	Partial<Travel_Packages_Destinations>;
+export type UpdatePromo = Partial<Promos>;
+export type UpdateBooking = Partial<Bookings>;
+export type UpdatePayment = Partial<Payments>;

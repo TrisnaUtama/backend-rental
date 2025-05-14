@@ -8,6 +8,7 @@ import {
 	type UpdateVehicle,
 } from "../../infrastructure/entity/types";
 import type { VehicleRepository } from "../../infrastructure/repositories/vehicle.repo";
+import { Vehicle_status } from "@prisma/client";
 
 @injectable()
 export class VehicleService {
