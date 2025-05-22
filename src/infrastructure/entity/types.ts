@@ -42,7 +42,6 @@ export const TYPES = {
 	promoRepo: Symbol.for("PromoRepository"),
 	bookingRepo: Symbol.for("BookingRepository"),
 	paymentRepo: Symbol.for("PaymentRepository"),
-
 	//  services
 	authService: Symbol.for("AuthService"),
 	userService: Symbol.for("UserService"),
@@ -54,7 +53,6 @@ export const TYPES = {
 	bookingService: Symbol.for("BookingService"),
 	paymentService: Symbol.for("PaymentService"),
 };
-
 // CREATES //
 export type CreateUser = Omit<
 	Users,
@@ -85,15 +83,20 @@ export type CreateFacility = Omit<
 >;
 export type CreateTravelPackage = Omit<
 	Travel_Packages,
-	"id" | "created_at" | "updated_at" | "status"
+	"id" | "created_at" | "updated_at" | "status" | "deleted_at"
 >;
 export type CreateTravelPackageDesination = Omit<
 	Travel_Packages_Destinations,
-	"id" | "created_at" | "updated_at" | "status"
+	"id" | "created_at" | "updated_at" | "status" | "deleted_at"
 >;
 export type CreateTravelPackageDesinationInput = Omit<
 	Travel_Packages_Destinations,
-	"id" | "travel_package_id" | "created_at" | "updated_at" | "status"
+	| "id"
+	| "travel_package_id"
+	| "created_at"
+	| "updated_at"
+	| "status"
+	| "deleted_at"
 >;
 export type CreatePromo = Omit<
 	Promos,
@@ -105,7 +108,7 @@ export type CreateBooking = Omit<
 >;
 export type CreatePayment = Omit<
 	Payments,
-	"id" | "created_at" | "updated_at" | "payment_status" | "payment_method"
+	"id" | "created_at" | "updated_at" | "deleted_at"
 >;
 
 // UPDATES //

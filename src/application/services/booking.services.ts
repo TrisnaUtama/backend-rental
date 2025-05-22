@@ -120,7 +120,9 @@ export class BookingService {
 				}
 
 				const durationInMs = end.getTime() - start.getTime();
-				const durationInDays = Math.ceil(durationInMs / (1000 * 60 * 60 * 24));
+				const durationInDays = Math.ceil(
+					durationInMs / (1000 * 60 * 60 * 24) + 1,
+				);
 
 				total_price = durationInDays * vehicleToBook.price_per_day.toNumber();
 			}

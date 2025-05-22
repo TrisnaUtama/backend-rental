@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 import jwt from "@elysiajs/jwt";
 import { verifyJwt } from "../../infrastructure/utils/jwt";
-import { userService } from "../../application/instances";
+import { paymentService, userService } from "../../application/instances";
 import { bookingService } from "../../application/instances";
 import { StandardResponse } from "../../infrastructure/utils/response/standard.response";
 import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.response";
@@ -9,6 +9,7 @@ import { response } from "../../application/instances";
 import type { IJwtPayload } from "../../infrastructure/entity/interfaces";
 import type {
 	CreateBooking,
+	CreatePayment,
 	UpdateBooking,
 } from "../../infrastructure/entity/types";
 import { Decimal } from "@prisma/client/runtime/library";
@@ -172,32 +173,20 @@ export const bookingRoute = new Elysia({
 				if (!update_booking) {
 					throw response.badRequest("Error while updating booking!");
 				}
-				// if (update_booking.status === "RECEIVED") {
-				//   const user_booking = await userService.getOne(update_booking.user_id);
-				//   const grossAmount = update_booking.total_price?.toNumber();
-				//   if (!grossAmount || grossAmount <= 0) {
-				//     throw response.badRequest("Invalid total price for Midtrans charge.");
-				//   }
-				//   const midtransPayload = {
-				//     payment_type: "bank_transfer",
-				//     transaction_details: {
-				//       order_id: `BOOKING-${params.id}-${Date.now()}`,
-				//       gross_amount: Math.round(grossAmount),
-				//     },
-				//     bank_transfer: {
-				//       bank: "bca",
-				//     },
-				//     customer_details: {
-				//       first_name: user_booking.name || "Customer",
-				//       email: user_booking.email || "user@example.com",
-				//     },
-				//   };
-				//   try {
-				//     const midtransResponse = await midtrans.charge(midtransPayload);
-				//   } catch (err: any) {
-				//     throw response.badRequest("Failed to process payment via Midtrans.");
-				//   }
-				// }
+				if (update_booking.status === "RECEIVED") {
+					const payload: CreatePayment = {
+						booking_id: update_booking.id,
+						expiry_date: null,
+						payment_date: null,
+						payment_method: null,
+						payment_status: "PENDING",
+						total_amount: update_booking.total_price ?? new Decimal(0),
+					};
+					const create_payment = await paymentService.create(payload);
+					if (!create_payment) {
+						throw response.badRequest("Error while creating payment");
+					}
+				}
 				return StandardResponse.success(
 					update_booking,
 					"Successfully updated booking",
