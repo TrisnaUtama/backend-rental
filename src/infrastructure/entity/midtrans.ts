@@ -4,10 +4,10 @@ import "reflect-metadata";
 
 @injectable()
 export class MidtransService {
-	private core: InstanceType<typeof MidtransClient.CoreApi>;
+	private core: InstanceType<typeof MidtransClient.Snap>;
 
 	constructor() {
-		this.core = new MidtransClient.CoreApi({
+		this.core = new MidtransClient.Snap({
 			isProduction: false,
 			serverKey: process.env.MIDTRANS_SERVER_KEY,
 			clientKey: process.env.MIDTRANS_CLIENT_KEY,
@@ -15,7 +15,7 @@ export class MidtransService {
 	}
 
 	async charge(payload: any) {
-		return this.core.charge(payload);
+		return this.core.createTransaction(payload);
 	}
 
 	async getTransactionStatus(orderId: string) {

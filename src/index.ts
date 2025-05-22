@@ -8,7 +8,7 @@ import { vehicleRoute } from "./presentation/router/vehicle.route";
 import { destinationRoute } from "./presentation/router/destination.route";
 import { travelRoute } from "./presentation/router/travel.route";
 import { bookingRoute } from "./presentation/router/booking.route";
-
+import { paymentRoute } from "./presentation/router/payment.route";
 const app = new Elysia();
 app
 	.use(
@@ -32,11 +32,10 @@ app
 			.use(vehicleRoute)
 			.use(destinationRoute)
 			.use(travelRoute)
-			.use(bookingRoute),
+			.use(bookingRoute)
+			.use(paymentRoute),
 	)
-
 	.listen(8000);
-
 console.log(
 	`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
 );

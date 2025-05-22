@@ -20,7 +20,17 @@ export class PaymentRepository implements IPayments {
 
 	async getOne(id: string) {
 		try {
-			return await this.prisma.payments.findFirst({ where: { id } });
+			return await this.prisma.payments.findFirst({
+				where: { id },
+				include: {
+					booking : {
+						include: {
+							travel_package: true,
+							vehicles: true,
+						},
+					},
+				},
+			});
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
 		}

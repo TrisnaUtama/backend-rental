@@ -55,9 +55,12 @@ enum Fuel {
 enum Booking_Status {
   SUBMITTED
   RECEIVED
-  REJECTED
+  IN_PROGRESS
+  COMPLETE
   CANCELED
+  REJECTED
   REFUNDED
+  RESCHEDULE
 }
 
 enum Promo_Status {
@@ -69,7 +72,10 @@ enum Promo_Status {
 
 enum Payment_Method {
   CASH
-  ONLINE
+  BANK_TRANSFER
+  QRIS
+  EWALLET
+  CREDIT_CARD
 }
 
 enum Payment_Status {
@@ -77,6 +83,7 @@ enum Payment_Status {
   PAID
   FAILED
   CANCELED
+  EXPIRED
 }
 
 enum Discount_Type {
@@ -284,11 +291,11 @@ model Promos {
 model Payments {
   id              String   @id @default(cuid())
   booking_id      String
-  transaction_id  String
-  payment_method  Payment_Method
+  payment_method  Payment_Method?
   payment_status  Payment_Status @default(PENDING)
   payment_date    DateTime?
   total_amount    Decimal
+  expiry_date DateTime?
 
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
