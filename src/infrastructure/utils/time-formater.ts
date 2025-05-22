@@ -10,7 +10,7 @@ export function getFormattedStartTime() {
 	const minutes = pad(now.getMinutes());
 	const seconds = pad(now.getSeconds());
 
-	const offsetMinutes = now.getTimezoneOffset(); 
+	const offsetMinutes = now.getTimezoneOffset();
 	const offsetHours = Math.floor(Math.abs(offsetMinutes) / 60);
 	const offsetMins = Math.abs(offsetMinutes) % 60;
 	const sign = offsetMinutes <= 0 ? "+" : "-";

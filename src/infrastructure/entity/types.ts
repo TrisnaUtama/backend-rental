@@ -83,7 +83,7 @@ export type CreateFacility = Omit<
 >;
 export type CreateTravelPackage = Omit<
 	Travel_Packages,
-	"id" | "created_at" | "updated_at" | "status"  | "deleted_at"
+	"id" | "created_at" | "updated_at" | "status" | "deleted_at"
 >;
 export type CreateTravelPackageDesination = Omit<
 	Travel_Packages_Destinations,
@@ -91,7 +91,12 @@ export type CreateTravelPackageDesination = Omit<
 >;
 export type CreateTravelPackageDesinationInput = Omit<
 	Travel_Packages_Destinations,
-	"id" | "travel_package_id" | "created_at" | "updated_at" | "status" | "deleted_at"
+	| "id"
+	| "travel_package_id"
+	| "created_at"
+	| "updated_at"
+	| "status"
+	| "deleted_at"
 >;
 export type CreatePromo = Omit<
 	Promos,

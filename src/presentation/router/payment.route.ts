@@ -122,7 +122,7 @@ export const paymentRoute = new Elysia({
 					];
 					gross_amount = Number(payment.total_amount);
 				}
-				const parameter  = {
+				const parameter = {
 					transaction_details: {
 						order_id: payment.booking.id,
 						gross_amount,
