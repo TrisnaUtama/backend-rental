@@ -1,4 +1,4 @@
-const ACCESS_TOKEN_EXP = 6 * 60;
+const ACCESS_TOKEN_EXP = 15 * 60;
 const REFRESH_TOKEN_EXP = 7 * 86400;
 const JWT_NAME = "jwt";
 const EXPIRY_DATE_MIDTRANS = 30;

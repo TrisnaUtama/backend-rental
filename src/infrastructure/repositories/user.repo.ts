@@ -43,6 +43,18 @@ export class UserRepository implements IUser {
 		}
 	}
 
+	async getRefreshToken(token:string){
+		try {
+			return await this.prisma.users.findFirst({
+				where: {
+					refresh_token: token
+				},
+			});
+		} catch (error) {
+			this.error_handler.handleRepositoryError(error);
+		}
+	}
+
 	async create(payload: CreateUser) {
 		try {
 			return await this.prisma.users.create({

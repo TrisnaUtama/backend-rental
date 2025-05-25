@@ -57,6 +57,7 @@ export interface IJwtPayload {
 export interface IUser {
 	getAll: () => Promise<Users[]>;
 	getOne: (id: string) => Promise<Users | null>;
+	getRefreshToken: (token: string) => Promise<Users | null>
 	create: (payload: CreateUser) => Promise<Users | null>;
 	update: (id: string, payload: UpdateUser) => Promise<Users>;
 }
