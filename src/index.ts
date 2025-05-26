@@ -9,6 +9,7 @@ import { destinationRoute } from "./presentation/router/destination.route";
 import { travelRoute } from "./presentation/router/travel.route";
 import { bookingRoute } from "./presentation/router/booking.route";
 import { paymentRoute } from "./presentation/router/payment.route";
+import { storageRoute } from "./presentation/router/storage.route";
 const app = new Elysia();
 app
 	.use(
@@ -33,7 +34,8 @@ app
 			.use(destinationRoute)
 			.use(travelRoute)
 			.use(bookingRoute)
-			.use(paymentRoute),
+			.use(paymentRoute)
+			.use(storageRoute),
 	)
 	.listen(8000);
 console.log(

@@ -15,6 +15,7 @@ import type {
 	IOTP,
 	IPayments,
 	IPromos,
+	IStorage,
 	ITravelPackages,
 	ITravelPackagesDestinations,
 	IUser,
@@ -46,6 +47,8 @@ import { BookingService } from "./services/booking.service";
 import { PaymentService } from "./services/payment.service";
 import { MidtransService } from "../infrastructure/entity/midtrans";
 import { OtpService } from "./services/otp.service";
+import { StorageRepository } from "../infrastructure/repositories/storage.repo";
+import { StorageService } from "./services/storage.service";
 
 export const container = new Container();
 
@@ -74,6 +77,7 @@ container.bind<IPromos>(TYPES.promoRepo).to(PromoRepository);
 container.bind<IBookings>(TYPES.bookingRepo).to(BookingRepository);
 container.bind<IPayments>(TYPES.paymentRepo).to(PaymentRepository);
 container.bind<IFacilities>(TYPES.facilityRepo).to(FacilityRepository);
+container.bind<IStorage>(TYPES.storageRepo).to(StorageRepository);
 container.bind<ErrorHandler>(TYPES.errorHandler).to(ErrorHandler);
 container.bind<HashService>(TYPES.hashed_password).to(HashService);
 container.bind<EmailService>(TYPES.email).to(EmailService);
@@ -90,6 +94,7 @@ container.bind<PromoService>(PromoService).toSelf();
 container.bind<BookingService>(BookingService).toSelf();
 container.bind<PaymentService>(PaymentService).toSelf();
 container.bind<OtpService>(OtpService).toSelf();
+container.bind<StorageService>(StorageService).toSelf();
 container.bind<Http>(Http).toSelf();
 container.bind<MidtransService>(MidtransService).toSelf();
 container.bind<Logger>(Logger).toSelf();
@@ -114,3 +119,4 @@ export const promoService = container.get<PromoService>(PromoService);
 export const bookingService = container.get<BookingService>(BookingService);
 export const paymentService = container.get<PaymentService>(PaymentService);
 export const otpService = container.get<OtpService>(OtpService);
+export const storageService = container.get<StorageService>(StorageService);

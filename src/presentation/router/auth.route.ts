@@ -126,7 +126,7 @@ export const authRouter = new Elysia({
 	)
 	.post(
 		"/sign-in",
-		async ({ body, set, cookie: { access_token, refresh_token } }) => {
+		async ({ body, set, cookie: {  refresh_token } }) => {
 			try {
 				const login_user = await authService.signIn(body.email, body.password);
 

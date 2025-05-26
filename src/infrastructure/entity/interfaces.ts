@@ -154,3 +154,9 @@ export interface IPayments {
 	create: (payload: CreatePayment) => Promise<Payments | null>;
 	update: (id: string, payload: UpdatePayment) => Promise<Payments>;
 }
+
+export interface IStorage {
+	saveImages: (file: File) => Promise<string>;
+	getImage: (filename: string) => Promise<string>;
+	deleteImage: (filename: string) => Promise<void>;
+}

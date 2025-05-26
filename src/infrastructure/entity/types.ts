@@ -42,6 +42,7 @@ export const TYPES = {
 	promoRepo: Symbol.for("PromoRepository"),
 	bookingRepo: Symbol.for("BookingRepository"),
 	paymentRepo: Symbol.for("PaymentRepository"),
+	storageRepo: Symbol.for("StorageRepository"),
 	//  services
 	authService: Symbol.for("AuthService"),
 	userService: Symbol.for("UserService"),
@@ -53,6 +54,7 @@ export const TYPES = {
 	bookingService: Symbol.for("BookingService"),
 	paymentService: Symbol.for("PaymentService"),
 	otpService: Symbol.for("OtpService"),
+	storageService: Symbol.for("StorageService"),
 };
 // CREATES //
 export type CreateUser = Omit<

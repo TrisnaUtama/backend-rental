@@ -23,7 +23,6 @@ export class StandardResponse {
 	static login<T>(
 		data: T,
 		access_token: string,
-		refresh_token: string,
 		message = "Success",
 	) {
 		return {
@@ -31,7 +30,6 @@ export class StandardResponse {
 			message,
 			data,
 			access_token,
-			refresh_token,
 		};
 	}
 }

@@ -16,8 +16,6 @@ export class DestinationService {
 	private errorHandler: ErrorHandler;
 	private response: Http;
 	private destinationRepo: DestinationRepository;
-	private facilityRepo: FacilityRepository;
-	private prisma: PrismaClient;
 
 	constructor(
 		@inject(TYPES.destinationRepo) destinationRepo: DestinationRepository,
@@ -29,8 +27,6 @@ export class DestinationService {
 		this.errorHandler = errorHandler;
 		this.response = response;
 		this.destinationRepo = destinationRepo;
-		this.facilityRepo = facilityRepo;
-		this.prisma = prisma;
 	}
 
 	async getAll() {
