@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { injectable, inject } from "inversify";
-import type { Prisma, PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 import type { ErrorHandler } from "../entity/errors/global.error";
 import type { IDestinations } from "../entity/interfaces";
 import {
