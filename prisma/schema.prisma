@@ -186,15 +186,16 @@ model Destinations {
   open_hour       String
   description     String
   image_urls      String[]
-  latitude        String
-  longitude       String
+  address         String
+  latitude        String?
+  longitude       String?
+  facilities      String[]
   status          Boolean @default(true)
 
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
   deleted_at      DateTime? 
 
-  destination_fasilities Destination_Fasilities[]
   travel_package_destinations Travel_Packages_Destinations[]
 }
 
@@ -238,8 +239,6 @@ model Destination_Fasilities {
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
   deleted_at      DateTime? 
-
-  destination     Destinations @relation(fields: [destination_id], references: [id])
 }
 
 model Bookings {

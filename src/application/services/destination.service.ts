@@ -4,122 +4,99 @@ import type { Http } from "../../infrastructure/utils/response/http.response";
 import type { ErrorHandler } from "../../infrastructure/entity/errors/global.error";
 import type { DestinationRepository } from "../../infrastructure/repositories/destination.repo";
 import {
-	type CreateDestination,
-	type UpdateDestination,
-	type CreateFacility,
-	TYPES,
-	type UpdateFacility,
+  type CreateDestination,
+  type UpdateDestination,
+  type CreateFacility,
+  TYPES,
+  type UpdateFacility,
 } from "../../infrastructure/entity/types";
 import type { FacilityRepository } from "../../infrastructure/repositories/facility.repo";
 import type { PrismaClient } from "@prisma/client";
 
 @injectable()
 export class DestinationService {
-	private errorHandler: ErrorHandler;
-	private response: Http;
-	private destinationRepo: DestinationRepository;
-	private facilityRepo: FacilityRepository;
-	private prisma: PrismaClient;
+  private errorHandler: ErrorHandler;
+  private response: Http;
+  private destinationRepo: DestinationRepository;
+  private facilityRepo: FacilityRepository;
+  private prisma: PrismaClient;
 
-	constructor(
-		@inject(TYPES.destinationRepo) destinationRepo: DestinationRepository,
-		@inject(TYPES.http) response: Http,
-		@inject(TYPES.errorHandler) errorHandler: ErrorHandler,
-		@inject(TYPES.facilityRepo) facilityRepo: FacilityRepository,
-		@inject(TYPES.prisma) prisma: PrismaClient,
-	) {
-		this.errorHandler = errorHandler;
-		this.response = response;
-		this.destinationRepo = destinationRepo;
-		this.facilityRepo = facilityRepo;
-		this.prisma = prisma;
-	}
+  constructor(
+    @inject(TYPES.destinationRepo) destinationRepo: DestinationRepository,
+    @inject(TYPES.http) response: Http,
+    @inject(TYPES.errorHandler) errorHandler: ErrorHandler,
+    @inject(TYPES.facilityRepo) facilityRepo: FacilityRepository,
+    @inject(TYPES.prisma) prisma: PrismaClient
+  ) {
+    this.errorHandler = errorHandler;
+    this.response = response;
+    this.destinationRepo = destinationRepo;
+    this.facilityRepo = facilityRepo;
+    this.prisma = prisma;
+  }
 
-	async getAll() {
-		try {
-			const destinations = await this.destinationRepo.getAll();
-			if (!destinations)
-				throw this.response.badRequest("Error while retreived destinations !");
-			if (destinations.length === 0)
-				throw this.response.notFound("Destinations is empty !");
+  async getAll() {
+    try {
+      const destinations = await this.destinationRepo.getAll();
+      if (!destinations)
+        throw this.response.badRequest("Error while retreived destinations !");
+      if (destinations.length === 0)
+        throw this.response.notFound("Destinations is empty !");
 
-			return destinations;
-		} catch (error) {
-			this.errorHandler.handleServiceError(error);
-		}
-	}
+      return destinations;
+    } catch (error) {
+      this.errorHandler.handleServiceError(error);
+    }
+  }
 
-	async getOne(id: string) {
-		try {
-			const destination = await this.destinationRepo.getOne(id);
-			if (!destination) throw this.response.notFound("Destinations is empty !");
+  async getOne(id: string) {
+    try {
+      const destination = await this.destinationRepo.getOne(id);
+      if (!destination) throw this.response.notFound("Destinations is empty !");
 
-			return destination;
-		} catch (error) {
-			this.errorHandler.handleServiceError(error);
-		}
-	}
+      return destination;
+    } catch (error) {
+      this.errorHandler.handleServiceError(error);
+    }
+  }
 
-	async create(payload_x: CreateDestination, payload_y: CreateFacility[]) {
-		try {
-			const result = await this.prisma.$transaction(async (tx) => {
-				const destination = await this.destinationRepo.create(payload_x, tx);
-				if (!destination) {
-					throw this.response.badRequest("Error while creating destination!");
-				}
+  async create(payload: CreateDestination) {
+    try {
+      const new_destination = await this.destinationRepo.create(payload);
+      if (!new_destination)
+        throw this.response.badRequest("Error while creating new destination");
+      return new_destination;
+    } catch (error) {
+      this.errorHandler.handleServiceError(error);
+    }
+  }
 
-				const payload_facilities = payload_y.map((facility) => ({
-					...facility,
-					destination_id: destination.id,
-				}));
+  async update(id: string, payload: UpdateDestination) {
+    try {
+      const existing_destination = await this.destinationRepo.getOne(id);
+      if (!existing_destination)
+        throw this.response.notFound("Destination not exists");
+      const updated_destination = await this.destinationRepo.update(
+        id,
+        payload
+      );
+      if (!updated_destination)
+        throw this.response.badRequest("Failed Updating Destination");
 
-				await this.facilityRepo.createMany(payload_facilities, tx);
+      return updated_destination;
+    } catch (error) {
+      this.errorHandler.handleServiceError(error);
+    }
+  }
 
-				return destination;
-			});
+  async delete(id: string) {
+    try {
+      const destination = await this.destinationRepo.getOne(id);
+      if (!destination) throw this.response.notFound("Destination not found !");
 
-			return result;
-		} catch (error) {
-			this.errorHandler.handleServiceError(error);
-		}
-	}
-
-	async update(
-		id: string,
-		payload_x: UpdateDestination,
-		payload_y: UpdateFacility[],
-	) {
-		try {
-			const result = await this.prisma.$transaction(async (tx) => {
-				const updatedDestination = await this.destinationRepo.update(
-					id,
-					payload_x,
-					tx,
-				);
-				if (!updatedDestination)
-					throw new Error("Error while updating destination!");
-
-				const updated_acilities = await this.facilityRepo.update(payload_y, tx);
-				if (!updated_acilities) {
-					throw new Error("Error while updating facilities!");
-				}
-
-				return updatedDestination;
-			});
-			return result;
-		} catch (error) {
-			this.errorHandler.handleServiceError(error);
-		}
-	}
-
-	async delete(id: string) {
-		try {
-			const destination = await this.destinationRepo.getOne(id);
-			if (!destination) throw this.response.notFound("Destination not found !");
-
-			await this.destinationRepo.update(id, { ...destination, status: false });
-		} catch (error) {
-			this.errorHandler.handleServiceError(error);
-		}
-	}
+      await this.destinationRepo.update(id, { ...destination, status: false });
+    } catch (error) {
+      this.errorHandler.handleServiceError(error);
+    }
+  }
 }

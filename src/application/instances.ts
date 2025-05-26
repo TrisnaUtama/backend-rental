@@ -6,19 +6,19 @@ import { Logger } from "../infrastructure/entity/logger";
 import { UserRepository } from "../infrastructure/repositories/user.repo";
 import { AuthService } from "./services/auth.service";
 import type {
-  IBookings,
-  IDestinations,
-  IFacilities,
-  ILogger,
-  INotification,
-  INotificationBroadcast,
-  IOTP,
-  IPayments,
-  IPromos,
-  ITravelPackages,
-  ITravelPackagesDestinations,
-  IUser,
-  IVehicles,
+	IBookings,
+	IDestinations,
+	IFacilities,
+	ILogger,
+	INotification,
+	INotificationBroadcast,
+	IOTP,
+	IPayments,
+	IPromos,
+	ITravelPackages,
+	ITravelPackagesDestinations,
+	IUser,
+	IVehicles,
 } from "../infrastructure/entity/interfaces";
 import type { PrismaClient } from "@prisma/client";
 import { ErrorHandler } from "../infrastructure/entity/errors/global.error";
@@ -57,19 +57,19 @@ container.bind<IOTP>(TYPES.otpRepo).to(OtpRepository);
 container.bind<Http>(TYPES.http).to(Http);
 container.bind<MidtransService>(TYPES.midtrans).to(MidtransService);
 container
-  .bind<INotification>(TYPES.notificationRepo)
-  .to(NotificationRepository);
+	.bind<INotification>(TYPES.notificationRepo)
+	.to(NotificationRepository);
 container
-  .bind<INotificationBroadcast>(TYPES.broadcastRepo)
-  .to(BroadcastRepository);
+	.bind<INotificationBroadcast>(TYPES.broadcastRepo)
+	.to(BroadcastRepository);
 container.bind<IVehicles>(TYPES.vehicleRepo).to(VehicleRepository);
 container.bind<IDestinations>(TYPES.destinationRepo).to(DestinationRepository);
 container
-  .bind<ITravelPackages>(TYPES.travelPackageRepo)
-  .to(TravelPackageRepository);
+	.bind<ITravelPackages>(TYPES.travelPackageRepo)
+	.to(TravelPackageRepository);
 container
-  .bind<ITravelPackagesDestinations>(TYPES.travelPackageDestinationRepo)
-  .to(TravelPackagesDestinationsRepository);
+	.bind<ITravelPackagesDestinations>(TYPES.travelPackageDestinationRepo)
+	.to(TravelPackagesDestinationsRepository);
 container.bind<IPromos>(TYPES.promoRepo).to(PromoRepository);
 container.bind<IBookings>(TYPES.bookingRepo).to(BookingRepository);
 container.bind<IPayments>(TYPES.paymentRepo).to(PaymentRepository);
@@ -102,14 +102,14 @@ export const midtrans = container.get<MidtransService>(MidtransService);
 export const authService = container.get<AuthService>(AuthService);
 export const userService = container.get<UserService>(UserService);
 export const notificationService =
-  container.get<NotificationService>(NotificationService);
+	container.get<NotificationService>(NotificationService);
 export const braodcastService =
-  container.get<BroadcastService>(BroadcastService);
+	container.get<BroadcastService>(BroadcastService);
 export const vehicleService = container.get<VehicleService>(VehicleService);
 export const destinationService =
-  container.get<DestinationService>(DestinationService);
+	container.get<DestinationService>(DestinationService);
 export const travelPackageService =
-  container.get<TravelPackageService>(TravelPackageService);
+	container.get<TravelPackageService>(TravelPackageService);
 export const promoService = container.get<PromoService>(PromoService);
 export const bookingService = container.get<BookingService>(BookingService);
 export const paymentService = container.get<PaymentService>(PaymentService);

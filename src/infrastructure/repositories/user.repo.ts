@@ -43,11 +43,11 @@ export class UserRepository implements IUser {
 		}
 	}
 
-	async getRefreshToken(token:string){
+	async getRefreshToken(token: string) {
 		try {
 			return await this.prisma.users.findFirst({
 				where: {
-					refresh_token: token
+					refresh_token: token,
 				},
 			});
 		} catch (error) {

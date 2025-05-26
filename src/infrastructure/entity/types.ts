@@ -52,7 +52,7 @@ export const TYPES = {
 	promoService: Symbol.for("PromoService"),
 	bookingService: Symbol.for("BookingService"),
 	paymentService: Symbol.for("PaymentService"),
-	otpService: Symbol.for("OtpService")
+	otpService: Symbol.for("OtpService"),
 };
 // CREATES //
 export type CreateUser = Omit<
