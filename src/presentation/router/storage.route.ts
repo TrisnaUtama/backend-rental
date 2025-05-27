@@ -6,7 +6,7 @@ import { StandardResponse } from "../../infrastructure/utils/response/standard.r
 import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.response";
 import { verifyJwt } from "../../infrastructure/utils/jwt";
 import { response } from "../../application/instances";
-import { promises as fs } from "node:fs";
+import { createReadStream, promises as fs } from "node:fs";
 import path from "node:path";
 
 export const storageRoute = new Elysia({
@@ -123,7 +123,8 @@ export const storageRoute = new Elysia({
 			const contentType = contentTypeMap[ext] || "application/octet-stream";
 			set.headers["Content-Type"] = contentType;
 			set.headers["Cache-Control"] = "public, max-age=31536000";
-		return StandardResponse.success(result, "Image updated successfully");
+			const stream = createReadStream(filename);
+			return StandardResponse.success(stream, "Image updated successfully");
 		} catch (error) {
 			set.status = 500;
 			return GlobalErrorHandler.handleError(error, set);
