@@ -46,7 +46,6 @@ export const notificationRoute = new Elysia({
 					"Something went wrong while retreived notification",
 				);
 			}
-
 			set.status = 200;
 			return StandardResponse.success(
 				notification,

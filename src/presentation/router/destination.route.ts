@@ -55,9 +55,6 @@ export const destinationRoute = new Elysia({
 			const destinations = await destinationService.getAll();
 			if (!destinations)
 				throw response.badRequest("Error while retreived destinations !");
-			if (destinations.length === 0)
-				throw response.badRequest("Destinations is empty !");
-
 			set.status = 200;
 			return StandardResponse.success(
 				destinations,

@@ -56,9 +56,6 @@ export const bookingRoute = new Elysia({
 					"Something went wrong while retreiving data Bookings",
 				);
 			}
-			if (bookings.length === 0) {
-				throw response.notFound("Bookings is empty");
-			}
 			set.status = 200;
 			return StandardResponse.success(
 				bookings,

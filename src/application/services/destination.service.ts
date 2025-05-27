@@ -32,9 +32,6 @@ export class DestinationService {
 			const destinations = await this.destinationRepo.getAll();
 			if (!destinations)
 				throw this.response.badRequest("Error while retreived destinations !");
-			if (destinations.length === 0)
-				throw this.response.notFound("Destinations is empty !");
-
 			return destinations;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);

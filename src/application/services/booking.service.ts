@@ -66,10 +66,6 @@ export class BookingService {
 				throw this.response.badRequest(
 					`Error while retreive data booking from user id ${id}`,
 				);
-			if (bookings.length === 0)
-				throw this.response.notFound(
-					`User ${id} didnt have any bookings history`,
-				);
 			return bookings;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);

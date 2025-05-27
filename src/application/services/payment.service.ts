@@ -30,8 +30,6 @@ export class PaymentService {
 			const payments = await this.paymentRepo.getAll();
 			if (!payments)
 				throw this.response.badRequest("Error while retreiving payments data");
-			if (payments.length === 0)
-				throw this.response.notFound("payments is empty");
 			return payments;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);

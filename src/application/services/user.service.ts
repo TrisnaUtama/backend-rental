@@ -35,8 +35,6 @@ export class UserService {
 			const users = await this.userRepo.getAll();
 			if (!users)
 				throw this.response.badRequest("Error while retreived users !");
-			if (users.length === 0) throw this.response.notFound("Users is empty !");
-
 			return users;
 		} catch (error) {
 			this.error.handleServiceError(error);
