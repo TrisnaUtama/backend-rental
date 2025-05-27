@@ -16,7 +16,7 @@ export class StorageRepository implements IStorage {
 		this.errorHandler = errorHandler;
 	}
 
-	async saveImages(file: File): Promise<string> {
+	async saveImages(file: File) {
 		try {
 			const arrayBuffer = await file.arrayBuffer();
 			const buffer = Buffer.from(arrayBuffer);
@@ -35,7 +35,7 @@ export class StorageRepository implements IStorage {
 		}
 	}
 
-	async deleteImage(filename: string): Promise<void> {
+	async deleteImage(filename: string) {
 		try {
 			if (!filename || filename.includes("..") || filename.includes("/")) {
 				throw new Error("Invalid filename");
@@ -48,7 +48,7 @@ export class StorageRepository implements IStorage {
 		}
 	}
 
-	async getImage(filename: string): Promise<string> {
+	async getImage(filename: string) {
 		try {
 			if (!filename || filename.includes("..") || filename.includes("/")) {
 				throw new Error("Invalid filename");

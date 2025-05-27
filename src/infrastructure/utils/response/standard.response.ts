@@ -20,11 +20,7 @@ export class StandardResponse {
 		};
 	}
 
-	static login<T>(
-		data: T,
-		access_token: string,
-		message = "Success",
-	) {
+	static login<T>(data: T, access_token: string, message = "Success") {
 		return {
 			success: true,
 			message,
