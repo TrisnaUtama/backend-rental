@@ -10,8 +10,8 @@ async function main() {
             name: "admin",
             password: hashed_password,
             phone_number: "99237404852",
-            is_verified: true,
             role: "SUPERADMIN",
+            year_of_experiences: 0
         }
     })
     console.log("successfully seeding data employee type");

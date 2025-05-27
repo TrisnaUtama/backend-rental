@@ -9,6 +9,9 @@
 		"lint:check": "bunx biome lint src",
 		"prepare": "husky"
 	},
+	"prisma": {
+		"seed": "bun run prisma/seed.ts"
+	},
 	"dependencies": {
 		"@elysiajs/cors": "^1.2.0",
 		"@elysiajs/jwt": "^1.2.0",
