@@ -84,16 +84,12 @@ export class StorageService {
 			try {
 				await this.storageRepo.deleteImage(oldFilename);
 			} catch (error: any) {
-				return this.response.badRequest(
-					`Failed to delete old image: ${error}`,
-				);
+				return this.response.badRequest(`Failed to delete old image: ${error}`);
 			}
 			const filename = await this.storageRepo.saveImages(file);
-
 			if (!filename) {
 				return this.response.badRequest("Failed to save new image");
 			}
-
 			const payload = {
 				filename,
 				url: `https://storage.trisnautama.site/${filename}`,
