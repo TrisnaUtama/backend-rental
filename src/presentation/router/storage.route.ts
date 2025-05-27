@@ -15,32 +15,32 @@ export const storageRoute = new Elysia({
 		tags: ["STORAGE"],
 	},
 })
-	.use(
-		jwt({
-			name: `${process.env.JWT_NAME}`,
-			secret: `${process.env.JWT_SECRET_KEY}`,
-		}),
-	)
-	.derive(async ({ cookie: { access_token }, set }) => {
-		if (!access_token.value) {
-			set.status = 401;
-			throw response.unauthorized();
-		}
-		const jwtPayload: IJwtPayload = verifyJwt(access_token.value.toString());
+	// .use(
+	// 	jwt({
+	// 		name: `${process.env.JWT_NAME}`,
+	// 		secret: `${process.env.JWT_SECRET_KEY}`,
+	// 	}),
+	// )
+	// .derive(async ({ cookie: { access_token }, set }) => {
+	// 	if (!access_token.value) {
+	// 		set.status = 401;
+	// 		throw response.unauthorized();
+	// 	}
+	// 	const jwtPayload: IJwtPayload = verifyJwt(access_token.value.toString());
 
-		if (!jwtPayload) {
-			set.status = 403;
-			throw response.forbidden();
-		}
+	// 	if (!jwtPayload) {
+	// 		set.status = 403;
+	// 		throw response.forbidden();
+	// 	}
 
-		const userId = jwtPayload.user_id;
-		if (!userId) throw response.badRequest("Invalid Payload !");
-		const user = await userService.getOne(userId.toString());
+	// 	const userId = jwtPayload.user_id;
+	// 	if (!userId) throw response.badRequest("Invalid Payload !");
+	// 	const user = await userService.getOne(userId.toString());
 
-		return {
-			user,
-		};
-	})
+	// 	return {
+	// 		user,
+	// 	};
+	// })
 	.post(
 		"/upload",
 		async ({ body, set }) => {
