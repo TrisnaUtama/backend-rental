@@ -59,7 +59,6 @@ export class StorageRepository implements IStorage {
 				throw new Error("Invalid filename");
 			}
 			const filePath = path.join(STORAGE_DIR, filename);
-			console.log(filePath);
 			await fs.access(filePath);
 			return filePath;
 		} catch (error) {

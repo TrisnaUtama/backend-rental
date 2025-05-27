@@ -123,8 +123,8 @@ export const storageRoute = new Elysia({
 			const contentType = contentTypeMap[ext] || "application/octet-stream";
 			set.headers["Content-Type"] = contentType;
 			set.headers["Cache-Control"] = "public, max-age=31536000";
-			const stream = createReadStream(filename);
-			return StandardResponse.success(stream, "Image updated successfully");
+			const filePath = Bun.file(filename)
+			return StandardResponse.success(filePath, "Image updated successfully");
 		} catch (error) {
 			set.status = 500;
 			return GlobalErrorHandler.handleError(error, set);
