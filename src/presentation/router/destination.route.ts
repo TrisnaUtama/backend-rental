@@ -98,7 +98,7 @@ export const destinationRoute = new Elysia({
 					facilities: body.facilities,
 					status: body.status ?? true,
 					deleted_at: null,
-					address: ""
+					address: "",
 				};
 
 				const destination = await destinationService.create(payload);
