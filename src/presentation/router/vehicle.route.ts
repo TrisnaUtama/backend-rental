@@ -70,10 +70,6 @@ export const vehicleRoute = new Elysia({
 					"Something went wrong while retreived vehicles",
 				);
 			}
-
-			if (vehicles.length === 0) {
-				throw response.notFound("User is empty");
-			}
 			set.status = 200;
 			return StandardResponse.success(
 				vehicles,

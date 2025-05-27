@@ -48,9 +48,6 @@ export const userRoute = new Elysia({
 				throw response.badRequest("Something went wrong while retreived users");
 			}
 
-			if (users.length === 0) {
-				throw response.notFound("User is empty");
-			}
 			set.status = 200;
 			return StandardResponse.success(users, "Successfully retreived users");
 		} catch (error) {

@@ -35,9 +35,6 @@ export class BroadcastService {
 	async getAll() {
 		try {
 			const broadcasts = await this.broadcastRepo.getAll();
-			if (broadcasts.length === 0)
-				throw this.response.badRequest("Broadcast is empty !");
-
 			return broadcasts;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);

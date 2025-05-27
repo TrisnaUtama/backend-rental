@@ -29,9 +29,6 @@ export class VehicleService {
 	async getAll() {
 		try {
 			const vehicles = await this.vehicleRepo.getAll();
-			if (vehicles.length === 0)
-				throw this.response.badRequest("Vehicle is empty !");
-
 			return vehicles;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);

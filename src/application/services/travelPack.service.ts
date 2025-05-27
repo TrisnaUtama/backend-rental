@@ -44,10 +44,6 @@ export class TravelPackageService {
 				throw this.response.badRequest(
 					"Error while retreiving travel packages !",
 				);
-
-			if (travelPacks.length === 0)
-				throw this.response.notFound("Travel Pack is empty !");
-
 			return travelPacks;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);

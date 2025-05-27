@@ -28,9 +28,6 @@ export class NotificationService {
 	async getAll() {
 		try {
 			const notifications = await this.notificationRepo.getAll();
-			if (notifications.length === 0)
-				throw this.response.badRequest("Notifications is empty !");
-
 			return notifications;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);

@@ -29,8 +29,6 @@ export class PromoService {
 		try {
 			const promos = await this.promoRepo.getAll();
 			if (!promos) throw this.response.badRequest("Error while getting promos");
-			if (promos.length === 0)
-				throw this.response.badRequest("Promos is empty");
 			return promos;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
