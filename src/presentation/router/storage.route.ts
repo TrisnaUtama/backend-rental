@@ -15,32 +15,32 @@ export const storageRoute = new Elysia({
 		tags: ["STORAGE"],
 	},
 })
-	// .use(
-	// 	jwt({
-	// 		name: `${process.env.JWT_NAME}`,
-	// 		secret: `${process.env.JWT_SECRET_KEY}`,
-	// 	}),
-	// )
-	// .derive(async ({ cookie: { access_token }, set }) => {
-	// 	if (!access_token.value) {
-	// 		set.status = 401;
-	// 		throw response.unauthorized();
-	// 	}
-	// 	const jwtPayload: IJwtPayload = verifyJwt(access_token.value.toString());
+	.use(
+		jwt({
+			name: `${process.env.JWT_NAME}`,
+			secret: `${process.env.JWT_SECRET_KEY}`,
+		}),
+	)
+	.derive(async ({ cookie: { access_token }, set }) => {
+		if (!access_token.value) {
+			set.status = 401;
+			throw response.unauthorized();
+		}
+		const jwtPayload: IJwtPayload = verifyJwt(access_token.value.toString());
 
-	// 	if (!jwtPayload) {
-	// 		set.status = 403;
-	// 		throw response.forbidden();
-	// 	}
+		if (!jwtPayload) {
+			set.status = 403;
+			throw response.forbidden();
+		}
 
-	// 	const userId = jwtPayload.user_id;
-	// 	if (!userId) throw response.badRequest("Invalid Payload !");
-	// 	const user = await userService.getOne(userId.toString());
+		const userId = jwtPayload.user_id;
+		if (!userId) throw response.badRequest("Invalid Payload !");
+		const user = await userService.getOne(userId.toString());
 
-	// 	return {
-	// 		user,
-	// 	};
-	// })
+		return {
+			user,
+		};
+	})
 	.post(
 		"/upload",
 		async ({ body, set }) => {
@@ -51,7 +51,6 @@ export const storageRoute = new Elysia({
 					set.status = 400;
 					return StandardResponse.error("No file provided", 400);
 				}
-
 				const result = await storageService.uploadImage(file);
 				return StandardResponse.success(result, "Image uploaded successfully");
 			} catch (error) {
@@ -71,17 +70,14 @@ export const storageRoute = new Elysia({
 		async ({ body, set }) => {
 			try {
 				const { file, oldFilename } = body;
-
 				if (!file) {
 					set.status = 400;
 					return StandardResponse.error("No file provided", 400);
 				}
-
 				if (!oldFilename) {
 					set.status = 400;
 					return StandardResponse.error("No old filename provided", 400);
 				}
-
 				const result = await storageService.updateImage(file, oldFilename);
 				return StandardResponse.success(result, "Image updated successfully");
 			} catch (error) {
@@ -100,26 +96,21 @@ export const storageRoute = new Elysia({
 	.get("/:filename", async ({ params, set }) => {
 		try {
 			const filename = params.filename;
-
 			if (!filename || filename.includes("..") || filename.includes("/")) {
 				set.status = 400;
 				return StandardResponse.error("Invalid filename", 400);
 			}
-
 			const result = await storageService.getImagePath(filename);
-
 			if (!result) {
 				set.status = 404;
 				return StandardResponse.error("Image not found", 404);
 			}
-
 			try {
 				await fs.access(result.toString());
 			} catch {
 				set.status = 404;
 				return StandardResponse.error("Image not found", 404);
 			}
-
 			const ext = path.extname(result.toString()).toLowerCase();
 			const contentTypeMap: { [key: string]: string } = {
 				".jpg": "image/jpeg",
@@ -129,31 +120,28 @@ export const storageRoute = new Elysia({
 				".webp": "image/webp",
 				".svg": "image/svg+xml",
 			};
-
 			const contentType = contentTypeMap[ext] || "application/octet-stream";
 			set.headers["Content-Type"] = contentType;
 			set.headers["Cache-Control"] = "public, max-age=31536000";
-
 			return result.toString();
 		} catch (error) {
 			set.status = 500;
 			return GlobalErrorHandler.handleError(error, set);
 		}
-	})
-
-	.delete("/:filename", async ({ params, set }) => {
-		try {
-			const filename = params.filename;
-
-			if (!filename || filename.includes("..") || filename.includes("/")) {
-				set.status = 400;
-				return StandardResponse.error("Invalid filename", 400);
-			}
-
-			const result = await storageService.deleteImage(filename);
-			return StandardResponse.success(result, "Image deleted successfully");
-		} catch (error) {
-			set.status = 500;
-			return GlobalErrorHandler.handleError(error, set);
-		}
 	});
+// .delete("/:filename", async ({ params, set }) => {
+// 	try {
+// 		const filename = params.filename;
+
+// 		if (!filename || filename.includes("..") || filename.includes("/")) {
+// 			set.status = 400;
+// 			return StandardResponse.error("Invalid filename", 400);
+// 		}
+
+// 		const result = await storageService.deleteImage(filename);
+// 		return StandardResponse.success(result, "Image deleted successfully");
+// 	} catch (error) {
+// 		set.status = 500;
+// 		return GlobalErrorHandler.handleError(error, set);
+// 	}
+// });
