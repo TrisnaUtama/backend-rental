@@ -124,8 +124,8 @@ export const storageRoute = new Elysia({
 			set.headers["Content-Type"] = contentType;
 			set.headers["Cache-Control"] = "public, max-age=31536000";
 			const filePath = Bun.file(result.toString());
-			console.log("route:", result);
-			return StandardResponse.success(result, "Success");
+			console.log("route:", filePath);
+			return StandardResponse.success(filePath, "Success");
 		} catch (error) {
 			set.status = 500;
 			return GlobalErrorHandler.handleError(error, set);
