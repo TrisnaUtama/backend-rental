@@ -38,7 +38,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
-            cd /var/www/html/your-app-folder
+            cd /home/jackychen/Documents/projects/backend-rental
             git reset --hard
             git pull origin main
             docker compose down --remove-orphans
