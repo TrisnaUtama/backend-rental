@@ -47,9 +47,9 @@ export class StorageService {
 				return this.response.badRequest("Failed to save image");
 			}
 			const payload = {
-				filename, 
-				url: `https://storage.trisnautama.site/${filename}`
-			}
+				filename,
+				url: `https://storage.trisnautama.site/${filename}`,
+			};
 			return payload;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
@@ -93,9 +93,9 @@ export class StorageService {
 			}
 
 			const payload = {
-				filename, 
-				url: `https://storage.trisnautama.site/${filename}`
-			}
+				filename,
+				url: `https://storage.trisnautama.site/${filename}`,
+			};
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
 		}

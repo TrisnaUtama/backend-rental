@@ -53,7 +53,6 @@ export class StorageRepository implements IStorage {
 			if (!filename || filename.includes("..") || filename.includes("/")) {
 				throw new Error("Invalid filename");
 			}
-
 			const filePath = path.join(STORAGE_DIR, filename);
 			await fs.access(filePath);
 			return filePath;
