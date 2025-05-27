@@ -123,8 +123,9 @@ export const storageRoute = new Elysia({
 			const contentType = contentTypeMap[ext] || "application/octet-stream";
 			set.headers["Content-Type"] = contentType;
 			set.headers["Cache-Control"] = "public, max-age=31536000";
-			const filePath = Bun.file(filename);
-			return filePath
+			const filePath = Bun.file(filename.toString());
+			console.log(filePath);
+			return StandardResponse.success(filePath, "Image not found");
 		} catch (error) {
 			set.status = 500;
 			return GlobalErrorHandler.handleError(error, set);
