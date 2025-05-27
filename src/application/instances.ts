@@ -8,7 +8,6 @@ import { AuthService } from "./services/auth.service";
 import type {
 	IBookings,
 	IDestinations,
-	IFacilities,
 	ILogger,
 	INotification,
 	INotificationBroadcast,
@@ -35,7 +34,6 @@ import { VehicleService } from "./services/vehicle.service";
 import { VehicleRepository } from "../infrastructure/repositories/vehicle.repo";
 import { DestinationService } from "./services/destination.service";
 import { DestinationRepository } from "../infrastructure/repositories/destination.repo";
-import { FacilityRepository } from "../infrastructure/repositories/facility.repo";
 import { TravelPackageRepository } from "../infrastructure/repositories/travelPack.repo";
 import { TravelPackageService } from "./services/travelPack.service";
 import { TravelPackagesDestinationsRepository } from "../infrastructure/repositories/travelPackDestination.repo";
@@ -76,7 +74,6 @@ container
 container.bind<IPromos>(TYPES.promoRepo).to(PromoRepository);
 container.bind<IBookings>(TYPES.bookingRepo).to(BookingRepository);
 container.bind<IPayments>(TYPES.paymentRepo).to(PaymentRepository);
-container.bind<IFacilities>(TYPES.facilityRepo).to(FacilityRepository);
 container.bind<IStorage>(TYPES.storageRepo).to(StorageRepository);
 container.bind<ErrorHandler>(TYPES.errorHandler).to(ErrorHandler);
 container.bind<HashService>(TYPES.hashed_password).to(HashService);

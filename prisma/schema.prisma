@@ -230,17 +230,6 @@ model Travel_Packages {
   bookings        Bookings[]
 }
 
-model Destination_Fasilities {
-  id              String   @id @default(cuid())
-  destination_id  String
-  name            String
-  status          Boolean? @default(true)
-
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-  deleted_at      DateTime? 
-}
-
 model Bookings {
   id              String   @id @default(cuid())
   user_id         String
