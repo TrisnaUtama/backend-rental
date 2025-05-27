@@ -83,8 +83,10 @@ export class StorageService {
 			}
 			try {
 				await this.storageRepo.deleteImage(oldFilename);
-			} catch (error) {
-				this.response.badRequest(`Failed to delete old image: ${oldFilename}`);
+			} catch (error: any) {
+				return this.response.badRequest(
+					`Failed to delete old image: ${error}`,
+				);
 			}
 			const filename = await this.storageRepo.saveImages(file);
 

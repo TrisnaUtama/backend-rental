@@ -36,16 +36,20 @@ export class StorageRepository implements IStorage {
 	}
 
 	async deleteImage(filename: string) {
-		try {
-			if (!filename || filename.includes("..") || filename.includes("/")) {
-				throw new Error("Invalid filename");
-			}
-			const filePath = path.join(STORAGE_DIR, filename);
-			await fs.unlink(filePath);
-		} catch (error) {
-			this.errorHandler.handleServiceError(error);
+	try {
+		if (!filename || filename.includes("..") || filename.includes("/")) {
+			throw new Error("Invalid filename");
 		}
+		const filePath = path.join(STORAGE_DIR, filename);
+		await fs.access(filePath); 
+		await fs.unlink(filePath);
+	} catch (error: any) {
+		if (error.code === "ENOENT") {
+			this.errorHandler.handleServiceError(`File not found, skipping delete: ${filename}`);
+		}
+		this.errorHandler.handleServiceError(error);
 	}
+}
 
 	async getImage(filename: string) {
 		try {
