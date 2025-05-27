@@ -10,6 +10,8 @@ async function main() {
             name: "admin",
             password: hashed_password,
             phone_number: "99237404852",
+            is_verified: true, 
+            status: true,
             role: "SUPERADMIN",
             year_of_experiences: 0
         }
