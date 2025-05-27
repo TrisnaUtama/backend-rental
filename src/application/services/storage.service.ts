@@ -96,6 +96,7 @@ export class StorageService {
 				filename,
 				url: `https://storage.trisnautama.site/${filename}`,
 			};
+			return payload
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
 		}
