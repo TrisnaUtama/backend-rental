@@ -128,20 +128,20 @@ export const storageRoute = new Elysia({
 			set.status = 500;
 			return GlobalErrorHandler.handleError(error, set);
 		}
-	})
-	// .delete("/:filename", async ({ params, set }) => {
-	// 	try {
-	// 		const filename = params.filename;
+	});
+// .delete("/:filename", async ({ params, set }) => {
+// 	try {
+// 		const filename = params.filename;
 
-	// 		if (!filename || filename.includes("..") || filename.includes("/")) {
-	// 			set.status = 400;
-	// 			return StandardResponse.error("Invalid filename", 400);
-	// 		}
+// 		if (!filename || filename.includes("..") || filename.includes("/")) {
+// 			set.status = 400;
+// 			return StandardResponse.error("Invalid filename", 400);
+// 		}
 
-	// 		const result = await storageService.deleteImage(filename);
-	// 		return StandardResponse.success(result, "Image deleted successfully");
-	// 	} catch (error) {
-	// 		set.status = 500;
-	// 		return GlobalErrorHandler.handleError(error, set);
-	// 	}
-	// });
+// 		const result = await storageService.deleteImage(filename);
+// 		return StandardResponse.success(result, "Image deleted successfully");
+// 	} catch (error) {
+// 		set.status = 500;
+// 		return GlobalErrorHandler.handleError(error, set);
+// 	}
+// });
