@@ -109,7 +109,6 @@ export class StorageService {
 			if (!filePath) {
 				return this.response.notFound("Image not found");
 			}
-			console.log("service :", filePath);
 			return filePath;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);

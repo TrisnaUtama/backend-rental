@@ -60,7 +60,6 @@ export class StorageRepository implements IStorage {
 			}
 			const filePath = path.join(STORAGE_DIR, filename);
 			await fs.access(filePath);
-			console.log("repo :", filePath);
 			return filePath;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
