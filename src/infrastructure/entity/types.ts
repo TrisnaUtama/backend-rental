@@ -5,7 +5,6 @@ import type {
 	Notification_Broadcast,
 	Vehicles,
 	Destinations,
-	Destination_Fasilities,
 	Travel_Packages,
 	Travel_Packages_Destinations,
 	Promos,
@@ -34,7 +33,6 @@ export const TYPES = {
 	broadcastRepo: Symbol.for("BroadcastRepository"),
 	vehicleRepo: Symbol.for("VehicleRepository"),
 	destinationRepo: Symbol.for("DestinationRepository"),
-	facilityRepo: Symbol.for("FacilityRepository"),
 	travelPackageRepo: Symbol.for("TravelPackageRepository"),
 	travelPackageDestinationRepo: Symbol.for(
 		"TravelPackageDestinationsRepository",
@@ -80,10 +78,6 @@ export type CreateDestination = Omit<
 	Destinations,
 	"id" | "created_at" | "updated_at"
 >;
-export type CreateFacility = Omit<
-	Destination_Fasilities,
-	"id" | "created_at" | "updated_at"
->;
 export type CreateTravelPackage = Omit<
 	Travel_Packages,
 	"id" | "created_at" | "updated_at" | "status" | "deleted_at"
@@ -121,7 +115,6 @@ export type UpdateNotification = Partial<Notifications>;
 export type UpdateNotificationBroadcast = Partial<Notification_Broadcast>;
 export type UpdateVehicle = Partial<Vehicles>;
 export type UpdateDestination = Partial<Destinations>;
-export type UpdateFacility = Partial<Destination_Fasilities>;
 export type UpdateTravelPackage = Partial<Travel_Packages>;
 export type UpdateTravelPackageDestination =
 	Partial<Travel_Packages_Destinations>;

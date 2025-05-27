@@ -5,7 +5,6 @@ import type {
 	Notification_Broadcast,
 	Vehicles,
 	Destinations,
-	Destination_Fasilities,
 	Travel_Packages,
 	Travel_Packages_Destinations,
 	Promos,
@@ -25,8 +24,6 @@ import type {
 	UpdateVehicle,
 	CreateDestination,
 	UpdateDestination,
-	CreateFacility,
-	UpdateFacility,
 	CreateTravelPackage,
 	UpdateTravelPackage,
 	CreateTravelPackageDesination,
@@ -105,14 +102,6 @@ export interface IDestinations {
 	create: (payload: CreateDestination) => Promise<Destinations | null>;
 	update: (id: string, payload: UpdateDestination) => Promise<Destinations>;
 }
-
-export interface IFacilities {
-	getAllByIdDestination: (id: string) => Promise<Destination_Fasilities[]>;
-	getOne: (id: string) => Promise<Destination_Fasilities | null>;
-	createMany: (payload: CreateFacility[]) => Promise<{ count: number }>;
-	update: (payload: UpdateFacility[]) => Promise<Destination_Fasilities[]>;
-}
-
 export interface ITravelPackages {
 	getAll: () => Promise<Travel_Packages[]>;
 	getOne: (id: string) => Promise<Travel_Packages | null>;

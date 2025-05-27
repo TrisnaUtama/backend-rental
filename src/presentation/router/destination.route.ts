@@ -10,7 +10,6 @@ import { StandardResponse } from "../../infrastructure/utils/response/standard.r
 import type {
 	CreateDestination,
 	UpdateDestination,
-	UpdateFacility,
 } from "../../infrastructure/entity/types";
 import type { IJwtPayload } from "../../infrastructure/entity/interfaces";
 import { verifyJwt } from "../../infrastructure/utils/jwt";
@@ -99,6 +98,7 @@ export const destinationRoute = new Elysia({
 					facilities: body.facilities,
 					status: body.status ?? true,
 					deleted_at: null,
+					address: "",
 				};
 
 				const destination = await destinationService.create(payload);

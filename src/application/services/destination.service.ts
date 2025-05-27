@@ -8,7 +8,6 @@ import {
 	type UpdateDestination,
 	TYPES,
 } from "../../infrastructure/entity/types";
-import type { FacilityRepository } from "../../infrastructure/repositories/facility.repo";
 import type { PrismaClient } from "@prisma/client";
 
 @injectable()
@@ -21,7 +20,6 @@ export class DestinationService {
 		@inject(TYPES.destinationRepo) destinationRepo: DestinationRepository,
 		@inject(TYPES.http) response: Http,
 		@inject(TYPES.errorHandler) errorHandler: ErrorHandler,
-		@inject(TYPES.facilityRepo) facilityRepo: FacilityRepository,
 		@inject(TYPES.prisma) prisma: PrismaClient,
 	) {
 		this.errorHandler = errorHandler;
