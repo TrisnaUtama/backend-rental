@@ -46,7 +46,6 @@ export const storageRoute = new Elysia({
 		async ({ body, set }) => {
 			try {
 				const file = body.file;
-				console.log(file);
 				if (!file) {
 					set.status = 400;
 					return StandardResponse.error("No file provided", 400);

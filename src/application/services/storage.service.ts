@@ -92,7 +92,7 @@ export class StorageService {
 			}
 			const payload = {
 				filename,
-				url: `https://storage.trisnautama.site/${filename}`,
+				url: `https://be.trisnautama.site/${filename}`,
 			};
 			return payload;
 		} catch (error) {
