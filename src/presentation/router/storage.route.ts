@@ -124,25 +124,25 @@ export const storageRoute = new Elysia({
 			set.headers["Content-Type"] = contentType;
 			set.headers["Cache-Control"] = "public, max-age=31536000";
 			const filePath = Bun.file(result.toString());
-			return filePath
+			return filePath;
+		} catch (error) {
+			set.status = 500;
+			return GlobalErrorHandler.handleError(error, set);
+		}
+	})
+	.delete("/:filename", async ({ params, set }) => {
+		try {
+			const filename = params.filename;
+
+			if (!filename || filename.includes("..") || filename.includes("/")) {
+				set.status = 400;
+				return StandardResponse.error("Invalid filename", 400);
+			}
+
+			const result = await storageService.deleteImage(filename);
+			return StandardResponse.success(result, "Image deleted successfully");
 		} catch (error) {
 			set.status = 500;
 			return GlobalErrorHandler.handleError(error, set);
 		}
 	});
-// .delete("/:filename", async ({ params, set }) => {
-// 	try {
-// 		const filename = params.filename;
-
-// 		if (!filename || filename.includes("..") || filename.includes("/")) {
-// 			set.status = 400;
-// 			return StandardResponse.error("Invalid filename", 400);
-// 		}
-
-// 		const result = await storageService.deleteImage(filename);
-// 		return StandardResponse.success(result, "Image deleted successfully");
-// 	} catch (error) {
-// 		set.status = 500;
-// 		return GlobalErrorHandler.handleError(error, set);
-// 	}
-// });
