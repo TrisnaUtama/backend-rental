@@ -138,9 +138,12 @@ export const authRouter = new Elysia({
 				refresh_token.set({
 					value: login_user.refresh_token,
 					httpOnly: true,
+					secure: true,
+					sameSite: "none",
 					maxAge: REFRESH_TOKEN_EXP,
 					path: "/",
 				});
+
 				access_token.set({
 					value: login_user.access_token,
 					httpOnly: false,
