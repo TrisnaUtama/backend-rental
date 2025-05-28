@@ -130,6 +130,10 @@ export const destinationRoute = new Elysia({
 					minLength: 5,
 					error: "Address must be at least 5 characters",
 				}),
+				category: t.String({
+					minLength: 3,
+					error: "category must be at least 3 characters",
+				}),
 				status: t.Boolean({
 					default: true,
 				}),
@@ -190,6 +194,10 @@ export const destinationRoute = new Elysia({
 				address: t.String({
 					minLength: 5,
 					error: "address must be at least 5 characters",
+				}),
+				category: t.String({
+					minLength: 3,
+					error: "category must be at least 3 characters",
 				}),
 				status: t.Boolean({
 					default: true,
