@@ -129,12 +129,10 @@ export const authRouter = new Elysia({
 		async ({ body, set, cookie: { access_token, refresh_token } }) => {
 			try {
 				const login_user = await authService.signIn(body.email, body.password);
-
 				if (!login_user) {
 					set.status = 401;
 					throw response.badRequest("Error while trying to login !");
 				}
-
 				refresh_token.set({
 					value: login_user.refresh_token,
 					httpOnly: true,
@@ -143,7 +141,6 @@ export const authRouter = new Elysia({
 					maxAge: REFRESH_TOKEN_EXP,
 					path: "/",
 				});
-
 				access_token.set({
 					value: login_user.access_token,
 					httpOnly: false,
@@ -152,7 +149,6 @@ export const authRouter = new Elysia({
 					maxAge: ACCESS_TOKEN_EXP,
 					path: "/",
 				});
-
 				set.status = 200;
 				return StandardResponse.login(
 					login_user.user,
