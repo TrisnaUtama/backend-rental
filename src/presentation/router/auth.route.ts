@@ -170,7 +170,6 @@ export const authRouter = new Elysia({
 	.post("/refresh", async ({ set, cookie }) => {
 		try {
 			const refreshToken = cookie.refresh_token;
-			console.log("route refrsh : ", refreshToken);
 			if (!refreshToken) {
 				set.status = 401;
 				throw response.unauthorized("Unauthorized");

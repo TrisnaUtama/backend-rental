@@ -162,8 +162,6 @@ export class AuthService {
 	async refresh(token: string) {
 		try {
 			const payload = verifyJwt(token);
-			console.log("payload : ", payload);
-			console.log("token - service : ", token);
 			if (!payload)
 				throw this.response.badRequest("Invalid or expired refresh token");
 			const user = await this.userRepo.getRefreshToken(token);
