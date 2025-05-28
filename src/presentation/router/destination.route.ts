@@ -90,12 +90,10 @@ export const destinationRoute = new Elysia({
 					open_hour: body.open_hour,
 					description: body.description,
 					image_urls: body.image_urls,
-					latitude: body.latitude,
-					longitude: body.longitude,
+					address: body.address,
 					facilities: body.facilities,
 					status: body.status ?? true,
 					deleted_at: null,
-					address: "",
 				};
 
 				const destination = await destinationService.create(payload);
@@ -128,13 +126,9 @@ export const destinationRoute = new Elysia({
 				image_urls: t.Array(t.String(), {
 					error: "Image URLs must be an array of strings",
 				}),
-				latitude: t.String({
+				address: t.String({
 					minLength: 5,
-					error: "Latitude must be at least 5 characters",
-				}),
-				longitude: t.String({
-					minLength: 5,
-					error: "Longitude must be at least 5 characters",
+					error: "Address must be at least 5 characters",
 				}),
 				status: t.Boolean({
 					default: true,
@@ -157,8 +151,7 @@ export const destinationRoute = new Elysia({
 					open_hour: body.open_hour,
 					description: body.description,
 					image_urls: body.image_urls,
-					latitude: body.latitude,
-					longitude: body.longitude,
+					address: body.address,
 					facilities: body.facilities,
 					status: body.status ?? true,
 				};
@@ -194,13 +187,9 @@ export const destinationRoute = new Elysia({
 				image_urls: t.Array(t.String(), {
 					error: "Image URLs must be an array of strings",
 				}),
-				latitude: t.String({
+				address: t.String({
 					minLength: 5,
-					error: "Latitude must be at least 5 characters",
-				}),
-				longitude: t.String({
-					minLength: 5,
-					error: "Longitude must be at least 5 characters",
+					error: "address must be at least 5 characters",
 				}),
 				status: t.Boolean({
 					default: true,
