@@ -134,7 +134,7 @@ export const authRouter = new Elysia({
 					set.status = 401;
 					throw response.badRequest("Error while trying to login !");
 				}
-				
+
 				refresh_token.set({
 					value: login_user.refresh_token,
 					httpOnly: true,
