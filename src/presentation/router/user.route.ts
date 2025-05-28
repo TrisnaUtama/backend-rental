@@ -22,7 +22,7 @@ export const userRoute = new Elysia({
 		}),
 	)
 	.derive(async ({ cookie: { access_token }, set }) => {
-		console.log("Access Token :",access_token.value);
+		console.log("Access Token :", access_token.value);
 		if (!access_token.value) {
 			set.status = 401;
 			throw response.unauthorized();
