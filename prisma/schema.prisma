@@ -187,8 +187,6 @@ model Destinations {
   description     String
   image_urls      String[]
   address         String
-  latitude        String?
-  longitude       String?
   facilities      String[]
   status          Boolean @default(true)
 
