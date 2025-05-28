@@ -22,7 +22,7 @@ export const decodeJwt = (token: string) => {
 
 export const verifyJwt = (token: string): IJwtPayload => {
 	try {
-		console.log(token);
+		console.log("token : ", token);
 		const decoded = jwt.verify(
 			token,
 			process.env.JWT_SECRET_KEY as string,
