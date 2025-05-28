@@ -28,7 +28,7 @@ export const verifyJwt = (token: string): IJwtPayload => {
 		) as IJwtPayload;
 		return decoded;
 	} catch (error) {
-		console.error("Error verifying JWT");
+		logger.error("Error verifying JWT");
 		throw new Error("Invalid JWT token");
 	}
 };

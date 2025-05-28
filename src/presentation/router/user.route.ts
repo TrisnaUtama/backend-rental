@@ -27,16 +27,13 @@ export const userRoute = new Elysia({
 			throw response.unauthorized();
 		}
 		const jwtPayload: IJwtPayload = verifyJwt(access_token.value.toString());
-
 		if (!jwtPayload) {
 			set.status = 403;
 			throw response.forbidden();
 		}
-
 		const userId = jwtPayload.user_id;
 		if (!userId) throw response.badRequest("Invalid Payload !");
 		const user = await userService.getOne(userId.toString());
-
 		return {
 			user,
 		};
