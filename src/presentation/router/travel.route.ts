@@ -53,7 +53,7 @@ export const travelRoute = new Elysia({
 					description: body.description,
 					duration: body.duration,
 					name: body.name,
-					image: "",
+					image: body.image,
 				};
 
 				const payload_y = body.travel_destinations.map(
