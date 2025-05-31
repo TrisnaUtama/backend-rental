@@ -27,7 +27,7 @@ export class TravelPackageRepository implements ITravelPackages {
 			return await this.prisma.travel_Packages.findMany({
 				include: {
 					travel_package_destinations: true,
-					vehicles: true,
+					pax_options: true,
 				},
 			});
 		} catch (error) {
@@ -41,7 +41,7 @@ export class TravelPackageRepository implements ITravelPackages {
 				where: { id },
 				include: {
 					travel_package_destinations: true,
-					vehicles: true,
+					pax_options: true,
 				},
 			});
 		} catch (error) {

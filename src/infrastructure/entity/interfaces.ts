@@ -10,6 +10,7 @@ import type {
 	Promos,
 	Bookings,
 	Payments,
+	Travel_Packages_Pax,
 } from "@prisma/client";
 import type {
 	CreateOTP,
@@ -34,6 +35,8 @@ import type {
 	UpdateBooking,
 	CreatePayment,
 	UpdatePayment,
+	CreatePax,
+	UpdatePax,
 } from "./types";
 
 // utils
@@ -110,6 +113,14 @@ export interface ITravelPackages {
 		id: string,
 		payload: UpdateTravelPackage,
 	) => Promise<Travel_Packages>;
+}
+export interface ITravelPax {
+	getAll: () => Promise<Travel_Packages_Pax[]>;
+	getOne: (id: string) => Promise<Travel_Packages_Pax | null>;
+	create: (payload: CreatePax[]) => Promise<{ count: number }>;
+	update: (
+		payload: UpdatePax[],
+	) => Promise<Travel_Packages_Pax[]>;
 }
 export interface ITravelPackagesDestinations {
 	getAll: () => Promise<Travel_Packages_Destinations[]>;

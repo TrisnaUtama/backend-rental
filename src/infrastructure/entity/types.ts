@@ -10,6 +10,7 @@ import type {
 	Promos,
 	Bookings,
 	Payments,
+	Travel_Packages_Pax,
 } from "@prisma/client";
 
 export const TYPES = {
@@ -34,6 +35,7 @@ export const TYPES = {
 	vehicleRepo: Symbol.for("VehicleRepository"),
 	destinationRepo: Symbol.for("DestinationRepository"),
 	travelPackageRepo: Symbol.for("TravelPackageRepository"),
+	travelPaxRepo: Symbol.for("TravelPaxRepository"),
 	travelPackageDestinationRepo: Symbol.for(
 		"TravelPackageDestinationsRepository",
 	),
@@ -41,19 +43,9 @@ export const TYPES = {
 	bookingRepo: Symbol.for("BookingRepository"),
 	paymentRepo: Symbol.for("PaymentRepository"),
 	storageRepo: Symbol.for("StorageRepository"),
-	//  services
-	authService: Symbol.for("AuthService"),
-	userService: Symbol.for("UserService"),
-	notificationService: Symbol.for("NotificationService"),
-	broadcastService: Symbol.for("BroadcastService"),
-	vehicleService: Symbol.for("VehicleService"),
-	destinationService: Symbol.for("DestinationService"),
-	promoService: Symbol.for("PromoService"),
-	bookingService: Symbol.for("BookingService"),
-	paymentService: Symbol.for("PaymentService"),
-	otpService: Symbol.for("OtpService"),
-	storageService: Symbol.for("StorageService"),
 };
+
+
 // CREATES //
 export type CreateUser = Omit<
 	Users,
@@ -107,6 +99,14 @@ export type CreatePayment = Omit<
 	Payments,
 	"id" | "created_at" | "updated_at" | "deleted_at"
 >;
+export type CreatePax = Omit<
+	Travel_Packages_Pax,
+	"id" | "created_at" |  "updated_at" | "deleted_at"
+>;
+export type CreatePaxInput = Omit<
+	Travel_Packages_Pax,
+	"id" | "created_at" | "travel_package_id" |  "updated_at" | "deleted_at"
+>;
 
 // UPDATES //
 export type UpdateUser = Partial<Users>;
@@ -121,3 +121,4 @@ export type UpdateTravelPackageDestination =
 export type UpdatePromo = Partial<Promos>;
 export type UpdateBooking = Partial<Bookings>;
 export type UpdatePayment = Partial<Payments>;
+export type UpdatePax = Partial<Travel_Packages_Pax>;

@@ -157,7 +157,7 @@ export const vehicleRoute = new Elysia({
 				capacity: t.Number({ minLength: 1, error: "Capcity must be filled" }),
 				year: t.Integer({ minimum: 1995, error: "Year atleast after 1995" }),
 				price_per_day: t.Integer({
-					minimum: 200000,
+					minimum: 100000,
 					error: "Price must be atleast Rp.200.000,00",
 				}),
 				description: t.String({

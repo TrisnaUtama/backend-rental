@@ -17,6 +17,7 @@ import type {
 	IStorage,
 	ITravelPackages,
 	ITravelPackagesDestinations,
+	ITravelPax,
 	IUser,
 	IVehicles,
 } from "../infrastructure/entity/interfaces";
@@ -47,6 +48,7 @@ import { MidtransService } from "../infrastructure/entity/midtrans";
 import { OtpService } from "./services/otp.service";
 import { StorageRepository } from "../infrastructure/repositories/storage.repo";
 import { StorageService } from "./services/storage.service";
+import { TravelPaxRepository } from "../infrastructure/repositories/travelPax.repo";
 
 export const container = new Container();
 
@@ -68,6 +70,9 @@ container.bind<IDestinations>(TYPES.destinationRepo).to(DestinationRepository);
 container
 	.bind<ITravelPackages>(TYPES.travelPackageRepo)
 	.to(TravelPackageRepository);
+container
+	.bind<ITravelPax>(TYPES.travelPaxRepo)
+	.to(TravelPaxRepository);
 container
 	.bind<ITravelPackagesDestinations>(TYPES.travelPackageDestinationRepo)
 	.to(TravelPackagesDestinationsRepository);
