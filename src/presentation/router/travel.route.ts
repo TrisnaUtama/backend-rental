@@ -75,6 +75,7 @@ export const travelRoute = new Elysia({
 
 				if (!create_travel_pack)
 					throw response.badRequest("Error while creating new travel packages");
+				console.log(create_travel_pack);
 
 				set.status = 201;
 				return StandardResponse.success(
