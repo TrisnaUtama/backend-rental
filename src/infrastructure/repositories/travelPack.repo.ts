@@ -52,7 +52,10 @@ export class TravelPackageRepository implements ITravelPackages {
 	async create(payload: CreateTravelPackage, tx?: Prisma.TransactionClient) {
 		try {
 			const client = tx || this.prisma;
-			return await client.travel_Packages.create({ data: payload, include: {travel_package_destinations: true} });
+			return await client.travel_Packages.create({
+				data: payload,
+				include: { travel_package_destinations: true },
+			});
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
 		}
