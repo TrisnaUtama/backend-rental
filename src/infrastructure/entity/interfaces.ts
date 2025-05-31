@@ -11,6 +11,7 @@ import type {
 	Bookings,
 	Payments,
 	Travel_Packages_Pax,
+	Rating,
 } from "@prisma/client";
 import type {
 	CreateOTP,
@@ -37,6 +38,8 @@ import type {
 	UpdatePayment,
 	CreatePax,
 	UpdatePax,
+	CreateRating,
+	UpdateRating,
 } from "./types";
 
 // utils
@@ -157,4 +160,12 @@ export interface IStorage {
 	saveImages: (file: File) => Promise<string>;
 	getImage: (filename: string) => Promise<string>;
 	deleteImage: (filename: string) => Promise<void>;
+}
+
+export interface IRating {
+	getAll:() => Promise<Rating[]>;
+	getOne:(id: string) => Promise<Rating | null>
+	getByTragetId: (targetId: string) => Promise<Rating[]>
+	create: (payload: CreateRating) => Promise<Rating | null>
+	update: (id: string, payload: UpdateRating) => Promise<Rating>
 }

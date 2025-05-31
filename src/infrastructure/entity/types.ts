@@ -11,6 +11,7 @@ import type {
 	Bookings,
 	Payments,
 	Travel_Packages_Pax,
+	Rating,
 } from "@prisma/client";
 
 export const TYPES = {
@@ -42,6 +43,7 @@ export const TYPES = {
 	promoRepo: Symbol.for("PromoRepository"),
 	bookingRepo: Symbol.for("BookingRepository"),
 	paymentRepo: Symbol.for("PaymentRepository"),
+	ratingRepo:  Symbol.for("RatingRepository"),
 	storageRepo: Symbol.for("StorageRepository"),
 };
 
@@ -106,6 +108,10 @@ export type CreatePaxInput = Omit<
 	Travel_Packages_Pax,
 	"id" | "created_at" | "travel_package_id" | "updated_at" | "deleted_at"
 >;
+export type CreateRating = Omit<
+	Rating,
+	"id"  | "created_at" |  "updated_at" | "deleted_at"
+>;
 
 // UPDATES //
 export type UpdateUser = Partial<Users>;
@@ -121,3 +127,4 @@ export type UpdatePromo = Partial<Promos>;
 export type UpdateBooking = Partial<Bookings>;
 export type UpdatePayment = Partial<Payments>;
 export type UpdatePax = Partial<Travel_Packages_Pax>;
+export type UpdateRating = Partial<Rating>;
