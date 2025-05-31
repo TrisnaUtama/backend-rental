@@ -149,7 +149,7 @@ export class TravelPackageService {
 					throw new Error("Error while updating travel pax!");
 				}
 
-				return updated_travel_pckage_destination;
+				return update_travel_package;
 			});
 			return result;
 		} catch (error) {
@@ -162,9 +162,9 @@ export class TravelPackageService {
 			const travel_pack = await this.travelPackageRepo.getOne(id);
 			if (!travel_pack)
 				throw this.response.notFound("Travel package is not found !");
-
+			const { travel_package_destinations, pax_options, ...rest } = travel_pack;
 			return await this.travelPackageRepo.update(id, {
-				...travel_pack,
+				...rest,
 				status: false,
 			});
 		} catch (error) {
