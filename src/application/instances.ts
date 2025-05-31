@@ -14,6 +14,7 @@ import type {
 	IOTP,
 	IPayments,
 	IPromos,
+	IRating,
 	IStorage,
 	ITravelPackages,
 	ITravelPackagesDestinations,
@@ -49,6 +50,8 @@ import { OtpService } from "./services/otp.service";
 import { StorageRepository } from "../infrastructure/repositories/storage.repo";
 import { StorageService } from "./services/storage.service";
 import { TravelPaxRepository } from "../infrastructure/repositories/travelPax.repo";
+import { RatingRepostitory } from "../infrastructure/repositories/rating.repo";
+import { RatingService } from "./services/rating.service";
 
 export const container = new Container();
 
@@ -75,6 +78,7 @@ container
 	.bind<ITravelPackagesDestinations>(TYPES.travelPackageDestinationRepo)
 	.to(TravelPackagesDestinationsRepository);
 container.bind<IPromos>(TYPES.promoRepo).to(PromoRepository);
+container.bind<IRating>(TYPES.ratingRepo).to(RatingRepostitory);
 container.bind<IBookings>(TYPES.bookingRepo).to(BookingRepository);
 container.bind<IPayments>(TYPES.paymentRepo).to(PaymentRepository);
 container.bind<IStorage>(TYPES.storageRepo).to(StorageRepository);
@@ -91,6 +95,7 @@ container.bind<VehicleService>(VehicleService).toSelf();
 container.bind<DestinationService>(DestinationService).toSelf();
 container.bind<TravelPackageService>(TravelPackageService).toSelf();
 container.bind<PromoService>(PromoService).toSelf();
+container.bind<RatingService>(RatingService).toSelf();
 container.bind<BookingService>(BookingService).toSelf();
 container.bind<PaymentService>(PaymentService).toSelf();
 container.bind<OtpService>(OtpService).toSelf();
@@ -116,6 +121,7 @@ export const destinationService =
 export const travelPackageService =
 	container.get<TravelPackageService>(TravelPackageService);
 export const promoService = container.get<PromoService>(PromoService);
+export const ratingServie = container.get<RatingService>(RatingService);
 export const bookingService = container.get<BookingService>(BookingService);
 export const paymentService = container.get<PaymentService>(PaymentService);
 export const otpService = container.get<OtpService>(OtpService);

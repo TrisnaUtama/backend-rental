@@ -32,6 +32,12 @@ enum Transmission {
   AUTOMATIC
 }
 
+enum RatedEntityType {
+  DESTINATION
+  VEHICLE
+  PACKAGE
+}
+
 enum Vehicle_Types {
   CITY_CAR
   HATCHBACK
@@ -128,6 +134,8 @@ model Users {
   otp              OTPs[]
   notification_broadcast Notification_Broadcast[]
   bookings         Bookings[]
+
+  Rating Rating[]
 }
 
 model Notifications {
@@ -224,6 +232,21 @@ model Travel_Packages {
   pax_options     Travel_Packages_Pax[]
   travel_package_destinations Travel_Packages_Destinations[]
   bookings        Bookings[]
+}
+model Rating {
+  id          String          @id @default(uuid())
+  user        Users         @relation(fields: [userId], references: [id])
+  userId      String
+  ratedType   RatedEntityType
+  targetId     String         
+  ratingValue Int
+  status      Boolean
+
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  deleted_at  DateTime? 
+
+  @@unique([userId, ratedType, targetId])
 }
 model Travel_Packages_Pax {
   id               String   @id @default(cuid())
