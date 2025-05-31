@@ -62,7 +62,7 @@ export const travelRoute = new Elysia({
 					}),
 				);
 
-				const payload_z = body.travel_pax.map((travel_pax) => ({
+				const payload_z = body.pax_options.map((travel_pax) => ({
 					pax: travel_pax.pax,
 					price: new Prisma.Decimal(travel_pax.price),
 				}));
@@ -116,7 +116,7 @@ export const travelRoute = new Elysia({
 							"Destination must be an array of objects with destination and travel id",
 					},
 				),
-				travel_pax: t.Array(
+				pax_options: t.Array(
 					t.Object({
 						pax: t.Integer({
 							minLength: 1,
@@ -154,7 +154,7 @@ export const travelRoute = new Elysia({
 					destination_id: travel_destination.destination_id,
 					travel_package_id: travel_package.id,
 				}));
-				const payload_z: UpdatePax[] = (body.travel_pax ?? []).map(
+				const payload_z: UpdatePax[] = (body.pax_options ?? []).map(
 					(travel_pax) => ({
 						id: travel_pax.id,
 						price: new Prisma.Decimal(travel_pax.price),
@@ -210,7 +210,7 @@ export const travelRoute = new Elysia({
 								"Destination must be an array of objects with destination and travel package",
 						},
 					),
-					travel_pax: t.Array(
+					pax_options: t.Array(
 						t.Object({
 							id: t.String(),
 							pax: t.Integer({
