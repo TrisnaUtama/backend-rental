@@ -176,7 +176,6 @@ model Vehicles {
   updated_at     DateTime @updatedAt
   deleted_at     DateTime? 
 
-  travel_packages Travel_Packages[]
   bookings        Bookings[]
 }
 
@@ -212,20 +211,27 @@ model Travel_Packages_Destinations {
 
 model Travel_Packages {
   id              String   @id @default(cuid())
-  vehicle_id      String
   name            String
-  price           Decimal
   duration        Int 
   description     String
   status          Boolean @default(true)
+  image           String
 
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
   deleted_at      DateTime? 
 
-  vehicles        Vehicles @relation(fields: [vehicle_id], references: [id])
+  pax_options     Travel_Packages_Pax[]
   travel_package_destinations Travel_Packages_Destinations[]
   bookings        Bookings[]
+}
+model Travel_Packages_Pax {
+  id               String   @id @default(cuid())
+  travel_package_id String
+  pax              Int
+  price            Decimal
+
+  travel_package   Travel_Packages @relation(fields: [travel_package_id], references: [id])
 }
 
 model Bookings {
