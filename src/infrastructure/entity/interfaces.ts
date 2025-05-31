@@ -163,9 +163,9 @@ export interface IStorage {
 }
 
 export interface IRating {
-	getAll:() => Promise<Rating[]>;
-	getOne:(id: string) => Promise<Rating | null>
-	getByTragetId: (targetId: string) => Promise<Rating[]>
-	create: (payload: CreateRating) => Promise<Rating | null>
-	update: (id: string, payload: UpdateRating) => Promise<Rating>
+	getAll: () => Promise<Rating[]>;
+	getOne: (id: string) => Promise<Rating | null>;
+	getByTragetId: (targetId: string) => Promise<Rating[]>;
+	create: (payload: CreateRating) => Promise<Rating | null>;
+	update: (id: string, payload: UpdateRating) => Promise<Rating>;
 }
