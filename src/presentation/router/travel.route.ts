@@ -56,7 +56,7 @@ export const travelRoute = new Elysia({
 					image: body.image,
 				};
 
-				const payload_y = body.travel_destinations.map(
+				const payload_y = body.travel_package_destinations.map(
 					(travel_destination) => ({
 						destination_id: travel_destination.destination_id,
 					}),
@@ -105,7 +105,7 @@ export const travelRoute = new Elysia({
 					minLength: 1,
 					errorMessage: { minLength: "Description is required" },
 				}),
-				travel_destinations: t.Array(
+				travel_package_destinations: t.Array(
 					t.Object({
 						destination_id: t.String({
 							minLength: 1,
@@ -149,7 +149,7 @@ export const travelRoute = new Elysia({
 				};
 
 				const payload_y: UpdateTravelPackageDestination[] = (
-					body.travel_destinations ?? []
+					body.travel_package_destinations ?? []
 				).map((travel_destination) => ({
 					id: travel_destination.id,
 					destination_id: travel_destination.destination_id,
@@ -198,7 +198,7 @@ export const travelRoute = new Elysia({
 						minLength: 1,
 						errorMessage: { minLength: "Description must not be empty" },
 					}),
-					travel_destinations: t.Array(
+					travel_package_destinations: t.Array(
 						t.Object({
 							id: t.String(),
 							destination_id: t.String({
