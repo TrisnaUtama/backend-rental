@@ -70,9 +70,7 @@ container.bind<IDestinations>(TYPES.destinationRepo).to(DestinationRepository);
 container
 	.bind<ITravelPackages>(TYPES.travelPackageRepo)
 	.to(TravelPackageRepository);
-container
-	.bind<ITravelPax>(TYPES.travelPaxRepo)
-	.to(TravelPaxRepository);
+container.bind<ITravelPax>(TYPES.travelPaxRepo).to(TravelPaxRepository);
 container
 	.bind<ITravelPackagesDestinations>(TYPES.travelPackageDestinationRepo)
 	.to(TravelPackagesDestinationsRepository);
