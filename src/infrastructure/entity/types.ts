@@ -43,7 +43,7 @@ export const TYPES = {
 	promoRepo: Symbol.for("PromoRepository"),
 	bookingRepo: Symbol.for("BookingRepository"),
 	paymentRepo: Symbol.for("PaymentRepository"),
-	ratingRepo:  Symbol.for("RatingRepository"),
+	ratingRepo: Symbol.for("RatingRepository"),
 	storageRepo: Symbol.for("StorageRepository"),
 };
 
@@ -110,7 +110,7 @@ export type CreatePaxInput = Omit<
 >;
 export type CreateRating = Omit<
 	Rating,
-	"id"  | "created_at" |  "updated_at" | "deleted_at"
+	"id" | "created_at" | "updated_at" | "deleted_at"
 >;
 
 // UPDATES //

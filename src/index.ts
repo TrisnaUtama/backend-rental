@@ -14,39 +14,39 @@ import staticPlugin from "@elysiajs/static";
 import { ratingRoute } from "./presentation/router/rating.route";
 const app = new Elysia();
 app
-  .use(
-    cors({
-      origin: "localhost:5173",
-      methods: ["GET", "POST", "PATCH", "DELETE"],
-      allowedHeaders: ["Content-Type", "Authorization"],
-      credentials: true,
-    })
-  )
-  .use(
-    staticPlugin({
-      prefix: "/",
-      assets: process.env.STORAGE_PATH || "/var/www/html/storage",
-    })
-  )
-  .use(
-    swagger({
-      path: "/docs",
-    })
-  )
-  .group("/api", (app) =>
-    app
-      .use(authRouter)
-      .use(userRoute)
-      .use(notificationRoute)
-      .use(vehicleRoute)
-      .use(destinationRoute)
-      .use(travelRoute)
-      .use(bookingRoute)
-      .use(paymentRoute)
-      .use(storageRoute)
-      .use(ratingRoute)
-  )
-  .listen({ port: 8000, hostname: "0.0.0.0" });
+	.use(
+		cors({
+			origin: "localhost:5173",
+			methods: ["GET", "POST", "PATCH", "DELETE"],
+			allowedHeaders: ["Content-Type", "Authorization"],
+			credentials: true,
+		}),
+	)
+	.use(
+		staticPlugin({
+			prefix: "/",
+			assets: process.env.STORAGE_PATH || "/var/www/html/storage",
+		}),
+	)
+	.use(
+		swagger({
+			path: "/docs",
+		}),
+	)
+	.group("/api", (app) =>
+		app
+			.use(authRouter)
+			.use(userRoute)
+			.use(notificationRoute)
+			.use(vehicleRoute)
+			.use(destinationRoute)
+			.use(travelRoute)
+			.use(bookingRoute)
+			.use(paymentRoute)
+			.use(storageRoute)
+			.use(ratingRoute),
+	)
+	.listen({ port: 8000, hostname: "0.0.0.0" });
 console.log(
-  `🦊 🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port} 🦊 🦊`
+	`🦊 🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port} 🦊 🦊`,
 );
