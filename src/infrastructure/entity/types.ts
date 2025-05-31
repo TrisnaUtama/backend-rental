@@ -45,7 +45,6 @@ export const TYPES = {
 	storageRepo: Symbol.for("StorageRepository"),
 };
 
-
 // CREATES //
 export type CreateUser = Omit<
 	Users,
@@ -101,11 +100,11 @@ export type CreatePayment = Omit<
 >;
 export type CreatePax = Omit<
 	Travel_Packages_Pax,
-	"id" | "created_at" |  "updated_at" | "deleted_at"
+	"id" | "created_at" | "updated_at" | "deleted_at"
 >;
 export type CreatePaxInput = Omit<
 	Travel_Packages_Pax,
-	"id" | "created_at" | "travel_package_id" |  "updated_at" | "deleted_at"
+	"id" | "created_at" | "travel_package_id" | "updated_at" | "deleted_at"
 >;
 
 // UPDATES //
