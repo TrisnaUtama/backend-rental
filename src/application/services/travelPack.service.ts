@@ -149,7 +149,7 @@ export class TravelPackageService {
 					throw new Error("Error while updating travel pax!");
 				}
 
-				return updated_travel_pckage_destination;
+				return update_travel_package;
 			});
 			return result;
 		} catch (error) {
