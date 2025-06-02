@@ -28,13 +28,13 @@ export class TravelPackageRepository implements ITravelPackages {
 				include: {
 					travel_package_destinations: {
 						where: {
-							deleted_at:  null
-						}
+							deleted_at: null,
+						},
 					},
 					pax_options: {
 						where: {
-							deleted_at: null
-						}
+							deleted_at: null,
+						},
 					},
 					accommodation: true,
 					travel_itineraries: {
@@ -56,13 +56,13 @@ export class TravelPackageRepository implements ITravelPackages {
 				include: {
 					travel_package_destinations: {
 						where: {
-							deleted_at:  null
-						}
+							deleted_at: null,
+						},
 					},
 					pax_options: {
 						where: {
-							deleted_at: null
-						}
+							deleted_at: null,
+						},
 					},
 					accommodation: true,
 					travel_itineraries: {
