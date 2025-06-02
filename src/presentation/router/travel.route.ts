@@ -5,6 +5,7 @@ import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.r
 import type {
 	CreateTravelPackage,
 	UpdatePax,
+	UpdateTravelItineraries,
 	UpdateTravelPackage,
 	UpdateTravelPackageDestination,
 } from "../../infrastructure/entity/types";
@@ -173,6 +174,11 @@ export const travelRoute = new Elysia({
 		async ({ params, set, body }) => {
 			try {
 				const travel_package = await travelPackageService.getOne(params.id);
+				if (!travel_package) {
+					set.status = 404;
+					return { error: `Travel package with id ${params.id} not found` };
+				}
+
 				const payload: UpdateTravelPackage = {
 					description: body.description ?? travel_package.description,
 					duration: body.duration ?? travel_package.duration,
@@ -182,42 +188,46 @@ export const travelRoute = new Elysia({
 
 				const payload_dest: UpdateTravelPackageDestination[] = (
 					body.travel_package_destinations ?? []
-				).map((travel_destination) => ({
-					id: travel_destination.id,
-					destination_id: travel_destination.destination_id,
+				).map((d) => ({
+					id: d.id,
+					destination_id: d.destination_id,
 					travel_package_id: travel_package.id,
 				}));
-				const payload_pax: UpdatePax[] = (body.pax_options ?? []).map(
-					(travel_pax) => ({
-						id: travel_pax.id,
-						price: new Prisma.Decimal(travel_pax.price),
-						pax: travel_pax.price,
-						travel_package_id: travel_package.id,
-					}),
-				);
-				const payload_itineraries: UpdatePax[] = (
-					body.travel_itineraries ?? []
-				).map((itineraries) => ({
-					id: itineraries.id,
-					destination_id: itineraries.destination_id,
-					day_number: itineraries.day_number,
-					description: itineraries.description || "",
+
+				const payload_pax: UpdatePax[] = (body.pax_options ?? []).map((p) => ({
+					id: p.id,
+					price: new Prisma.Decimal(p.price),
+					pax: p.pax,
+					travel_package_id: travel_package.id,
 				}));
 
-				const create_travel_pack = await travelPackageService.update(
+				const payload_itineraries: UpdateTravelItineraries[] = (
+					body.travel_itineraries ?? []
+				).map((i) => ({
+					id: i.id,
+					destination_id: i.destination_id,
+					day_number: i.day_number,
+					description: i.description || "",
+				}));
+
+				const updated_travel_package = await travelPackageService.update(
 					params.id,
 					payload,
 					payload_dest,
 					payload_pax,
 					payload_itineraries,
+					payload.duration ?? travel_package.duration,
 				);
-				if (!create_travel_pack)
-					throw response.badRequest("Error while creating new travel packages");
 
-				set.status = 201;
+				if (!updated_travel_package) {
+					set.status = 400;
+					return { error: "Error while updating travel package" };
+				}
+
+				set.status = 200;
 				return StandardResponse.success(
-					create_travel_pack,
-					"Success updating new travel packages",
+					updated_travel_package,
+					"Travel package updated successfully",
 				);
 			} catch (error) {
 				set.status = 500;
@@ -233,7 +243,7 @@ export const travelRoute = new Elysia({
 					}),
 					image: t.String({
 						minLength: 1,
-						errorMessage: { minLength: "image must not be empty" },
+						errorMessage: { minLength: "Image must not be empty" },
 					}),
 					duration: t.Integer({
 						minimum: 1,
@@ -248,29 +258,29 @@ export const travelRoute = new Elysia({
 							id: t.String(),
 							destination_id: t.String({
 								minLength: 1,
-								error: "Destination must be filled",
+								error: "Destination ID must be filled",
 							}),
 						}),
 						{
 							error:
-								"Destination must be an array of objects with destination and travel package",
+								"travel_package_destinations must be an array of valid destination objects",
 						},
 					),
 					pax_options: t.Array(
 						t.Object({
 							id: t.String(),
 							pax: t.Integer({
-								minLength: 1,
-								error: "Pax must be filled",
+								minimum: 1,
+								error: "Pax must be at least 1",
 							}),
 							price: t.Integer({
 								minimum: 200000,
-								error: "Price must be atleast Rp.200.000,00",
+								error: "Price must be at least Rp.200.000,00",
 							}),
 						}),
 						{
 							error:
-								"Travel Pax must be an array of objects with destination and travel id",
+								"pax_options must be an array of valid pax objects with id, pax, and price",
 						},
 					),
 					travel_itineraries: t.Array(
@@ -292,13 +302,15 @@ export const travelRoute = new Elysia({
 							),
 						}),
 						{
-							error: "Travel itineraries must be a valid array",
+							error:
+								"travel_itineraries must be an array of valid itinerary objects",
 						},
 					),
 				}),
 			),
 		},
 	)
+
 	.delete("/:id", async ({ set, params }) => {
 		try {
 			set.status = 204;
