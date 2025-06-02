@@ -164,6 +164,44 @@ model Notification_Broadcast {
   user           Users         @relation(fields: [user_id], references: [id])
 }
 
+model Accommodations {
+  id             String    @id @default(cuid())
+  name           String
+  address        String
+  description    String?
+  image_urls     String[]  
+  price_per_night Decimal  
+  status          Boolean
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+  deleted_at      DateTime? 
+
+  Travel_Packages Travel_Packages[]
+}
+
+model Travel_Itineraries {
+  id                String    @id @default(cuid())
+  travel_package_id  String
+  day_number        Int
+  destination_id    String
+  description       String?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+  deleted_at        DateTime?
+
+  travel_package    Travel_Packages @relation(fields: [travel_package_id], references: [id])
+  destination       Destinations    @relation(fields: [destination_id], references: [id])
+}
+
+model Booking_Vehicles {
+  id         String   @id @default(cuid())
+  booking_id String
+  vehicle_id String
+
+  booking    Bookings @relation(fields: [booking_id], references: [id])
+  vehicle    Vehicles @relation(fields: [vehicle_id], references: [id])
+}
+
 model Vehicles {
   id             String   @id @default(cuid())
   name           String
@@ -185,6 +223,8 @@ model Vehicles {
   deleted_at     DateTime? 
 
   bookings        Bookings[]
+
+  Booking_Vehicles Booking_Vehicles[]
 }
 
 model Destinations {
@@ -201,6 +241,7 @@ model Destinations {
   updated_at      DateTime @updatedAt
   deleted_at      DateTime? 
 
+  travel_itineraries Travel_Itineraries[]
   travel_package_destinations Travel_Packages_Destinations[]
 }
 
@@ -223,24 +264,28 @@ model Travel_Packages {
   duration        Int 
   description     String
   status          Boolean @default(true)
+  accommodation_id   String?
   image           String
 
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
   deleted_at      DateTime? 
 
+  accommodation      Accommodations? @relation(fields: [accommodation_id], references: [id])
+  travel_itineraries  Travel_Itineraries[]
   pax_options     Travel_Packages_Pax[]
   travel_package_destinations Travel_Packages_Destinations[]
   bookings        Bookings[]
 }
 model Rating {
-  id          String          @id @default(uuid())
+  id          String          @id @default(cuid())
   user        Users         @relation(fields: [userId], references: [id])
   userId      String
   ratedType   RatedEntityType
   targetId     String         
   ratingValue Int
   status      Boolean
+  comment     String
 
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
@@ -262,7 +307,6 @@ model Bookings {
   user_id         String
   promo_id        String?
   travel_package_id String?
-  vehicle_id      String?
   status          Booking_Status @default(SUBMITTED)
   start_date      DateTime
   end_date        DateTime?
@@ -279,9 +323,10 @@ model Bookings {
   users           Users @relation(fields: [user_id], references: [id])
   promos          Promos? @relation(fields: [promo_id], references: [id])
   travel_package  Travel_Packages? @relation(fields: [travel_package_id], references: [id])
-  vehicles        Vehicles? @relation(fields: [vehicle_id], references: [id])
+  booking_vehicles Booking_Vehicles[]
 
   Payments Payments[]
+  Vehicles Vehicles[]
 }
 
 model Promos {

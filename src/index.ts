@@ -12,6 +12,7 @@ import { paymentRoute } from "./presentation/router/payment.route";
 import { storageRoute } from "./presentation/router/storage.route";
 import staticPlugin from "@elysiajs/static";
 import { ratingRoute } from "./presentation/router/rating.route";
+import { accomodationRoute } from "./presentation/router/accomodation.route";
 const app = new Elysia();
 app
 	.use(
@@ -44,6 +45,7 @@ app
 			.use(bookingRoute)
 			.use(paymentRoute)
 			.use(storageRoute)
+			.use(accomodationRoute)
 			.use(ratingRoute),
 	)
 	.listen({ port: 8000, hostname: "0.0.0.0" });

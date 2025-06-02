@@ -1,16 +1,16 @@
 import "reflect-metadata";
 import { injectable, inject } from "inversify";
-import {
-	TYPES,
-	type CreateTravelPackage,
-	type UpdateTravelPackage,
-} from "./../entity/types";
+import type { ITravel_Itineraries } from "../entity/interfaces";
 import type { ErrorHandler } from "../entity/errors/global.error";
 import type { Prisma, PrismaClient } from "@prisma/client";
-import type { ITravelPackages } from "../entity/interfaces";
+import {
+	TYPES,
+	type CreateTravelItineraries,
+	type UpdateTravelItineraries,
+} from "../entity/types";
 
 @injectable()
-export class TravelPackageRepository implements ITravelPackages {
+export class TravelItinerariesRepository implements ITravel_Itineraries {
 	private errorHandler: ErrorHandler;
 	private prisma: PrismaClient;
 
@@ -24,14 +24,7 @@ export class TravelPackageRepository implements ITravelPackages {
 
 	async getAll() {
 		try {
-			return await this.prisma.travel_Packages.findMany({
-				include: {
-					travel_package_destinations: true,
-					pax_options: true,
-					accommodation: true,
-					travel_itineraries: true,
-				},
-			});
+			return await this.prisma.travel_Itineraries.findMany({});
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
 		}
@@ -39,26 +32,22 @@ export class TravelPackageRepository implements ITravelPackages {
 
 	async getOne(id: string) {
 		try {
-			return await this.prisma.travel_Packages.findUnique({
+			return await this.prisma.travel_Itineraries.findUnique({
 				where: { id },
-				include: {
-					travel_package_destinations: true,
-					pax_options: true,
-					accommodation: true,
-					travel_itineraries: true,
-				},
 			});
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
 		}
 	}
 
-	async create(payload: CreateTravelPackage, tx?: Prisma.TransactionClient) {
+	async create(
+		payload: CreateTravelItineraries[],
+		tx?: Prisma.TransactionClient,
+	) {
 		try {
 			const client = tx || this.prisma;
-			return await client.travel_Packages.create({
+			return await client.travel_Itineraries.createMany({
 				data: payload,
-				include: { travel_package_destinations: true },
 			});
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
@@ -66,18 +55,18 @@ export class TravelPackageRepository implements ITravelPackages {
 	}
 
 	async update(
-		id: string,
-		payload: UpdateTravelPackage,
+		payload: UpdateTravelItineraries[],
 		tx?: Prisma.TransactionClient,
 	) {
 		try {
 			const client = tx || this.prisma;
-			return await client.travel_Packages.update({
-				where: {
-					id,
-				},
-				data: payload,
-			});
+			const updatePromises = payload.map((travelIteneraries) =>
+				client.travel_Itineraries.update({
+					where: { id: travelIteneraries.id },
+					data: travelIteneraries,
+				}),
+			);
+			return await Promise.all(updatePromises);
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
 		}

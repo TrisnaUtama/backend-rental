@@ -104,6 +104,7 @@ export const ratingRoute = new Elysia({
 					targetId: body.targetId,
 					userId: body.userId,
 					status: true,
+					comment: body.comment,
 				};
 
 				const new_account = await ratingServie.create(payload);
@@ -139,6 +140,10 @@ export const ratingRoute = new Elysia({
 				userId: t.String({
 					minLength: 1,
 					description: "user is required",
+				}),
+				comment: t.String({
+					minLength: 5,
+					description: "comment is required",
 				}),
 			}),
 		},

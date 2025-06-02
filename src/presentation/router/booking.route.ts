@@ -110,7 +110,6 @@ export const bookingRoute = new Elysia({
 				const payload: CreateBooking = {
 					user_id: user.id,
 					promo_id: body.promo_id || null,
-					vehicle_id: body.vehicle_id || null,
 					travel_package_id: body.travel_package_id || null,
 					licences_id: body.licences_id,
 					card_id: body.card_id,
@@ -120,7 +119,11 @@ export const bookingRoute = new Elysia({
 					end_date: body.end_date ?? null,
 					total_price: new Decimal(0),
 				};
-				const create_booking = await bookingService.create(payload);
+				const create_booking = await bookingService.create(
+					payload,
+					body.vehicle_ids,
+					body.selected_pax,
+				);
 				set.status = 200;
 				return StandardResponse.success(
 					create_booking,
@@ -135,7 +138,8 @@ export const bookingRoute = new Elysia({
 			body: t.Object({
 				promo_id: t.Optional(t.String()),
 				travel_package_id: t.Optional(t.String()),
-				vehicle_id: t.Optional(t.String()),
+				vehicle_ids: t.Optional(t.Array(t.String())),
+				selected_pax: t.Optional(t.String()),
 				licences_id: t.String(),
 				card_id: t.String(),
 				pick_up_at_airport: t.Boolean(),
@@ -156,7 +160,6 @@ export const bookingRoute = new Elysia({
 				const payload: UpdateBooking = {
 					user_id: user.id,
 					promo_id: body.promo_id || null,
-					vehicle_id: body.vehicle_id || null,
 					travel_package_id: body.travel_package_id || null,
 					licences_id: body.licences_id,
 					card_id: body.card_id,
@@ -170,6 +173,7 @@ export const bookingRoute = new Elysia({
 				if (!update_booking) {
 					throw response.badRequest("Error while updating booking!");
 				}
+
 				if (update_booking.status === "RECEIVED") {
 					const payload: CreatePayment = {
 						booking_id: update_booking.id,
@@ -198,7 +202,8 @@ export const bookingRoute = new Elysia({
 				t.Object({
 					promo_id: t.Optional(t.String()),
 					travel_package_id: t.Optional(t.String()),
-					vehicle_id: t.Optional(t.String()),
+					vehicle_ids: t.Optional(t.Array(t.String())),
+					selected_pax: t.Optional(t.String()),
 					licences_id: t.String(),
 					card_id: t.String(),
 					pick_up_at_airport: t.Boolean(),
@@ -208,5 +213,31 @@ export const bookingRoute = new Elysia({
 					status: t.Enum(Booking_Status),
 				}),
 			),
+		},
+	)
+	.patch(
+		"/assign-vehicle/:id",
+		async ({ set, params, body, user }) => {
+			try {
+				const result = await bookingService.assignVehicleAndConfirm(
+					params.id,
+					body.vehicle_ids,
+				);
+				set.status = 200;
+				return StandardResponse.success(
+					result,
+					"Successfully assigned vehicle and confirmed booking",
+				);
+			} catch (error) {
+				set.status = 500;
+				return GlobalErrorHandler.handleError(error, set);
+			}
+		},
+		{
+			body: t.Object({
+				vehicle_ids: t.Array(t.String(), {
+					error: "vehicle_ids must be an array of vehicle UUIDs",
+				}),
+			}),
 		},
 	);

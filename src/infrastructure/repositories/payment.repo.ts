@@ -25,8 +25,12 @@ export class PaymentRepository implements IPayments {
 				include: {
 					booking: {
 						include: {
-							travel_package: true,
-							vehicles: true,
+							travel_package: {
+								include: {
+									pax_options: true,
+								},
+							},
+							booking_vehicles: true,
 						},
 					},
 				},

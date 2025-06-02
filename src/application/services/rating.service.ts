@@ -87,9 +87,7 @@ export class RatingService {
 		try {
 			const exist_rating = await this.ratingRepo.getOne(id);
 			if (!exist_rating) throw this.response.notFound("rating not found");
-
 			return await this.ratingRepo.update(id, {
-				...exist_rating,
 				status: false,
 			});
 		} catch (error) {

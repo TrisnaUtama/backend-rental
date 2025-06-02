@@ -6,6 +6,7 @@ import { Logger } from "../infrastructure/entity/logger";
 import { UserRepository } from "../infrastructure/repositories/user.repo";
 import { AuthService } from "./services/auth.service";
 import type {
+	IAccomodation,
 	IBookings,
 	IDestinations,
 	ILogger,
@@ -18,9 +19,11 @@ import type {
 	IStorage,
 	ITravelPackages,
 	ITravelPackagesDestinations,
+	IBooking_Vehicles,
 	ITravelPax,
 	IUser,
 	IVehicles,
+	ITravel_Itineraries,
 } from "../infrastructure/entity/interfaces";
 import type { PrismaClient } from "@prisma/client";
 import { ErrorHandler } from "../infrastructure/entity/errors/global.error";
@@ -52,6 +55,10 @@ import { StorageService } from "./services/storage.service";
 import { TravelPaxRepository } from "../infrastructure/repositories/travelPax.repo";
 import { RatingRepostitory } from "../infrastructure/repositories/rating.repo";
 import { RatingService } from "./services/rating.service";
+import { AccomodationRepostitory } from "../infrastructure/repositories/accomodation.repo";
+import { AccomodationService } from "./services/accomodation.service";
+import { BookingVehiclesRepository } from "../infrastructure/repositories/bookingVehicle.repo";
+import { TravelItinerariesRepository } from "../infrastructure/repositories/travelItineraries.repo";
 
 export const container = new Container();
 
@@ -75,8 +82,17 @@ container
 	.to(TravelPackageRepository);
 container.bind<ITravelPax>(TYPES.travelPaxRepo).to(TravelPaxRepository);
 container
+	.bind<IAccomodation>(TYPES.accomodationRepo)
+	.to(AccomodationRepostitory);
+container
 	.bind<ITravelPackagesDestinations>(TYPES.travelPackageDestinationRepo)
 	.to(TravelPackagesDestinationsRepository);
+container
+	.bind<IBooking_Vehicles>(TYPES.bookingVehicleRepo)
+	.to(BookingVehiclesRepository);
+container
+	.bind<ITravel_Itineraries>(TYPES.travelItinerariesRepo)
+	.to(TravelItinerariesRepository);
 container.bind<IPromos>(TYPES.promoRepo).to(PromoRepository);
 container.bind<IRating>(TYPES.ratingRepo).to(RatingRepostitory);
 container.bind<IBookings>(TYPES.bookingRepo).to(BookingRepository);
@@ -96,6 +112,7 @@ container.bind<DestinationService>(DestinationService).toSelf();
 container.bind<TravelPackageService>(TravelPackageService).toSelf();
 container.bind<PromoService>(PromoService).toSelf();
 container.bind<RatingService>(RatingService).toSelf();
+container.bind<AccomodationService>(AccomodationService).toSelf();
 container.bind<BookingService>(BookingService).toSelf();
 container.bind<PaymentService>(PaymentService).toSelf();
 container.bind<OtpService>(OtpService).toSelf();
@@ -126,3 +143,5 @@ export const bookingService = container.get<BookingService>(BookingService);
 export const paymentService = container.get<PaymentService>(PaymentService);
 export const otpService = container.get<OtpService>(OtpService);
 export const storageService = container.get<StorageService>(StorageService);
+export const accomodationService =
+	container.get<AccomodationService>(AccomodationService);

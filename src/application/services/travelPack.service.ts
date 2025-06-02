@@ -12,14 +12,18 @@ import {
 	type CreateTravelPackageDesinationInput,
 	type UpdatePax,
 	type CreatePaxInput,
+	type CreateTravelItinerariesnput,
+	type UpdateTravelItineraries,
 } from "../../infrastructure/entity/types";
 import type { PrismaClient } from "@prisma/client";
 import type { TravelPaxRepository } from "../../infrastructure/repositories/travelPax.repo";
+import type { TravelItinerariesRepository } from "../../infrastructure/repositories/travelItineraries.repo";
 
 @injectable()
 export class TravelPackageService {
 	private travelPackageRepo: TravelPackageRepository;
 	private travelPackagesDestinationRepo: TravelPackagesDestinationsRepository;
+	private travelItinerariesRepo: TravelItinerariesRepository;
 	private travelPaxRepo: TravelPaxRepository;
 	private response: Http;
 	private errorHandler: ErrorHandler;
@@ -33,6 +37,8 @@ export class TravelPackageService {
 		@inject(TYPES.travelPaxRepo) travelPaxRepo: TravelPaxRepository,
 		@inject(TYPES.travelPackageDestinationRepo)
 		travelPackageDestinationRepo: TravelPackagesDestinationsRepository,
+		@inject(TYPES.travelItinerariesRepo)
+		travelItinerariesRepo: TravelItinerariesRepository,
 	) {
 		this.travelPackageRepo = travelPackageRepo;
 		this.response = response;
@@ -40,6 +46,7 @@ export class TravelPackageService {
 		this.prisma = prisma;
 		this.travelPackagesDestinationRepo = travelPackageDestinationRepo;
 		this.travelPaxRepo = travelPaxRepo;
+		this.travelItinerariesRepo = travelItinerariesRepo;
 	}
 
 	async getAll() {
@@ -67,49 +74,58 @@ export class TravelPackageService {
 	}
 
 	async create(
-		payload_x: CreateTravelPackage,
-		payload_y: CreateTravelPackageDesinationInput[],
-		payload_z: CreatePaxInput[],
+		payload: CreateTravelPackage,
+		payload_dest: CreateTravelPackageDesinationInput[],
+		payload_pax: CreatePaxInput[],
+		payload_itineraries: CreateTravelItinerariesnput[],
 	) {
 		try {
 			const result = await this.prisma.$transaction(async (tx) => {
 				const create_travel_pack = await this.travelPackageRepo.create(
-					payload_x,
+					payload,
 					tx,
 				);
 				if (!create_travel_pack)
 					throw this.response.badRequest(
 						"Error while creating new travel package",
 					);
-
-				const payload_pack_destination = payload_y.map(
+				const payload_pack_destination = payload_dest.map(
 					(travel_pack_destination) => ({
 						...travel_pack_destination,
 						destination_id: travel_pack_destination.destination_id,
 						travel_package_id: create_travel_pack.id,
 					}),
 				);
-
-				const payload_pax = payload_z.map((travel_pax) => ({
+				const payload_pax_data = payload_pax.map((travel_pax) => ({
 					...travel_pax,
 					travel_package_id: create_travel_pack.id,
 				}));
+				const payload_itineraries_data = payload_itineraries.map(
+					(itineraries) => ({
+						...itineraries,
+						travel_package_id: create_travel_pack.id,
+					}),
+				);
 
 				if (!payload_pack_destination)
 					throw this.response.badRequest(
-						"Error while creating new travel package",
+						"Error while inserting destinations into travel package",
 					);
-
-				if (!payload_pax)
+				if (!payload_pax_data)
 					throw this.response.badRequest(
-						"Error while creating new travel package",
+						"Error while inserting pax into travel package",
+					);
+				if (!payload_itineraries_data)
+					throw this.response.badRequest(
+						"Error while inserting itineraries into travel package",
 					);
 
 				await this.travelPackagesDestinationRepo.create(
 					payload_pack_destination,
 					tx,
 				);
-				await this.travelPaxRepo.create(payload_pax, tx);
+				await this.travelPaxRepo.create(payload_pax_data, tx);
+				await this.travelItinerariesRepo.create(payload_itineraries_data, tx);
 				return create_travel_pack;
 			});
 			return result;
@@ -121,8 +137,9 @@ export class TravelPackageService {
 	async update(
 		id: string,
 		payload_x: UpdateTravelPackage,
-		payload_y: UpdateTravelPackageDestination[],
-		payload_z: UpdatePax[],
+		payload_dest: UpdateTravelPackageDestination[],
+		payload_pax: UpdatePax[],
+		payload_itineraries: UpdateTravelItineraries[],
 	) {
 		try {
 			const result = await this.prisma.$transaction(async (tx) => {
@@ -137,9 +154,13 @@ export class TravelPackageService {
 					);
 
 				const updated_travel_pckage_destination =
-					await this.travelPackagesDestinationRepo.update(payload_y, tx);
+					await this.travelPackagesDestinationRepo.update(payload_dest, tx);
 				const update_travel_pax = await this.travelPaxRepo.update(
-					payload_z,
+					payload_pax,
+					tx,
+				);
+				const update_travel_itineraries = await this.travelPaxRepo.update(
+					payload_itineraries,
 					tx,
 				);
 				if (!updated_travel_pckage_destination) {
@@ -147,6 +168,9 @@ export class TravelPackageService {
 				}
 				if (!update_travel_pax) {
 					throw new Error("Error while updating travel pax!");
+				}
+				if (!update_travel_itineraries) {
+					throw new Error("Error while updating Itineraries!");
 				}
 
 				return update_travel_package;

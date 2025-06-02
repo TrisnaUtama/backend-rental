@@ -80,51 +80,83 @@ export const paymentRoute = new Elysia({
 	})
 	.patch(
 		"/:id",
-		async ({ set, body, user, params }) => {
+		async ({ set, user, params }) => {
 			try {
 				const startTime = getFormattedStartTime();
 				const payment = await paymentService.getOne(params.id);
-				if (!payment.booking.start_date || !payment.booking.end_date) {
+
+				const booking = payment.booking;
+
+				if (!booking.start_date || !booking.end_date) {
 					return response.badRequest(
 						"Start date and end date must be provided",
 					);
 				}
+
 				const durationInMs =
-					payment.booking.end_date.getTime() -
-					payment.booking.start_date.getTime();
-				const durationInDays = Math.ceil(
-					durationInMs / (1000 * 60 * 60 * 24) + 1,
-				);
-				let item_details: any = [];
+					booking.end_date.getTime() - booking.start_date.getTime();
+				const durationInDays =
+					Math.ceil(durationInMs / (1000 * 60 * 60 * 24)) + 1;
+
+				let item_details: any[] = [];
 				let gross_amount = 0;
-				if (payment.booking.travel_package) {
-					const pkg = payment.booking.travel_package;
+
+				if (booking.travel_package) {
+					const pkg = booking.travel_package;
+					const paxOptions = pkg.pax_options;
+
+					if (!paxOptions || paxOptions.length === 0) {
+						return response.badRequest(
+							"Pax options not found for travel package",
+						);
+					}
+
+					const matchedPax = paxOptions.find(
+						(pax) => Number(pax.price) === Number(payment.total_amount),
+					);
+
+					if (!matchedPax) {
+						return response.badRequest(
+							"No matching Pax option found for the given payment total",
+						);
+					}
+
 					item_details = [
 						{
-							id: pkg.id,
-							name: pkg.name,
-							price: Number(pkg.price),
-							quantity: durationInDays,
+							id: `${pkg.id}-${matchedPax.pax}`,
+							name: `${pkg.name} - ${matchedPax.pax} Pax`,
+							price: Number(matchedPax.price),
+							quantity: 1,
 						},
 					];
-					gross_amount = Number(payment.total_amount);
-				} else if (payment.booking.vehicle_id) {
+
+					gross_amount = Number(matchedPax.price);
+				} else if (
+					!booking.travel_package_id &&
+					booking.booking_vehicles &&
+					booking.booking_vehicles.length > 0
+				) {
+					const bookingVehicle = booking.booking_vehicles[0];
 					const vehicle = await vehicleService.getOne(
-						payment.booking.vehicle_id,
+						bookingVehicle.vehicle_id,
 					);
 					item_details = [
 						{
 							id: vehicle.id,
-							name: vehicle.name,
+							name: `Rental - ${vehicle.name}`,
 							price: Number(vehicle.price_per_day),
 							quantity: durationInDays,
 						},
 					];
-					gross_amount = Number(payment.total_amount);
+
+					gross_amount = item_details[0].price * item_details[0].quantity;
+				} else {
+					return response.badRequest("Unsupported or unknown booking type");
 				}
+
 				const parameter = {
 					transaction_details: {
-						order_id: payment.booking.id,
+						order_id: booking.id,
 						gross_amount,
 					},
 					item_details,
@@ -141,10 +173,12 @@ export const paymentRoute = new Elysia({
 						duration: EXPIRY_DATE_MIDTRANS,
 					},
 				};
+
 				const snapResponse = await midtrans.charge(parameter);
+
 				set.status = 200;
 				return StandardResponse.success(
-					{ snapResponse: snapResponse, payment_id: payment.id },
+					{ snapResponse, payment_id: payment.id },
 					"Payment created & Midtrans token generated successfully",
 				);
 			} catch (error) {
