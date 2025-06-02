@@ -171,6 +171,7 @@ model Accommodations {
   description    String?
   image_urls     String[]  
   price_per_night Decimal  
+  facilities  String[]
   status          Boolean
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
