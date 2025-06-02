@@ -208,7 +208,7 @@ export const travelRoute = new Elysia({
 			try {
 				const result = await travelPackageService.addNewTravelDestination(
 					body.travel_package_id,
-					body.travel_destination,
+					body.new_travel_destination,
 				);
 
 				set.status = 201;
@@ -224,7 +224,7 @@ export const travelRoute = new Elysia({
 		{
 			body: t.Object({
 				travel_package_id: t.String({ description: "ID travel_package" }),
-				travel_destination: t.Array(
+				new_travel_destination: t.Array(
 					t.Object({
 						destination_id: t.String({ description: "ID destination" }),
 					}),
@@ -237,7 +237,7 @@ export const travelRoute = new Elysia({
 		"/pax",
 		async ({ set, body }) => {
 			try {
-				const payload_pax = body.pax_options.map((travel_pax) => ({
+				const payload_pax = body.new_pax_options.map((travel_pax) => ({
 					pax: travel_pax.pax,
 					price: new Prisma.Decimal(travel_pax.price),
 				}));
@@ -259,7 +259,7 @@ export const travelRoute = new Elysia({
 		{
 			body: t.Object({
 				travel_package_id: t.String({ description: "ID travel_package" }),
-				pax_options: t.Array(
+				new_pax_options: t.Array(
 					t.Object({
 						pax: t.Integer({ description: "pax" }),
 						price: t.Integer({ description: "price" }),
