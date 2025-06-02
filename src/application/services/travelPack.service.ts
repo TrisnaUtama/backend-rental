@@ -14,6 +14,7 @@ import {
 	type CreatePaxInput,
 	type CreateTravelItinerariesnput,
 	type UpdateTravelItineraries,
+	type CreateTravelItineraries,
 } from "../../infrastructure/entity/types";
 import type { PrismaClient } from "@prisma/client";
 import type { TravelPaxRepository } from "../../infrastructure/repositories/travelPax.repo";
@@ -196,6 +197,34 @@ export class TravelPackageService {
 				...rest,
 				status: false,
 			});
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
+
+	async addNewItineraries(
+		travel_package_id: string,
+		newDuration: number,
+		oldDuration: number,
+		newItineraries: CreateTravelItinerariesnput[],
+	) {
+		try {
+			if (newDuration <= oldDuration) return;
+
+			const filteredItineraries = newItineraries.filter(
+				(it) => it.day_number > oldDuration && it.day_number <= newDuration,
+			);
+
+			const newItinerariesPayload = filteredItineraries.map((it) => ({
+				travel_package_id,
+				day_number: it.day_number,
+				destination_id: it.destination_id,
+				description: it.description || "",
+			}));
+
+			if (newItinerariesPayload.length > 0) {
+				return await this.travelItinerariesRepo.create(newItinerariesPayload);
+			}
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
 		}
