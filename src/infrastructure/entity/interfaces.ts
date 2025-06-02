@@ -154,6 +154,11 @@ export interface ITravel_Itineraries {
 	getOne: (id: string) => Promise<Travel_Itineraries | null>;
 	create: (payload: CreateTravelItineraries[]) => Promise<{ count: number }>;
 	update: (payload: UpdateTravelItineraries[]) => Promise<Travel_Itineraries[]>;
+	syncUpdate: (
+		travel_package_id: string,
+		duration: number,
+		payload: UpdateTravelItineraries[],
+	) => Promise<Travel_Itineraries[]>;
 }
 
 export interface IPromos {

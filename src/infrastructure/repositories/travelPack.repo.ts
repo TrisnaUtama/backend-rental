@@ -29,7 +29,11 @@ export class TravelPackageRepository implements ITravelPackages {
 					travel_package_destinations: true,
 					pax_options: true,
 					accommodation: true,
-					travel_itineraries: true,
+					travel_itineraries: {
+						where: {
+							deleted_at: null,
+						},
+					},
 				},
 			});
 		} catch (error) {

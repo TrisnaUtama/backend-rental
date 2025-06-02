@@ -140,6 +140,7 @@ export class TravelPackageService {
 		payload_dest: UpdateTravelPackageDestination[],
 		payload_pax: UpdatePax[],
 		payload_itineraries: UpdateTravelItineraries[],
+		duration: number,
 	) {
 		try {
 			const result = await this.prisma.$transaction(async (tx) => {
@@ -159,10 +160,14 @@ export class TravelPackageService {
 					payload_pax,
 					tx,
 				);
-				const update_travel_itineraries = await this.travelPaxRepo.update(
-					payload_itineraries,
-					tx,
-				);
+				const update_travel_itineraries =
+					await this.travelItinerariesRepo.syncUpdate(
+						id,
+						duration,
+						payload_itineraries,
+						tx,
+					);
+
 				if (!updated_travel_pckage_destination) {
 					throw new Error("Error while updating travel pacakage destination!");
 				}
