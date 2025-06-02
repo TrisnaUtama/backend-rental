@@ -175,8 +175,6 @@ export const travelRoute = new Elysia({
 			try {
 				const result = await travelPackageService.addNewItineraries(
 					body.travel_package_id,
-					body.newDuration,
-					body.oldDuration,
 					body.newItineraries,
 				);
 
@@ -193,8 +191,6 @@ export const travelRoute = new Elysia({
 		{
 			body: t.Object({
 				travel_package_id: t.String({ description: "ID paket travel" }),
-				newDuration: t.Number({ description: "Durasi baru" }),
-				oldDuration: t.Number({ description: "Durasi lama" }),
 				newItineraries: t.Array(
 					t.Object({
 						day_number: t.Number({ description: "Hari ke berapa itinerary" }),

@@ -203,30 +203,22 @@ export class TravelPackageService {
 	}
 
 	async addNewItineraries(
-		travel_package_id: string,
-		newDuration: number,
-		oldDuration: number,
-		newItineraries: CreateTravelItinerariesnput[],
-	) {
-		try {
-			if (newDuration <= oldDuration) return;
+	travel_package_id: string,
+	newItineraries: CreateTravelItinerariesnput[],
+) {
+	try {
+		const newItinerariesPayload = newItineraries.map((it) => ({
+			travel_package_id,
+			day_number: it.day_number,
+			destination_id: it.destination_id,
+			description: it.description || "",
+		}));
 
-			const filteredItineraries = newItineraries.filter(
-				(it) => it.day_number > oldDuration && it.day_number <= newDuration,
-			);
-
-			const newItinerariesPayload = filteredItineraries.map((it) => ({
-				travel_package_id,
-				day_number: it.day_number,
-				destination_id: it.destination_id,
-				description: it.description || "",
-			}));
-
-			if (newItinerariesPayload.length > 0) {
-				return await this.travelItinerariesRepo.create(newItinerariesPayload);
-			}
-		} catch (error) {
-			this.errorHandler.handleServiceError(error);
+		if (newItinerariesPayload.length > 0) {
+			return await this.travelItinerariesRepo.create(newItinerariesPayload);
 		}
+	} catch (error) {
+		this.errorHandler.handleServiceError(error);
 	}
+}
 }
