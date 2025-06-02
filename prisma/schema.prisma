@@ -299,6 +299,9 @@ model Travel_Packages_Pax {
   travel_package_id String
   pax              Int
   price            Decimal
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  deleted_at  DateTime? 
 
   travel_package   Travel_Packages @relation(fields: [travel_package_id], references: [id])
 }

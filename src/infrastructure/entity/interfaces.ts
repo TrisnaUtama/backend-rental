@@ -132,6 +132,10 @@ export interface ITravelPax {
 	getOne: (id: string) => Promise<Travel_Packages_Pax | null>;
 	create: (payload: CreatePax[]) => Promise<{ count: number }>;
 	update: (payload: UpdatePax[]) => Promise<Travel_Packages_Pax[]>;
+	syncUpdate: (
+		travel_package_id: string,
+		payload: UpdatePax[],
+	) => Promise<Travel_Packages_Pax[]>;
 }
 export interface ITravelPackagesDestinations {
 	getAll: () => Promise<Travel_Packages_Destinations[]>;
@@ -140,6 +144,10 @@ export interface ITravelPackagesDestinations {
 		payload: CreateTravelPackageDesination[],
 	) => Promise<{ count: number }>;
 	update: (
+		payload: UpdateTravelPackageDestination[],
+	) => Promise<Travel_Packages_Destinations[]>;
+	syncUpdate: (
+		travel_package_id: string,
 		payload: UpdateTravelPackageDestination[],
 	) => Promise<Travel_Packages_Destinations[]>;
 }
