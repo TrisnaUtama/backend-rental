@@ -90,7 +90,7 @@ export const accomodationRoute = new Elysia({
 					name: body.name,
 					price_per_night: new Decimal(body.price_per_night),
 					status: true,
-                    facilities: body.facilities
+					facilities: body.facilities,
 				};
 
 				const new_accomodation = await accomodationService.create(payload);
@@ -132,7 +132,7 @@ export const accomodationRoute = new Elysia({
 						errorMessage: { minLength: "At least one image URL is required" },
 					},
 				),
-                facilities: t.Array(
+				facilities: t.Array(
 					t.String({
 						minLength: 3,
 						error: "Facility name must be at least 3 characters",
@@ -155,7 +155,7 @@ export const accomodationRoute = new Elysia({
 					name: body.name,
 					price_per_night: new Decimal(body.price_per_night),
 					status: body.status,
-                    facilities: body.facilities
+					facilities: body.facilities,
 				};
 				const update_accomodation = await accomodationService.update(
 					params.id,
@@ -197,7 +197,7 @@ export const accomodationRoute = new Elysia({
 				price_per_night: t.Number({
 					errorMessage: { type: "Price per night must be a number" },
 				}),
-                facilities: t.Array(
+				facilities: t.Array(
 					t.String({
 						minLength: 3,
 						error: "Facility name must be at least 3 characters",
