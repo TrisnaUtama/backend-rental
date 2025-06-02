@@ -284,7 +284,8 @@ export const travelRoute = new Elysia({
 					duration: body.duration ?? travel_package.duration,
 					name: body.name ?? travel_package.name,
 					image: body.image ?? travel_package.image,
-					accommodation_id: body.accomodation_id ?? travel_package.accommodation_id
+					accommodation_id:
+						body.accomodation_id ?? travel_package.accommodation_id,
 				};
 				const payload_dest: UpdateTravelPackageDestination[] = (
 					body.travel_package_destinations ?? []
@@ -354,10 +355,10 @@ export const travelRoute = new Elysia({
 						errorMessage: { minLength: "Description must not be empty" },
 					}),
 					accomodation_id: t.Optional(
-					t.String({
-						errorMessage: { minLength: "Description is required" },
-					}),
-				),
+						t.String({
+							errorMessage: { minLength: "Description is required" },
+						}),
+					),
 					travel_package_destinations: t.Array(
 						t.Object({
 							id: t.String(),
