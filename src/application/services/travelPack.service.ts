@@ -237,21 +237,20 @@ export class TravelPackageService {
 			}));
 
 			if (newDestinationInput.length > 0) {
-				return await this.travelPackagesDestinationRepo.create(newDestinationInput);
+				return await this.travelPackagesDestinationRepo.create(
+					newDestinationInput,
+				);
 			}
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
 		}
 	}
-	async addNewTravelPax(
-		travel_package_id: string,
-		newPax: CreatePaxInput[],
-	) {
+	async addNewTravelPax(travel_package_id: string, newPax: CreatePaxInput[]) {
 		try {
 			const newPaxInput = newPax.map((it) => ({
 				travel_package_id,
-				pax : it.pax,
-				price: it.price
+				pax: it.pax,
+				price: it.price,
 			}));
 
 			if (newPaxInput.length > 0) {
