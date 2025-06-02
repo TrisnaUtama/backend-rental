@@ -226,4 +226,39 @@ export class TravelPackageService {
 			this.errorHandler.handleServiceError(error);
 		}
 	}
+	async addNewTravelDestination(
+		travel_package_id: string,
+		newDestination: CreateTravelPackageDesinationInput[],
+	) {
+		try {
+			const newDestinationInput = newDestination.map((it) => ({
+				travel_package_id,
+				destination_id: it.destination_id,
+			}));
+
+			if (newDestinationInput.length > 0) {
+				return await this.travelPackagesDestinationRepo.create(newDestinationInput);
+			}
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
+	async addNewTravelPax(
+		travel_package_id: string,
+		newPax: CreatePaxInput[],
+	) {
+		try {
+			const newPaxInput = newPax.map((it) => ({
+				travel_package_id,
+				pax : it.pax,
+				price: it.price
+			}));
+
+			if (newPaxInput.length > 0) {
+				return await this.travelPaxRepo.create(newPaxInput);
+			}
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
 }
