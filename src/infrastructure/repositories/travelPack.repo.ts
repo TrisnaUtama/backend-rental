@@ -26,8 +26,16 @@ export class TravelPackageRepository implements ITravelPackages {
 		try {
 			return await this.prisma.travel_Packages.findMany({
 				include: {
-					travel_package_destinations: true,
-					pax_options: true,
+					travel_package_destinations: {
+						where: {
+							deleted_at:  null
+						}
+					},
+					pax_options: {
+						where: {
+							deleted_at: null
+						}
+					},
 					accommodation: true,
 					travel_itineraries: {
 						where: {
@@ -46,8 +54,16 @@ export class TravelPackageRepository implements ITravelPackages {
 			return await this.prisma.travel_Packages.findUnique({
 				where: { id },
 				include: {
-					travel_package_destinations: true,
-					pax_options: true,
+					travel_package_destinations: {
+						where: {
+							deleted_at:  null
+						}
+					},
+					pax_options: {
+						where: {
+							deleted_at: null
+						}
+					},
 					accommodation: true,
 					travel_itineraries: {
 						where: {
