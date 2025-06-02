@@ -202,6 +202,73 @@ export const travelRoute = new Elysia({
 			}),
 		},
 	)
+	.post(
+		"/destination",
+		async ({ set, body }) => {
+			try {
+				const result = await travelPackageService.addNewTravelDestination(
+					body.travel_package_id,
+					body.travel_destination,
+				);
+
+				set.status = 201;
+				return {
+					message: "Itineraries added successfully",
+					data: result,
+				};
+			} catch (error) {
+				set.status = 500;
+				return GlobalErrorHandler.handleError(error, set);
+			}
+		},
+		{
+			body: t.Object({
+				travel_package_id: t.String({ description: "ID travel_package" }),
+				travel_destination: t.Array(
+					t.Object({
+						destination_id: t.String({ description: "ID destination" }),
+					}),
+					{ description: "new Destination matched" },
+				),
+			}),
+		},
+	)
+	.post(
+		"/pax",
+		async ({ set, body }) => {
+			try {
+				const payload_pax = body.pax_options.map((travel_pax) => ({
+					pax: travel_pax.pax,
+					price: new Prisma.Decimal(travel_pax.price),
+				}));
+				const result = await travelPackageService.addNewTravelPax(
+					body.travel_package_id,
+					payload_pax,
+				);
+
+				set.status = 201;
+				return {
+					message: "Itineraries added successfully",
+					data: result,
+				};
+			} catch (error) {
+				set.status = 500;
+				return GlobalErrorHandler.handleError(error, set);
+			}
+		},
+		{
+			body: t.Object({
+				travel_package_id: t.String({ description: "ID travel_package" }),
+				pax_options: t.Array(
+					t.Object({
+						pax: t.Integer({ description: "pax" }),
+						price: t.Integer({ description: "price" }),
+					}),
+					{ description: "new Destination matched" },
+				),
+			}),
+		},
+	)
 	.patch(
 		"/:id",
 		async ({ params, set, body }) => {
