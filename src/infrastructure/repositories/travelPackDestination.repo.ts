@@ -73,4 +73,41 @@ export class TravelPackagesDestinationsRepository
 			this.errorHandler.handleRepositoryError(error);
 		}
 	}
+
+	async syncUpdate(
+		travel_package_id: string,
+		payload: UpdateTravelPackageDestination[],
+		tx?: Prisma.TransactionClient,
+	) {
+		try {
+			const client = tx || this.prisma;
+			const existing = await client.travel_Packages_Destinations.findMany({
+				where: {
+					travel_package_id,
+					deleted_at: null,
+				},
+			});
+			const incomingIds = payload.map((d) => d.id).filter(Boolean);
+			const toDelete = existing.filter((d) => !incomingIds.includes(d.id));
+
+			const softDeletePromises = toDelete.map((d) =>
+				client.travel_Packages_Destinations.update({
+					where: { id: d.id },
+					data: { deleted_at: new Date() },
+				}),
+			);
+			const updatePromises = payload.map((d) =>
+				client.travel_Packages_Destinations.update({
+					where: { id: d.id },
+					data: {
+						destination_id: d.destination_id,
+					},
+				}),
+			);
+
+			return await Promise.all([...softDeletePromises, ...updatePromises]);
+		} catch (error) {
+			this.errorHandler.handleRepositoryError(error);
+		}
+	}
 }

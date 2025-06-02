@@ -156,8 +156,13 @@ export class TravelPackageService {
 					);
 
 				const updated_travel_pckage_destination =
-					await this.travelPackagesDestinationRepo.update(payload_dest, tx);
-				const update_travel_pax = await this.travelPaxRepo.update(
+					await this.travelPackagesDestinationRepo.syncUpdate(
+						id,
+						payload_dest,
+						tx,
+					);
+				const update_travel_pax = await this.travelPaxRepo.syncUpdate(
+					id,
 					payload_pax,
 					tx,
 				);
