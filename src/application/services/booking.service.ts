@@ -7,11 +7,14 @@ import {
 	type CreateBooking,
 	type UpdateBooking,
 } from "../../infrastructure/entity/types";
-import { Vehicle_status } from ".prisma/client";
 import type { Http } from "../../infrastructure/utils/response/http.response";
 import type { VehicleRepository } from "../../infrastructure/repositories/vehicle.repo";
 import type { TravelPackageRepository } from "../../infrastructure/repositories/travelPack.repo";
+import type { BookingVehiclesRepository } from "../../infrastructure/repositories/bookingVehicle.repo";
+import type { TravelPaxRepository } from "../../infrastructure/repositories/travelPax.repo";
+import type { Bookings } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
+import type { PaymentRepository } from "../../infrastructure/repositories/payment.repo";
 
 @injectable()
 export class BookingService {
@@ -20,6 +23,9 @@ export class BookingService {
 	private bookingRepo: BookingRepository;
 	private vehicleRepo: VehicleRepository;
 	private travelPackageRepo: TravelPackageRepository;
+	private bookingVehicleRepo: BookingVehiclesRepository;
+	private travelPaxRepo: TravelPaxRepository;
+	private paymentrepo: PaymentRepository;
 
 	constructor(
 		@inject(TYPES.errorHandler) errorHandler: ErrorHandler,
@@ -27,12 +33,19 @@ export class BookingService {
 		@inject(TYPES.bookingRepo) bookingRepo: BookingRepository,
 		@inject(TYPES.vehicleRepo) vehicleRepo: VehicleRepository,
 		@inject(TYPES.travelPackageRepo) travelPackageRepo: TravelPackageRepository,
+		@inject(TYPES.bookingVehicleRepo)
+		bookingVehicleRepo: BookingVehiclesRepository,
+		@inject(TYPES.travelPaxRepo) travelPaxRepo: TravelPaxRepository,
+		@inject(TYPES.paymentRepo) paymentrepo: PaymentRepository,
 	) {
 		this.errorHandler = errorHandler;
 		this.response = response;
 		this.bookingRepo = bookingRepo;
 		this.vehicleRepo = vehicleRepo;
 		this.travelPackageRepo = travelPackageRepo;
+		this.bookingVehicleRepo = bookingVehicleRepo;
+		this.travelPaxRepo = travelPaxRepo;
+		this.paymentrepo = paymentrepo;
 	}
 
 	async getOne(id: string) {
@@ -72,96 +85,93 @@ export class BookingService {
 		}
 	}
 
-	async create(payload: CreateBooking) {
+	async create(
+		payload: CreateBooking,
+		vehicle_ids?: string[],
+		selected_pax_option_id?: string,
+	) {
 		try {
-			const { vehicle_id, travel_package_id, start_date, end_date } = payload;
+			const { travel_package_id, start_date, end_date } = payload;
 
-			if (
-				(vehicle_id && travel_package_id) ||
-				(!vehicle_id && !travel_package_id)
-			) {
-				return this.response.badRequest(
-					"Must book either a vehicle or a travel package, not both or none.",
-				);
+			if (!start_date || !end_date) {
+				throw this.response.badRequest("Start date and end date are required");
 			}
 
-			let total_price = 0;
+			let total_price = new Decimal(0);
 
-			if (vehicle_id) {
-				const vehicleToBook = await this.vehicleRepo.getOne(vehicle_id);
+			if (vehicle_ids && vehicle_ids.length > 0) {
+				const vehicles = await this.vehicleRepo.getManyByIds(vehicle_ids);
 
-				if (!vehicleToBook) {
-					return this.response.badRequest(
-						"Cannot book this vehicle: not found",
-					);
-				}
-
-				if (vehicleToBook.status !== "AVAILABLE") {
-					return this.response.badRequest(
-						"Cannot book this vehicle: not available",
-					);
-				}
-
-				if (!start_date || !end_date) {
-					return this.response.badRequest(
-						"Start date and end date are required for vehicle booking",
-					);
+				if (vehicles.length !== vehicle_ids?.length) {
+					throw this.response.badRequest("One or more vehicles not found");
 				}
 
 				const start = new Date(start_date);
 				const end = new Date(end_date);
-
 				if (start >= end) {
-					return this.response.badRequest("End date must be after start date");
+					throw this.response.badRequest("End date must be after start date");
 				}
 
-				const durationInMs = end.getTime() - start.getTime();
-				const durationInDays = Math.ceil(
-					durationInMs / (1000 * 60 * 60 * 24) + 1,
-				);
+				const durationInDays =
+					Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) +
+					1;
 
-				total_price = durationInDays * vehicleToBook.price_per_day.toNumber();
+				for (const vehicle of vehicles) {
+					if (vehicle.status !== "AVAILABLE") {
+						throw this.response.badRequest(
+							`Vehicle ${vehicle.name} is not available`,
+						);
+					}
+
+					total_price = total_price.plus(
+						vehicle.price_per_day.mul(durationInDays),
+					);
+				}
 			}
 
 			if (travel_package_id) {
-				const travelToBook =
+				const travelPackage =
 					await this.travelPackageRepo.getOne(travel_package_id);
-
-				if (!travelToBook) {
-					return this.response.badRequest(
-						"Cannot book this travel package: not found",
-					);
+				if (!travelPackage || !travelPackage.status) {
+					throw this.response.badRequest("Travel package not available");
 				}
 
-				if (travelToBook.status !== true) {
-					return this.response.badRequest(
-						"Cannot book this travel package: not active",
-					);
+				if (!selected_pax_option_id) {
+					throw this.response.badRequest("Selected pax option is required");
 				}
-				if (!start_date) {
-					return this.response.badRequest(
-						"Start date is required for travel package booking",
-					);
+
+				const paxOption = await this.travelPaxRepo.getOne(
+					selected_pax_option_id,
+				);
+				if (!paxOption || paxOption.travel_package_id !== travel_package_id) {
+					throw this.response.badRequest("Invalid pax option selected");
 				}
 
 				const start = new Date(start_date);
-
-				const durationInMs = travelToBook.duration * 60 * 60 * 1000;
-				const end = new Date(start.getTime() + durationInMs);
+				const durationMs = travelPackage.duration * 60 * 60 * 1000;
+				const end = new Date(start.getTime() + durationMs);
 
 				payload.start_date = start;
 				payload.end_date = end;
 
-				total_price = travelToBook.price.toNumber();
+				total_price = total_price.plus(paxOption.price);
 			}
-			const totalPriceDecimal = new Decimal(total_price);
 
-			const create_booking = await this.bookingRepo.create({
+			const booking = await this.bookingRepo.create({
 				...payload,
-				total_price: totalPriceDecimal,
+				total_price,
 			});
 
-			return create_booking;
+			if (vehicle_ids && vehicle_ids.length > 0) {
+				const relations = vehicle_ids.map((vehicle_id: string) => ({
+					booking_id: booking.id,
+					vehicle_id,
+				}));
+
+				await this.bookingVehicleRepo.create(relations);
+			}
+
+			return booking;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
 		}
@@ -171,13 +181,72 @@ export class BookingService {
 		try {
 			const exist_booking = await this.bookingRepo.getOne(id);
 			if (!exist_booking)
-				throw this.response.notFound(`Booking id ${id} not found !`);
-			const update_booking = await this.bookingRepo.update(id, payload);
-			if (!update_booking)
+				throw this.response.notFound(`Booking with id ${id} not found`);
+
+			if (payload.start_date && payload.end_date) {
+				const start = new Date(payload.start_date);
+				const end = new Date(payload.end_date);
+				if (start >= end) {
+					throw this.response.badRequest("End date must be after start date");
+				}
+			}
+
+			const updated = await this.bookingRepo.update(id, payload);
+			if (!updated) {
 				throw this.response.badRequest(
-					`Error while updating updating data booking with id ${id}`,
+					`Failed to update booking with id ${id}`,
 				);
-			return update_booking;
+			}
+
+			return updated;
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
+
+	async assignVehicleAndConfirm(
+		bookingId: string,
+		vehicleIds: string[],
+	): Promise<Bookings> {
+		try {
+			const booking = await this.bookingRepo.getOne(bookingId);
+			if (!booking)
+				throw this.response.notFound(`Booking with id ${bookingId} not found`);
+
+			if (booking.status !== "SUBMITTED") {
+				throw this.response.badRequest(
+					"Only submitted bookings can be accepted",
+				);
+			}
+
+			if (!booking.travel_package_id) {
+				throw this.response.badRequest("Booking is not a travel package");
+			}
+
+			await this.bookingVehicleRepo.create(
+				vehicleIds.map((id) => ({
+					booking_id: bookingId,
+					vehicle_id: id,
+				})),
+			);
+
+			const updatedBooking = await this.bookingRepo.update(bookingId, {
+				status: "RECEIVED",
+			});
+
+			if (!updatedBooking.total_price)
+				throw this.errorHandler.handleServiceError("total price still empty");
+
+			await this.paymentrepo.create({
+				booking_id: bookingId,
+				payment_status: "PENDING",
+				payment_date: null,
+				payment_method: null,
+				expiry_date: null,
+				total_amount: updatedBooking.total_price,
+			});
+
+			return updatedBooking;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
 		}

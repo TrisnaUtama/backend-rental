@@ -24,6 +24,13 @@ export class BookingRepository implements IBookings {
 				where: {
 					id,
 				},
+				include: {
+					booking_vehicles: true,
+					travel_package: true,
+					Payments: true,
+					promos: true,
+					users: true,
+				},
 			});
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
@@ -36,6 +43,13 @@ export class BookingRepository implements IBookings {
 				where: {
 					user_id: id,
 				},
+				include: {
+					booking_vehicles: true,
+					travel_package: true,
+					Payments: true,
+					promos: true,
+					users: true,
+				},
 			});
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
@@ -44,7 +58,15 @@ export class BookingRepository implements IBookings {
 
 	async getAll() {
 		try {
-			return await this.prisma.bookings.findMany();
+			return await this.prisma.bookings.findMany({
+				include: {
+					booking_vehicles: true,
+					travel_package: true,
+					Payments: true,
+					promos: true,
+					users: true,
+				},
+			});
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
 		}

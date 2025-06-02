@@ -12,6 +12,9 @@ import type {
 	Payments,
 	Travel_Packages_Pax,
 	Rating,
+	Accommodations,
+	Booking_Vehicles,
+	Travel_Itineraries,
 } from "@prisma/client";
 import type {
 	CreateOTP,
@@ -40,6 +43,12 @@ import type {
 	UpdatePax,
 	CreateRating,
 	UpdateRating,
+	CreateAccomodation,
+	UpdateAccomodation,
+	CreateBookingVehicle,
+	UpdateBookingVehicle,
+	CreateTravelItineraries,
+	UpdateTravelItineraries,
 } from "./types";
 
 // utils
@@ -98,6 +107,7 @@ export interface INotificationBroadcast {
 export interface IVehicles {
 	getAll: () => Promise<Vehicles[]>;
 	getOne: (id: string) => Promise<Vehicles | null>;
+	getManyByIds: (ids: string[]) => Promise<Vehicles[] | null>;
 	create: (payload: CreateVehicle) => Promise<Vehicles | null>;
 	update: (id: string, payload: UpdateVehicle) => Promise<Vehicles>;
 }
@@ -132,6 +142,18 @@ export interface ITravelPackagesDestinations {
 	update: (
 		payload: UpdateTravelPackageDestination[],
 	) => Promise<Travel_Packages_Destinations[]>;
+}
+export interface IBooking_Vehicles {
+	getAll: () => Promise<Booking_Vehicles[]>;
+	getOne: (id: string) => Promise<Booking_Vehicles | null>;
+	create: (payload: CreateBookingVehicle[]) => Promise<{ count: number }>;
+	update: (payload: UpdateBookingVehicle[]) => Promise<Booking_Vehicles[]>;
+}
+export interface ITravel_Itineraries {
+	getAll: () => Promise<Travel_Itineraries[]>;
+	getOne: (id: string) => Promise<Travel_Itineraries | null>;
+	create: (payload: CreateTravelItineraries[]) => Promise<{ count: number }>;
+	update: (payload: UpdateTravelItineraries[]) => Promise<Travel_Itineraries[]>;
 }
 
 export interface IPromos {
@@ -168,4 +190,10 @@ export interface IRating {
 	getByTragetId: (targetId: string) => Promise<Rating[]>;
 	create: (payload: CreateRating) => Promise<Rating | null>;
 	update: (id: string, payload: UpdateRating) => Promise<Rating>;
+}
+export interface IAccomodation {
+	getAll: () => Promise<Accommodations[]>;
+	getOne: (id: string) => Promise<Accommodations | null>;
+	create: (payload: CreateAccomodation) => Promise<Accommodations | null>;
+	update: (id: string, payload: UpdateAccomodation) => Promise<Accommodations>;
 }

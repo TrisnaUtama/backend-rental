@@ -48,6 +48,18 @@ export class VehicleRepository implements IVehicles {
 		}
 	}
 
+	async getManyByIds(ids: string[]) {
+		try {
+			return this.prisma.vehicles.findMany({
+				where: {
+					id: { in: ids },
+				},
+			});
+		} catch (error) {
+			this.errorHandler.handleRepositoryError(error);
+		}
+	}
+
 	async update(id: string, payload: UpdateVehicle) {
 		try {
 			return await this.prisma.vehicles.update({

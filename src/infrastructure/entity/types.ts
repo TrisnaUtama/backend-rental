@@ -12,6 +12,9 @@ import type {
 	Payments,
 	Travel_Packages_Pax,
 	Rating,
+	Accommodations,
+	Booking_Vehicles,
+	Travel_Itineraries,
 } from "@prisma/client";
 
 export const TYPES = {
@@ -40,10 +43,13 @@ export const TYPES = {
 	travelPackageDestinationRepo: Symbol.for(
 		"TravelPackageDestinationsRepository",
 	),
+	travelItinerariesRepo: Symbol.for("TravelItinerariesRepository"),
+	bookingVehicleRepo: Symbol.for("BookingVehiclesRepository"),
 	promoRepo: Symbol.for("PromoRepository"),
 	bookingRepo: Symbol.for("BookingRepository"),
 	paymentRepo: Symbol.for("PaymentRepository"),
 	ratingRepo: Symbol.for("RatingRepository"),
+	accomodationRepo: Symbol.for("AccomodationRepository"),
 	storageRepo: Symbol.for("StorageRepository"),
 };
 
@@ -77,16 +83,11 @@ export type CreateTravelPackage = Omit<
 >;
 export type CreateTravelPackageDesination = Omit<
 	Travel_Packages_Destinations,
-	"id" | "created_at" | "updated_at" | "status" | "deleted_at"
+	"id" | "created_at" | "updated_at" | "deleted_at"
 >;
 export type CreateTravelPackageDesinationInput = Omit<
 	Travel_Packages_Destinations,
-	| "id"
-	| "travel_package_id"
-	| "created_at"
-	| "updated_at"
-	| "status"
-	| "deleted_at"
+	"id" | "travel_package_id" | "created_at" | "updated_at" | "deleted_at"
 >;
 export type CreatePromo = Omit<
 	Promos,
@@ -112,6 +113,26 @@ export type CreateRating = Omit<
 	Rating,
 	"id" | "created_at" | "updated_at" | "deleted_at"
 >;
+export type CreateAccomodation = Omit<
+	Accommodations,
+	"id" | "created_at" | "updated_at" | "deleted_at"
+>;
+export type CreateBookingVehicle = Omit<
+	Booking_Vehicles,
+	"id" | "created_at" | "updated_at" | "deleted_at"
+>;
+export type CreateBookingVehicleInput = Omit<
+	Booking_Vehicles,
+	"id" | "booking_id" | "created_at" | "updated_at" | "deleted_at"
+>;
+export type CreateTravelItineraries = Omit<
+	Travel_Itineraries,
+	"id" | "created_at" | "updated_at" | "deleted_at"
+>;
+export type CreateTravelItinerariesnput = Omit<
+	Travel_Itineraries,
+	"id" | "travel_package_id" | "created_at" | "updated_at" | "deleted_at"
+>;
 
 // UPDATES //
 export type UpdateUser = Partial<Users>;
@@ -128,3 +149,6 @@ export type UpdateBooking = Partial<Bookings>;
 export type UpdatePayment = Partial<Payments>;
 export type UpdatePax = Partial<Travel_Packages_Pax>;
 export type UpdateRating = Partial<Rating>;
+export type UpdateAccomodation = Partial<Accommodations>;
+export type UpdateBookingVehicle = Partial<Booking_Vehicles>;
+export type UpdateTravelItineraries = Partial<Travel_Itineraries>;
