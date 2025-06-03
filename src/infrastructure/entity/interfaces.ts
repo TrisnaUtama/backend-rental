@@ -180,6 +180,7 @@ export interface IBookings {
 	getAll: () => Promise<Bookings[]>;
 	getOne: (id: string) => Promise<Bookings | null>;
 	getByUserId: (id: string) => Promise<Bookings[] | null>;
+	findAvailableVehicle(startDate: Date, endDate: Date): Promise<Vehicles[]>;
 	create: (payload: CreateBooking) => Promise<Bookings | null>;
 	update: (id: string, payload: UpdateBooking) => Promise<Bookings>;
 }
