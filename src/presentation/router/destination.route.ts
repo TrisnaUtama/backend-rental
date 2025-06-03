@@ -20,36 +20,6 @@ export const destinationRoute = new Elysia({
 		tags: ["DESTINATIONS"],
 	},
 })
-	.use(
-		jwt({
-			name: `${process.env.JWT_NAME}`,
-			secret: `${process.env.JWT_SECRET_KEY}`,
-		}),
-	)
-	.derive(async ({ cookie: { access_token }, set }) => {
-		if (!access_token.value) {
-			set.status = 401;
-			throw response.unauthorized();
-		}
-		const jwtPayload: IJwtPayload = verifyJwt(access_token.value.toString());
-
-		if (!jwtPayload) {
-			set.status = 403;
-			throw response.forbidden();
-		}
-
-		const userId = jwtPayload.user_id;
-		if (!userId) throw response.badRequest("Invalid Payload !");
-		const user = await userService.getOne(userId.toString());
-		if (!user || !user.refresh_token) {
-			set.status = 403;
-			throw response.forbidden();
-		}
-
-		return {
-			user,
-		};
-	})
 	.get("/", async ({ set }) => {
 		try {
 			const destinations = await destinationService.getAll();
@@ -80,6 +50,36 @@ export const destinationRoute = new Elysia({
 			set.status = 500;
 			return GlobalErrorHandler.handleError(error, set);
 		}
+	})
+	.use(
+		jwt({
+			name: `${process.env.JWT_NAME}`,
+			secret: `${process.env.JWT_SECRET_KEY}`,
+		}),
+	)
+	.derive(async ({ cookie: { access_token }, set }) => {
+		if (!access_token.value) {
+			set.status = 401;
+			throw response.unauthorized();
+		}
+		const jwtPayload: IJwtPayload = verifyJwt(access_token.value.toString());
+
+		if (!jwtPayload) {
+			set.status = 403;
+			throw response.forbidden();
+		}
+
+		const userId = jwtPayload.user_id;
+		if (!userId) throw response.badRequest("Invalid Payload !");
+		const user = await userService.getOne(userId.toString());
+		if (!user || !user.refresh_token) {
+			set.status = 403;
+			throw response.forbidden();
+		}
+
+		return {
+			user,
+		};
 	})
 	.post(
 		"/",
