@@ -20,7 +20,43 @@ export const bookingRoute = new Elysia({
 	detail: {
 		tags: ["BOOKING"],
 	},
-})
+}).post(
+		"/available-cars",
+		async ({ body, set }) => {
+			try {
+				const { start_date, end_date } = body;
+				const startDate = new Date(start_date);
+				const endDate = new Date(end_date);
+
+				if (
+					Number.isNaN(startDate.getTime()) ||
+					Number.isNaN(endDate.getTime())
+				) {
+					throw response.badRequest("Invalid date format");
+				}
+
+				const availableCars = await bookingService.findAvailableVehicle(
+					startDate,
+					endDate,
+				);
+
+				set.status = 200;
+				return StandardResponse.success(
+					availableCars,
+					"Successfully retrieved available cars",
+				);
+			} catch (error) {
+				set.status = 500;
+				return GlobalErrorHandler.handleError(error, set);
+			}
+		},
+		{
+			body: t.Object({
+				start_date: t.String({ format: "date-time" }),
+				end_date: t.String({ format: "date-time" }),
+			}),
+		},
+	)
 	.use(
 		jwt({
 			name: `${process.env.JWT_NAME}`,
@@ -103,43 +139,6 @@ export const bookingRoute = new Elysia({
 			return GlobalErrorHandler.handleError(error, set);
 		}
 	})
-	.post(
-		"/available-cars",
-		async ({ body, set }) => {
-			try {
-				const { start_date, end_date } = body;
-				const startDate = new Date(start_date);
-				const endDate = new Date(end_date);
-
-				if (
-					Number.isNaN(startDate.getTime()) ||
-					Number.isNaN(endDate.getTime())
-				) {
-					throw response.badRequest("Invalid date format");
-				}
-
-				const availableCars = await bookingService.findAvailableVehicle(
-					startDate,
-					endDate,
-				);
-
-				set.status = 200;
-				return StandardResponse.success(
-					availableCars,
-					"Successfully retrieved available cars",
-				);
-			} catch (error) {
-				set.status = 500;
-				return GlobalErrorHandler.handleError(error, set);
-			}
-		},
-		{
-			body: t.Object({
-				start_date: t.String({ format: "date-time" }),
-				end_date: t.String({ format: "date-time" }),
-			}),
-		},
-	)
 	.post(
 		"/",
 		async ({ set, body, user }) => {
