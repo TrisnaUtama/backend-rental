@@ -73,38 +73,38 @@ export class BookingRepository implements IBookings {
 	}
 
 	async findAvailableVehicle(startDate: Date, endDate: Date) {
-	try {
-		return await this.prisma.vehicles.findMany({
-			where: {
-				Booking_Vehicles: {
-					none: {
-						booking: {
-							deleted_at: null,
-							OR: [
-								{
-									start_date: {
-										lt: endDate,
+		try {
+			return await this.prisma.vehicles.findMany({
+				where: {
+					Booking_Vehicles: {
+						none: {
+							booking: {
+								deleted_at: null,
+								OR: [
+									{
+										start_date: {
+											lt: endDate,
+										},
+										end_date: {
+											gt: startDate,
+										},
 									},
-									end_date: {
-										gt: startDate,
+									{
+										start_date: {
+											lt: endDate,
+										},
+										end_date: null,
 									},
-								},
-								{
-									start_date: {
-										lt: endDate,
-									},
-									end_date: null,
-								},
-							],
+								],
+							},
 						},
 					},
 				},
-			},
-		});
-	} catch (error) {
-		this.errorHandler.handleRepositoryError(error);
+			});
+		} catch (error) {
+			this.errorHandler.handleRepositoryError(error);
+		}
 	}
-}
 
 	async create(payload: CreateBooking) {
 		try {

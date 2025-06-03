@@ -205,26 +205,25 @@ export class BookingService {
 	}
 
 	async findAvailableVehicle(startDate: Date, endDate: Date) {
-	try {
-		if (!startDate || !endDate) {
-			throw this.response.badRequest("Start and end date must be provided");
+		try {
+			if (!startDate || !endDate) {
+				throw this.response.badRequest("Start and end date must be provided");
+			}
+
+			if (startDate >= endDate) {
+				throw this.response.badRequest("End date must be after start date");
+			}
+
+			const availableVehicles = await this.bookingRepo.findAvailableVehicle(
+				startDate,
+				endDate,
+			);
+
+			return availableVehicles;
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
 		}
-
-		if (startDate >= endDate) {
-			throw this.response.badRequest("End date must be after start date");
-		}
-
-		const availableVehicles = await this.bookingRepo.findAvailableVehicle(
-			startDate,
-			endDate,
-		);
-
-		return availableVehicles;
-	} catch (error) {
-		this.errorHandler.handleServiceError(error);
 	}
-}
-
 
 	async assignVehicleAndConfirm(
 		bookingId: string,
