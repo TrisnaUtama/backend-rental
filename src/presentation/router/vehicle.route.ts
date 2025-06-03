@@ -25,6 +25,40 @@ export const vehicleRoute = new Elysia({
 		tags: ["VEHICLE"],
 	},
 })
+	.get("/", async ({ set }) => {
+		try {
+			const vehicles = await vehicleService.getAll();
+			if (!vehicles) {
+				throw response.badRequest(
+					"Something went wrong while retreived vehicles",
+				);
+			}
+			set.status = 200;
+			return StandardResponse.success(
+				vehicles,
+				"Successfully retreived vehicles",
+			);
+		} catch (error) {
+			set.status = 500;
+			return GlobalErrorHandler.handleError(error, set);
+		}
+	})
+	.get("/:id", async ({ set, params }) => {
+		try {
+			const vehicle = await vehicleService.getOne(params.id);
+			if (!vehicle) {
+				throw response.badRequest("Error while retreiving data vehicle !");
+			}
+
+			return StandardResponse.success(
+				vehicle,
+				"Successdully retreived data vehicle",
+			);
+		} catch (error) {
+			set.status = 500;
+			return GlobalErrorHandler.handleError(error, set);
+		}
+	})
 	.use(
 		jwt({
 			name: `${process.env.JWT_NAME}`,
@@ -61,40 +95,6 @@ export const vehicleRoute = new Elysia({
 		return {
 			user,
 		};
-	})
-	.get("/", async ({ set }) => {
-		try {
-			const vehicles = await vehicleService.getAll();
-			if (!vehicles) {
-				throw response.badRequest(
-					"Something went wrong while retreived vehicles",
-				);
-			}
-			set.status = 200;
-			return StandardResponse.success(
-				vehicles,
-				"Successfully retreived vehicles",
-			);
-		} catch (error) {
-			set.status = 500;
-			return GlobalErrorHandler.handleError(error, set);
-		}
-	})
-	.get("/:id", async ({ set, params }) => {
-		try {
-			const vehicle = await vehicleService.getOne(params.id);
-			if (!vehicle) {
-				throw response.badRequest("Error while retreiving data vehicle !");
-			}
-
-			return StandardResponse.success(
-				vehicle,
-				"Successdully retreived data vehicle",
-			);
-		} catch (error) {
-			set.status = 500;
-			return GlobalErrorHandler.handleError(error, set);
-		}
 	})
 	.post(
 		"/",
