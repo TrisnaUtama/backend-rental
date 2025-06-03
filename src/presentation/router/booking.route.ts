@@ -20,7 +20,8 @@ export const bookingRoute = new Elysia({
 	detail: {
 		tags: ["BOOKING"],
 	},
-}).post(
+})
+	.post(
 		"/available-cars",
 		async ({ body, set }) => {
 			try {
