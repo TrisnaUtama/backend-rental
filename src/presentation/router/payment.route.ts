@@ -201,75 +201,75 @@ export const paymentRoute = new Elysia({
 		}
 	})
 	.post(
-	"/notification-handler",
-	async ({ body, set }) => {
-		try {
-			const notification = await midtrans.parseNotification(body);
+		"/notification-handler",
+		async ({ body, set }) => {
+			try {
+				const notification = await midtrans.parseNotification(body);
 
-			const {
-				order_id,
-				transaction_status,
-				status_code,
-				gross_amount,
-				fraud_status,
-			} = notification;
+				const {
+					order_id,
+					transaction_status,
+					status_code,
+					gross_amount,
+					fraud_status,
+				} = notification;
 
-			const payment = await paymentService.getByOrderid(order_id);
+				const payment = await paymentService.getByOrderid(order_id);
 
-			if (!payment) {
-				set.status = 404;
-				throw response.notFound("Payment not found");
+				if (!payment) {
+					set.status = 404;
+					throw response.notFound("Payment not found");
+				}
+
+				const serverKey = process.env.MIDTRANS_SERVER_KEY || "";
+				const localHash = crypto
+					.createHash("sha512")
+					.update(order_id + status_code + gross_amount + serverKey)
+					.digest("hex");
+
+				if (body.signature_key !== localHash) {
+					return StandardResponse.error("Invalid Signature", 400);
+				}
+
+				let statusToUpdate: Payment_Status;
+
+				if (transaction_status === "capture") {
+					statusToUpdate =
+						fraud_status === "accept"
+							? Payment_Status.PAID
+							: fraud_status === "challenge"
+								? Payment_Status.PENDING
+								: Payment_Status.FAILED;
+				} else if (transaction_status === "settlement") {
+					statusToUpdate = Payment_Status.PAID;
+				} else if (
+					transaction_status === "cancel" ||
+					transaction_status === "deny" ||
+					transaction_status === "expire"
+				) {
+					statusToUpdate = Payment_Status.FAILED;
+				} else if (transaction_status === "pending") {
+					statusToUpdate = Payment_Status.PENDING;
+				} else {
+					statusToUpdate = Payment_Status.FAILED;
+				}
+
+				await paymentService.update(payment.id, {
+					payment_status: statusToUpdate,
+					total_amount: new Decimal(gross_amount),
+				});
+
+				set.status = 200;
+				return StandardResponse.success(
+					null,
+					`Payment status updated to ${statusToUpdate}`,
+				);
+			} catch (error) {
+				set.status = 500;
+				return GlobalErrorHandler.handleError(error, set);
 			}
-
-			const serverKey = process.env.MIDTRANS_SERVER_KEY || "";
-			const localHash = crypto
-				.createHash("sha512")
-				.update(order_id + status_code + gross_amount + serverKey)
-				.digest("hex");
-
-			if (body.signature_key !== localHash) {
-				return StandardResponse.error("Invalid Signature", 400);
-			}
-
-			let statusToUpdate: Payment_Status;
-
-			if (transaction_status === "capture") {
-				statusToUpdate =
-					fraud_status === "accept"
-						? Payment_Status.PAID
-						: fraud_status === "challenge"
-						? Payment_Status.PENDING
-						: Payment_Status.FAILED;
-			} else if (transaction_status === "settlement") {
-				statusToUpdate = Payment_Status.PAID;
-			} else if (
-				transaction_status === "cancel" ||
-				transaction_status === "deny" ||
-				transaction_status === "expire"
-			) {
-				statusToUpdate = Payment_Status.FAILED;
-			} else if (transaction_status === "pending") {
-				statusToUpdate = Payment_Status.PENDING;
-			} else {
-				statusToUpdate = Payment_Status.FAILED;
-			}
-
-			await paymentService.update(payment.id, {
-				payment_status: statusToUpdate,
-				total_amount: new Decimal(gross_amount),
-			});
-
-			set.status = 200;
-			return StandardResponse.success(
-				null,
-				`Payment status updated to ${statusToUpdate}`,
-			);
-		} catch (error) {
-			set.status = 500;
-			return GlobalErrorHandler.handleError(error, set);
-		}
-	},
-	{
-		body: MidtransNotificationSchema,
-	},
-);
+		},
+		{
+			body: MidtransNotificationSchema,
+		},
+	);

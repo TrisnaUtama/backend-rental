@@ -25,6 +25,4 @@ export class MidtransService {
 	async parseNotification(notificationJson: any) {
 		return this.core.transaction.notification(notificationJson);
 	}
-
-
 }
