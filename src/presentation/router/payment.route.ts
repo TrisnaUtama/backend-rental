@@ -14,7 +14,6 @@ import type { IJwtPayload } from "../../infrastructure/entity/interfaces";
 import { Payment_Method, Payment_Status } from "@prisma/client";
 import { EXPIRY_DATE_MIDTRANS } from "../../infrastructure/utils/constant";
 import { getFormattedStartTime } from "../../infrastructure/utils/time-formater";
-import { Buffer } from "node:buffer";
 
 const MidtransNotificationSchema = t.Object({
 	order_id: t.String({ error: "order_id is required" }),
@@ -208,6 +207,7 @@ export const paymentRoute = new Elysia({
 					grossAmount,
 					fraud_status,
 					payment_type,
+					signature_key,
 				} = body;
 				const payment = await paymentService.getByOrderid(order_id);
 
@@ -215,11 +215,11 @@ export const paymentRoute = new Elysia({
 					set.status = 404;
 					throw response.notFound("Payment not found");
 				}
-
-				const grossAmountForHash = String(grossAmount);
-
-				const stringToHash = `${order_id}${transaction_status}${grossAmountForHash}${process.env.MIDTRANS_SERVER_KEY}`;
+				const stringToHash = `${order_id}${transaction_status}${grossAmount}${process.env.MIDTRANS_SERVER_KEY}`;
 				const hashBuffer = Bun.hash("sha512", stringToHash);
+				if (body.signature_key !== hashBuffer.toString()) {
+					return StandardResponse.error("error", 400);
+				}
 
 				let statusToUpdate: Payment_Status;
 				switch (transaction_status) {
