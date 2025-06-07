@@ -207,7 +207,7 @@ export const paymentRoute = new Elysia({
 					grossAmount,
 					fraud_status,
 					payment_type,
-					signature_key
+					signature_key,
 				} = body;
 				const payment = await paymentService.getByOrderid(order_id);
 
@@ -217,8 +217,8 @@ export const paymentRoute = new Elysia({
 				}
 				const stringToHash = `${order_id}${transaction_status}${grossAmount}${process.env.MIDTRANS_SERVER_KEY}`;
 				const hashBuffer = Bun.hash("sha512", stringToHash);
-				if(body.signature_key !== hashBuffer.toString()){
-					return StandardResponse.error("error", 400)
+				if (body.signature_key !== hashBuffer.toString()) {
+					return StandardResponse.error("error", 400);
 				}
 
 				let statusToUpdate: Payment_Status;
