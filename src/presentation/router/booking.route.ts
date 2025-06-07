@@ -188,14 +188,13 @@ export const bookingRoute = new Elysia({
 	)
 	.patch(
 		"/:id",
-		async ({ set, params, body, user }) => {
+		async ({ set, params, body }) => {
 			try {
 				const existing_booking = await bookingService.getOne(params.id);
 				if (!existing_booking) {
 					throw response.badRequest("Error while retrieving Booking");
 				}
 				const payload: UpdateBooking = {
-					user_id: user.id,
 					promo_id: body.promo_id || null,
 					travel_package_id: body.travel_package_id || null,
 					licences_id: body.licences_id,
