@@ -156,7 +156,7 @@ export const paymentRoute = new Elysia({
 						id: vehicle.id,
 						name: `Rental - ${vehicle.name}`,
 						price: Number(vehicle.price_per_day),
-						quantity: `${durationInDays} days`,
+						quantity: durationInDays,
 					});
 
 					gross_amount += Number(vehicle.price_per_day) * durationInDays;
