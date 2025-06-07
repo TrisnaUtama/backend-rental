@@ -14,12 +14,15 @@ import type { IJwtPayload } from "../../infrastructure/entity/interfaces";
 import { Payment_Method, Payment_Status } from "@prisma/client";
 import { EXPIRY_DATE_MIDTRANS } from "../../infrastructure/utils/constant";
 import { getFormattedStartTime } from "../../infrastructure/utils/time-formater";
+import { Buffer } from 'node:buffer'; 
 
 const MidtransNotificationSchema = t.Object({
-	order_id: t.String({ error: "order_id is required" }),
-	transaction_status: t.String({ error: "transaction_status is required" }),
-	fraud_status: t.Optional(t.String()),
-	payment_type: t.Optional(t.Enum(Payment_Method)),
+    order_id: t.String({ error: "order_id is required" }),
+    transaction_status: t.String({ error: "transaction_status is required" }),
+    grossAmount: t.Number({ error: "grossAmount is required" }), 
+    fraud_status: t.Optional(t.String()),
+    payment_type: t.Optional(t.Enum(Payment_Method)),
+    signature_key: t.String({ error: "signature_key is required" }),
 });
 
 export const paymentRoute = new Elysia({
@@ -158,7 +161,7 @@ export const paymentRoute = new Elysia({
 							id: vehicle.id,
 							name: `Rental - ${vehicle.name}`,
 							price: Number(vehicle.price_per_day),
-							quantity: durationInDays,
+							quantity: `${durationInDays} days`,
 						});
 
 						gross_amount += Number(vehicle.price_per_day) * durationInDays;
@@ -199,70 +202,72 @@ export const paymentRoute = new Elysia({
 				return GlobalErrorHandler.handleError(error, set);
 			}
 		},
-		{
-			body: t.Object({
-				payment_method: t.Enum(Payment_Method, {
-					error: "payment method must be filled",
-				}),
-			}),
-		},
-	)
-	.post(
-		"/notification-handler",
-		async ({ body, set }) => {
-			try {
-				const { order_id, transaction_status, fraud_status, payment_type } =
-					body;
+	).post(
+        "/notification-handler",
+        async ({ body, set }) => {
+            try {
+                const { order_id, transaction_status, grossAmount, fraud_status, payment_type } = body;
+                const payment = await paymentService.getByOrderid(order_id);
 
-				const payment = await paymentService.getByOrderid(order_id);
+                if (!payment) {
+                    set.status = 404;
+                    throw response.notFound("Payment not found");
+                }
 
-				if (!payment) {
-					set.status = 404;
-					throw response.notFound("Payment not found");
-				}
+                const grossAmountForHash = String(grossAmount);
 
-				let statusToUpdate: Payment_Status;
+                const stringToHash = `${order_id}${transaction_status}${grossAmountForHash}${process.env.MIDTRANS_SERVER_KEY}`;
+                const hashBuffer = Bun.hash('sha512', stringToHash);
 
-				switch (transaction_status) {
-					case "capture":
-						statusToUpdate =
-							fraud_status === "challenge"
-								? Payment_Status.PENDING
-								: Payment_Status.PAID;
-						break;
-					case "settlement":
-						statusToUpdate = Payment_Status.PAID;
-						break;
-					case "cancel":
-					case "deny":
-					case "expire":
-						statusToUpdate = Payment_Status.FAILED;
-						break;
-					case "pending":
-						statusToUpdate = Payment_Status.PENDING;
-						break;
-					default:
-						statusToUpdate = Payment_Status.FAILED;
-				}
 
-				const payment_payload = {
-					...payment,
-					payment_status: statusToUpdate,
-				};
+                let statusToUpdate: Payment_Status;
+                switch (transaction_status) {
+                    case "capture":
+                        statusToUpdate = fraud_status === "challenge" ? Payment_Status.PENDING : Payment_Status.PAID;
+                        break;
+                    case "settlement":
+                        statusToUpdate = Payment_Status.PAID;
+                        break;
+                    case "cancel":
+                    case "deny":
+                    case "expire":
+                        statusToUpdate = Payment_Status.FAILED;
+                        break;
+                    case "pending":
+                        statusToUpdate = Payment_Status.PENDING;
+                        break;
+                    default:
+                        statusToUpdate = Payment_Status.FAILED;
+                }
 
-				await paymentService.update(payment.id, payment_payload);
+                const updateData: {
+                    payment_status: Payment_Status;
+                    gross_amount?: number; 
+                    payment_method?: Payment_Method; 
+                } = {
+                    payment_status: statusToUpdate,
+                    gross_amount: grossAmount 
+                };
+                if (payment_type) {
+                    updateData.payment_method = payment_type;
+                }
+                const finalUpdatePayload = {
+                    ...payment, 
+                    ...updateData 
+                };
+                await paymentService.update(payment.id, finalUpdatePayload);
 
-				set.status = 200;
-				return StandardResponse.success(
-					null,
-					`Payment status updated to ${statusToUpdate}`,
-				);
-			} catch (error) {
-				set.status = 500;
-				return GlobalErrorHandler.handleError(error, set);
-			}
-		},
-		{
-			body: MidtransNotificationSchema,
-		},
-	);
+                set.status = 200;
+                return StandardResponse.success(
+                    null,
+                    `Payment status updated to ${statusToUpdate}`,
+                );
+            } catch (error) {
+                set.status = 500;
+                return GlobalErrorHandler.handleError(error, set);
+            }
+        },
+        {
+            body: MidtransNotificationSchema,
+        },
+    );
