@@ -49,11 +49,12 @@ export class DestinationService {
 		}
 	}
 
-	async getRecomendation(id:string[]){
-		try{
-			const recomendationDestination = await this.destinationRepo.getRecomendedById(id)
-			return recomendationDestination
-		}catch (error) {
+	async getRecomendation(id: string[]) {
+		try {
+			const recomendationDestination =
+				await this.destinationRepo.getRecomendedById(id);
+			return recomendationDestination;
+		} catch (error) {
 			this.errorHandler.handleServiceError(error);
 		}
 	}

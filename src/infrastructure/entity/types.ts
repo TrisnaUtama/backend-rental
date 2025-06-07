@@ -53,7 +53,6 @@ export const TYPES = {
 	ratingRepo: Symbol.for("RatingRepository"),
 	accomodationRepo: Symbol.for("AccomodationRepository"),
 	storageRepo: Symbol.for("StorageRepository"),
-
 };
 
 // CREATES //

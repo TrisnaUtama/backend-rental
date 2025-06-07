@@ -49,7 +49,7 @@ export class PaymentService {
 		}
 	}
 
-	async getByOrderid(order_id:string) {
+	async getByOrderid(order_id: string) {
 		try {
 			const payment = await this.paymentRepo.getByOrderId(order_id);
 			if (!payment)
