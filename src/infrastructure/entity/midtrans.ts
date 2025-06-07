@@ -15,10 +15,18 @@ export class MidtransService {
 	}
 
 	async charge(payload: any) {
-		return this.core.createTransaction(payload);
+		return this.core.createTransactionToken(payload);
 	}
 
 	async getTransactionStatus(orderId: string) {
 		return this.core.transaction.status(orderId);
+	}
+
+	async parseNotification(body: any) {
+		return {
+			orderId: body.order_id,
+			transactionStatus: body.transaction_status,
+			fraudStatus: body.fraud_status,
+		};
 	}
 }

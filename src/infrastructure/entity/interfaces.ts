@@ -115,6 +115,7 @@ export interface IVehicles {
 export interface IDestinations {
 	getAll: () => Promise<Destinations[]>;
 	getOne: (id: string) => Promise<Destinations | null>;
+	getRecomendedById: (ids: string[]) => Promise<Destinations[] | null>
 	create: (payload: CreateDestination) => Promise<Destinations | null>;
 	update: (id: string, payload: UpdateDestination) => Promise<Destinations>;
 }
@@ -188,6 +189,7 @@ export interface IBookings {
 export interface IPayments {
 	getAll: () => Promise<Payments[]>;
 	getOne: (id: string) => Promise<Payments | null>;
+	getByOrderId: (order_id:string) => Promise<Payments | null>
 	create: (payload: CreatePayment) => Promise<Payments | null>;
 	update: (id: string, payload: UpdatePayment) => Promise<Payments>;
 }

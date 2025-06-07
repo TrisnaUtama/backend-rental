@@ -49,6 +49,15 @@ export class DestinationService {
 		}
 	}
 
+	async getRecomendation(id:string[]){
+		try{
+			const recomendationDestination = await this.destinationRepo.getRecomendedById(id)
+			return recomendationDestination
+		}catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
+
 	async create(payload: CreateDestination) {
 		try {
 			const new_destination = await this.destinationRepo.create(payload);

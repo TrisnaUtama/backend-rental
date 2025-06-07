@@ -113,8 +113,7 @@ export class BookingService {
 				}
 
 				const durationInDays =
-					Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) +
-					1;
+					(end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
 
 				for (const vehicle of vehicles) {
 					if (vehicle.status !== "AVAILABLE") {
