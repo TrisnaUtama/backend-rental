@@ -259,7 +259,10 @@ export const paymentRoute = new Elysia({
 					...payment,
 					...updateData,
 				};
-				const data = await paymentService.update(payment.id, finalUpdatePayload);
+				const data = await paymentService.update(
+					payment.id,
+					finalUpdatePayload,
+				);
 
 				console.log(data);
 
