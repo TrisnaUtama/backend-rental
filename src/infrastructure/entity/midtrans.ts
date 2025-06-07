@@ -22,11 +22,9 @@ export class MidtransService {
 		return this.core.transaction.status(orderId);
 	}
 
-	async parseNotification(body: any) {
-		return {
-			orderId: body.order_id,
-			transactionStatus: body.transaction_status,
-			fraudStatus: body.fraud_status,
-		};
+	async parseNotification(notificationJson: any) {
+		return this.core.transaction.notification(notificationJson);
 	}
+
+
 }

@@ -15,6 +15,7 @@ import { Payment_Method, Payment_Status } from "@prisma/client";
 import { EXPIRY_DATE_MIDTRANS } from "../../infrastructure/utils/constant";
 import { getFormattedStartTime } from "../../infrastructure/utils/time-formater";
 import crypto from "node:crypto";
+import { Decimal } from "@prisma/client/runtime/library";
 
 const MidtransNotificationSchema = t.Object({
 	order_id: t.String({ error: "order_id is required" }),
@@ -200,83 +201,75 @@ export const paymentRoute = new Elysia({
 		}
 	})
 	.post(
-		"/notification-handler",
-		async ({ body, set }) => {
-			try {
-				const {
-					order_id,
-					transaction_status,
-					status_code,
-					gross_amount,
-					fraud_status,
-					payment_type,
-					signature_key,
-				} = body;
-				const payment = await paymentService.getByOrderid(order_id);
+	"/notification-handler",
+	async ({ body, set }) => {
+		try {
+			const notification = await midtrans.parseNotification(body);
 
-				if (!payment) {
-					set.status = 404;
-					throw response.notFound("Payment not found");
-				}
+			const {
+				order_id,
+				transaction_status,
+				status_code,
+				gross_amount,
+				fraud_status,
+			} = notification;
 
-				const serverKey = process.env.MIDTRANS_SERVER_KEY || "";
-				const hash = crypto
-					.createHash("sha512")
-					.update(order_id + status_code + gross_amount + serverKey)
-					.digest("hex");
-				if (signature_key !== hash) {
-					return StandardResponse.error("Invalid Signature", 400);
-				}
+			const payment = await paymentService.getByOrderid(order_id);
 
-				let statusToUpdate: Payment_Status;
-				if (transaction_status === "capture") {
-					if (fraud_status === "accept") {
-						statusToUpdate = Payment_Status.PAID;
-					} else if (fraud_status === "challenge") {
-						statusToUpdate = Payment_Status.PENDING;
-					} else {
-						statusToUpdate = Payment_Status.FAILED;
-					}
-				} else if (transaction_status === "settlement") {
-					statusToUpdate = Payment_Status.PAID;
-				} else if (
-					transaction_status === "cancel" ||
-					transaction_status === "deny" ||
-					transaction_status === "expire"
-				) {
-					statusToUpdate = Payment_Status.FAILED;
-				} else if (transaction_status === "pending") {
-					statusToUpdate = Payment_Status.PENDING;
-				} else {
-					statusToUpdate = Payment_Status.FAILED;
-				}
-
-				const updateData: {
-					payment_status: Payment_Status;
-					gross_amount?: number;
-				} = {
-					payment_status: statusToUpdate,
-					gross_amount: Number(gross_amount),
-				};
-				const finalUpdatePayload = {
-					...payment,
-					...updateData,
-				};
-				const data = await paymentService.update(
-					payment.id,
-					finalUpdatePayload,
-				);
-				set.status = 200;
-				return StandardResponse.success(
-					null,
-					`Payment status updated to ${statusToUpdate}`,
-				);
-			} catch (error) {
-				set.status = 500;
-				return GlobalErrorHandler.handleError(error, set);
+			if (!payment) {
+				set.status = 404;
+				throw response.notFound("Payment not found");
 			}
-		},
-		{
-			body: MidtransNotificationSchema,
-		},
-	);
+
+			const serverKey = process.env.MIDTRANS_SERVER_KEY || "";
+			const localHash = crypto
+				.createHash("sha512")
+				.update(order_id + status_code + gross_amount + serverKey)
+				.digest("hex");
+
+			if (body.signature_key !== localHash) {
+				return StandardResponse.error("Invalid Signature", 400);
+			}
+
+			let statusToUpdate: Payment_Status;
+
+			if (transaction_status === "capture") {
+				statusToUpdate =
+					fraud_status === "accept"
+						? Payment_Status.PAID
+						: fraud_status === "challenge"
+						? Payment_Status.PENDING
+						: Payment_Status.FAILED;
+			} else if (transaction_status === "settlement") {
+				statusToUpdate = Payment_Status.PAID;
+			} else if (
+				transaction_status === "cancel" ||
+				transaction_status === "deny" ||
+				transaction_status === "expire"
+			) {
+				statusToUpdate = Payment_Status.FAILED;
+			} else if (transaction_status === "pending") {
+				statusToUpdate = Payment_Status.PENDING;
+			} else {
+				statusToUpdate = Payment_Status.FAILED;
+			}
+
+			await paymentService.update(payment.id, {
+				payment_status: statusToUpdate,
+				total_amount: new Decimal(gross_amount),
+			});
+
+			set.status = 200;
+			return StandardResponse.success(
+				null,
+				`Payment status updated to ${statusToUpdate}`,
+			);
+		} catch (error) {
+			set.status = 500;
+			return GlobalErrorHandler.handleError(error, set);
+		}
+	},
+	{
+		body: MidtransNotificationSchema,
+	},
+);
