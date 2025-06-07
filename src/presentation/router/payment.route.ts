@@ -11,9 +11,16 @@ import { StandardResponse } from "../../infrastructure/utils/response/standard.r
 import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.response";
 import { response } from "../../application/instances";
 import type { IJwtPayload } from "../../infrastructure/entity/interfaces";
-import { Payment_Method } from "@prisma/client";
+import { Payment_Method, Payment_Status } from "@prisma/client";
 import { EXPIRY_DATE_MIDTRANS } from "../../infrastructure/utils/constant";
 import { getFormattedStartTime } from "../../infrastructure/utils/time-formater";
+
+const MidtransNotificationSchema = t.Object({
+	order_id: t.String({ error: "order_id is required" }),
+	transaction_status: t.String({ error: "transaction_status is required" }),
+	fraud_status: t.Optional(t.String()),
+	payment_type: t.Optional(t.Enum(Payment_Method)),
+});
 
 export const paymentRoute = new Elysia({
 	prefix: "/v1/payments",
@@ -95,8 +102,7 @@ export const paymentRoute = new Elysia({
 
 				const durationInMs =
 					booking.end_date.getTime() - booking.start_date.getTime();
-				const durationInDays =
-					Math.ceil(durationInMs / (1000 * 60 * 60 * 24)) + 1;
+				const durationInDays = Math.ceil(durationInMs / (1000 * 60 * 60 * 24));
 
 				let item_details: any[] = [];
 				let gross_amount = 0;
@@ -136,20 +142,27 @@ export const paymentRoute = new Elysia({
 					booking.booking_vehicles &&
 					booking.booking_vehicles.length > 0
 				) {
-					const bookingVehicle = booking.booking_vehicles[0];
-					const vehicle = await vehicleService.getOne(
-						bookingVehicle.vehicle_id,
-					);
-					item_details = [
-						{
+					const bookingVehicles = booking.booking_vehicles;
+					item_details = [];
+
+					for (const bv of bookingVehicles) {
+						const vehicle = await vehicleService.getOne(bv.vehicle_id);
+
+						if (!vehicle) {
+							return response.badRequest(
+								`Vehicle with id ${bv.vehicle_id} not found`,
+							);
+						}
+
+						item_details.push({
 							id: vehicle.id,
 							name: `Rental - ${vehicle.name}`,
 							price: Number(vehicle.price_per_day),
 							quantity: durationInDays,
-						},
-					];
+						});
 
-					gross_amount = item_details[0].price * item_details[0].quantity;
+						gross_amount += Number(vehicle.price_per_day) * durationInDays;
+					}
 				} else {
 					return response.badRequest("Unsupported or unknown booking type");
 				}
@@ -178,7 +191,7 @@ export const paymentRoute = new Elysia({
 
 				set.status = 200;
 				return StandardResponse.success(
-					{ snapResponse, payment_id: payment.id },
+					{ token: snapResponse, payment_id: payment.id },
 					"Payment created & Midtrans token generated successfully",
 				);
 			} catch (error) {
@@ -192,5 +205,64 @@ export const paymentRoute = new Elysia({
 					error: "payment method must be filled",
 				}),
 			}),
+		},
+	)
+	.post(
+		"/notification-handler",
+		async ({ body, set }) => {
+			try {
+				const { order_id, transaction_status, fraud_status, payment_type } =
+					body;
+
+				const payment = await paymentService.getByOrderid(order_id);
+
+				if (!payment) {
+					set.status = 404;
+					throw response.notFound("Payment not found");
+				}
+
+				let statusToUpdate: Payment_Status;
+
+				switch (transaction_status) {
+					case "capture":
+						statusToUpdate =
+							fraud_status === "challenge"
+								? Payment_Status.PENDING
+								: Payment_Status.PAID;
+						break;
+					case "settlement":
+						statusToUpdate = Payment_Status.PAID;
+						break;
+					case "cancel":
+					case "deny":
+					case "expire":
+						statusToUpdate = Payment_Status.FAILED;
+						break;
+					case "pending":
+						statusToUpdate = Payment_Status.PENDING;
+						break;
+					default:
+						statusToUpdate = Payment_Status.FAILED;
+				}
+
+				const payment_payload = {
+					...payment,
+					payment_status: statusToUpdate,
+				};
+
+				await paymentService.update(payment.id, payment_payload);
+
+				set.status = 200;
+				return StandardResponse.success(
+					null,
+					`Payment status updated to ${statusToUpdate}`,
+				);
+			} catch (error) {
+				set.status = 500;
+				return GlobalErrorHandler.handleError(error, set);
+			}
+		},
+		{
+			body: MidtransNotificationSchema,
 		},
 	);

@@ -38,6 +38,20 @@ export class DestinationRepository implements IDestinations {
 		}
 	}
 
+	async getRecomendedById(ids: string[]) {
+		try {
+			return await this.prisma.destinations.findMany({
+				where: {
+					id: {
+						in: ids,
+					},
+				},
+			});
+		} catch (error) {
+			this.errorHandler.handleRepositoryError(error);
+		}
+	}
+
 	async create(payload: CreateDestination) {
 		try {
 			return await this.prisma.destinations.create({ data: payload });

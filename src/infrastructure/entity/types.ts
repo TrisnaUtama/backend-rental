@@ -26,6 +26,8 @@ export const TYPES = {
 	email: Symbol.for("EmailService"),
 	http: Symbol.for("Http"),
 	midtrans: Symbol.for("MidtransService"),
+	httpClient: Symbol.for("HttpClient"),
+	recomendation: Symbol.for("RecomendationService"),
 	// badRequest: Symbol.for("BadRequest"),
 	// notFoundError: Symbol.for("NotFoundError"),
 	// unauthorizedError: Symbol.for("UnautorizedError"),

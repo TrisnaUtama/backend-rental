@@ -13,6 +13,7 @@ import { storageRoute } from "./presentation/router/storage.route";
 import staticPlugin from "@elysiajs/static";
 import { ratingRoute } from "./presentation/router/rating.route";
 import { accomodationRoute } from "./presentation/router/accomodation.route";
+import { recommendationRoute } from "./presentation/router/recomendation.route";
 const app = new Elysia();
 app
 	.use(
@@ -26,7 +27,7 @@ app
 	.use(
 		staticPlugin({
 			prefix: "/",
-			assets: process.env.STORAGE_PATH || "/var/www/html/storage",
+			assets: process.env.STORAGE_PATH,
 		}),
 	)
 	.use(
@@ -46,6 +47,7 @@ app
 			.use(paymentRoute)
 			.use(storageRoute)
 			.use(accomodationRoute)
+			.use(recommendationRoute)
 			.use(ratingRoute),
 	)
 	.listen({ port: 8000, hostname: "0.0.0.0" });

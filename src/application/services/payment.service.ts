@@ -49,6 +49,19 @@ export class PaymentService {
 		}
 	}
 
+	async getByOrderid(order_id: string) {
+		try {
+			const payment = await this.paymentRepo.getByOrderId(order_id);
+			if (!payment)
+				throw this.response.badRequest(
+					`Error while retreiving payment with id ${order_id}`,
+				);
+			return payment;
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
+
 	async create(payload: CreatePayment) {
 		try {
 			const created_payment = await this.paymentRepo.create(payload);

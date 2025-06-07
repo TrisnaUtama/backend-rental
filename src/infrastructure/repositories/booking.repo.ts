@@ -25,7 +25,11 @@ export class BookingRepository implements IBookings {
 					id,
 				},
 				include: {
-					booking_vehicles: true,
+					booking_vehicles: {
+						include: {
+							vehicle: true,
+						},
+					},
 					travel_package: true,
 					Payments: true,
 					promos: true,
@@ -44,7 +48,11 @@ export class BookingRepository implements IBookings {
 					user_id: id,
 				},
 				include: {
-					booking_vehicles: true,
+					booking_vehicles: {
+						include: {
+							vehicle: true,
+						},
+					},
 					travel_package: true,
 					Payments: true,
 					promos: true,
@@ -60,7 +68,11 @@ export class BookingRepository implements IBookings {
 		try {
 			return await this.prisma.bookings.findMany({
 				include: {
-					booking_vehicles: true,
+					booking_vehicles: {
+						include: {
+							vehicle: true,
+						},
+					},
 					travel_package: true,
 					Payments: true,
 					promos: true,

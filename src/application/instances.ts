@@ -59,6 +59,8 @@ import { AccomodationRepostitory } from "../infrastructure/repositories/accomoda
 import { AccomodationService } from "./services/accomodation.service";
 import { BookingVehiclesRepository } from "../infrastructure/repositories/bookingVehicle.repo";
 import { TravelItinerariesRepository } from "../infrastructure/repositories/travelItineraries.repo";
+import { HttpClient } from "../infrastructure/utils/response/http-client";
+import { RecomendationService } from "./services/recomendation.service";
 
 export const container = new Container();
 
@@ -101,6 +103,7 @@ container.bind<IStorage>(TYPES.storageRepo).to(StorageRepository);
 container.bind<ErrorHandler>(TYPES.errorHandler).to(ErrorHandler);
 container.bind<HashService>(TYPES.hashed_password).to(HashService);
 container.bind<EmailService>(TYPES.email).to(EmailService);
+container.bind<HttpClient>(TYPES.httpClient).to(HttpClient);
 
 // services
 container.bind<AuthService>(AuthService).toSelf();
@@ -120,6 +123,7 @@ container.bind<StorageService>(StorageService).toSelf();
 container.bind<Http>(Http).toSelf();
 container.bind<MidtransService>(MidtransService).toSelf();
 container.bind<Logger>(Logger).toSelf();
+container.bind<RecomendationService>(RecomendationService).toSelf();
 
 //instance
 
@@ -145,3 +149,5 @@ export const otpService = container.get<OtpService>(OtpService);
 export const storageService = container.get<StorageService>(StorageService);
 export const accomodationService =
 	container.get<AccomodationService>(AccomodationService);
+export const recomendationService =
+	container.get<RecomendationService>(RecomendationService);
