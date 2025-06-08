@@ -11,7 +11,7 @@ import { StandardResponse } from "../../infrastructure/utils/response/standard.r
 import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.response";
 import { response } from "../../application/instances";
 import type { IJwtPayload } from "../../infrastructure/entity/interfaces";
-import {  Payment_Status } from "@prisma/client";
+import { Payment_Status } from "@prisma/client";
 import { EXPIRY_DATE_MIDTRANS } from "../../infrastructure/utils/constant";
 import { getFormattedStartTime } from "../../infrastructure/utils/time-formater";
 import crypto from "node:crypto";
