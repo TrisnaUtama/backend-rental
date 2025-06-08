@@ -183,7 +183,7 @@ export const bookingRoute = new Elysia({
 				pick_up_at_airport: t.Boolean(),
 				notes: t.Optional(t.String()),
 				start_date: t.Date(),
-				end_date: t.Date(),
+				end_date: t.Optional(t.Date()),
 			}),
 		},
 	)
