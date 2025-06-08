@@ -91,79 +91,89 @@ export class BookingService {
 		selected_pax_option_id?: string,
 	) {
 		try {
-        const { travel_package_id, start_date, end_date } = payload;
+			const { travel_package_id, start_date, end_date } = payload;
 
-        if (!start_date) { 
-            throw this.response.badRequest("Start date is required");
-        }
+			if (!start_date) {
+				throw this.response.badRequest("Start date is required");
+			}
 
-        let total_price = new Decimal(0);
-        let calculated_end_date: Date | null = end_date ?? null;
+			let total_price = new Decimal(0);
+			let calculated_end_date: Date | null = end_date ?? null;
 
-        if (vehicle_ids && vehicle_ids.length > 0) {
-            if (!end_date) {
-                throw this.response.badRequest("End date is required for vehicle bookings");
-            }
-            const vehicles = await this.vehicleRepo.getManyByIds(vehicle_ids);
-            if (vehicles.length !== vehicle_ids?.length) {
-                throw this.response.badRequest("One or more vehicles not found");
-            }
-            const start = new Date(start_date);
-            const end = new Date(end_date);
-            if (start >= end) {
-                throw this.response.badRequest("End date must be after start date");
-            }
-            const durationInDays = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
-            for (const vehicle of vehicles) {
-                if (vehicle.status !== "AVAILABLE") {
-                    throw this.response.badRequest(`Vehicle ${vehicle.name} is not available`);
-                }
-                total_price = total_price.plus(vehicle.price_per_day.mul(durationInDays));
-            }
-        }
+			if (vehicle_ids && vehicle_ids.length > 0) {
+				if (!end_date) {
+					throw this.response.badRequest(
+						"End date is required for vehicle bookings",
+					);
+				}
+				const vehicles = await this.vehicleRepo.getManyByIds(vehicle_ids);
+				if (vehicles.length !== vehicle_ids?.length) {
+					throw this.response.badRequest("One or more vehicles not found");
+				}
+				const start = new Date(start_date);
+				const end = new Date(end_date);
+				if (start >= end) {
+					throw this.response.badRequest("End date must be after start date");
+				}
+				const durationInDays =
+					(end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
+				for (const vehicle of vehicles) {
+					if (vehicle.status !== "AVAILABLE") {
+						throw this.response.badRequest(
+							`Vehicle ${vehicle.name} is not available`,
+						);
+					}
+					total_price = total_price.plus(
+						vehicle.price_per_day.mul(durationInDays),
+					);
+				}
+			}
 
-        if (travel_package_id) {
-            const travelPackage = await this.travelPackageRepo.getOne(travel_package_id);
-            if (!travelPackage || !travelPackage.status) {
-                throw this.response.badRequest("Travel package not available");
-            }
-            if (!selected_pax_option_id) {
-                throw this.response.badRequest("Selected pax option is required");
-            }
-            const paxOption = await this.travelPaxRepo.getOne(selected_pax_option_id);
-            if (!paxOption || paxOption.travel_package_id !== travel_package_id) {
-                throw this.response.badRequest("Invalid pax option selected");
-            }
+			if (travel_package_id) {
+				const travelPackage =
+					await this.travelPackageRepo.getOne(travel_package_id);
+				if (!travelPackage || !travelPackage.status) {
+					throw this.response.badRequest("Travel package not available");
+				}
+				if (!selected_pax_option_id) {
+					throw this.response.badRequest("Selected pax option is required");
+				}
+				const paxOption = await this.travelPaxRepo.getOne(
+					selected_pax_option_id,
+				);
+				if (!paxOption || paxOption.travel_package_id !== travel_package_id) {
+					throw this.response.badRequest("Invalid pax option selected");
+				}
 
-            const start = new Date(start_date);
-            const durationInDays = travelPackage.duration;
-            start.setDate(start.getDate() + durationInDays);
-            calculated_end_date = start;
+				const start = new Date(start_date);
+				const durationInDays = travelPackage.duration;
+				start.setDate(start.getDate() + durationInDays);
+				calculated_end_date = start;
 
-            total_price = total_price.plus(paxOption.price);
-        }
+				total_price = total_price.plus(paxOption.price);
+			}
 
-        const booking = await this.bookingRepo.create({
-            ...payload,
-            end_date: calculated_end_date, 
-            total_price,
-            pax_option_id: selected_pax_option_id || null,
-        });
+			const booking = await this.bookingRepo.create({
+				...payload,
+				end_date: calculated_end_date,
+				total_price,
+				pax_option_id: selected_pax_option_id || null,
+			});
 
-        if (vehicle_ids && vehicle_ids.length > 0) {
-            const relations = vehicle_ids.map((vehicle_id: string) => ({
-                booking_id: booking.id,
-                vehicle_id,
-            }));
+			if (vehicle_ids && vehicle_ids.length > 0) {
+				const relations = vehicle_ids.map((vehicle_id: string) => ({
+					booking_id: booking.id,
+					vehicle_id,
+				}));
 
-            await this.bookingVehicleRepo.create(relations);
-        }
+				await this.bookingVehicleRepo.create(relations);
+			}
 
-        return booking;
-    } catch (error) {
-        this.errorHandler.handleServiceError(error);
-    }
-}
+			return booking;
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
 
 	async update(id: string, payload: UpdateBooking) {
 		try {

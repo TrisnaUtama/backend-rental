@@ -58,7 +58,7 @@ export class BookingRepository implements IBookings {
 					Payments: true,
 					promos: true,
 					users: true,
-					pax_option: true
+					pax_option: true,
 				},
 			});
 		} catch (error) {
@@ -79,7 +79,7 @@ export class BookingRepository implements IBookings {
 					Payments: true,
 					promos: true,
 					users: true,
-					pax_option: true
+					pax_option: true,
 				},
 			});
 		} catch (error) {
