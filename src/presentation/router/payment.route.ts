@@ -274,10 +274,10 @@ export const paymentRoute = new Elysia({
 					payment_status: statusToUpdate,
 					total_amount: new Decimal(body.gross_amount),
 				});
-				
+
 				await bookingService.update(payment.booking_id, {
-					status: "COMPLETE"
-				})
+					status: "COMPLETE",
+				});
 
 				set.status = 200;
 				return "OK";
