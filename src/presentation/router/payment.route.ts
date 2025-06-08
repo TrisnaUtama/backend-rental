@@ -260,7 +260,7 @@ export const paymentRoute = new Elysia({
 				return "OK";
 			} catch (error) {
 				console.error("Midtrans notification error", error);
-				set.status = 200; 
+				set.status = 200;
 				return "OK";
 			}
 		},
