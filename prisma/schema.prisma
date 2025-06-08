@@ -303,6 +303,7 @@ model Travel_Packages_Pax {
   updated_at      DateTime @updatedAt
   deleted_at  DateTime? 
 
+  booking     Bookings[]
   travel_package   Travel_Packages @relation(fields: [travel_package_id], references: [id])
 }
 
@@ -313,6 +314,7 @@ model Bookings {
   travel_package_id String?
   status          Booking_Status @default(SUBMITTED)
   start_date      DateTime
+  pax_option_id   String?
   end_date        DateTime?
   total_price     Decimal?
   card_id         String
@@ -331,6 +333,8 @@ model Bookings {
 
   Payments Payments[]
   Vehicles Vehicles[]
+
+  pax_option Travel_Packages_Pax[]
 }
 
 model Promos {
