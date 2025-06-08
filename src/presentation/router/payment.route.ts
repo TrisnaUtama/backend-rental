@@ -11,7 +11,7 @@ import { StandardResponse } from "../../infrastructure/utils/response/standard.r
 import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.response";
 import { response } from "../../application/instances";
 import type { IJwtPayload } from "../../infrastructure/entity/interfaces";
-import { Payment_Method, Payment_Status } from "@prisma/client";
+import { Payment_Status } from "@prisma/client";
 import { EXPIRY_DATE_MIDTRANS } from "../../infrastructure/utils/constant";
 import { getFormattedStartTime } from "../../infrastructure/utils/time-formater";
 import crypto from "node:crypto";
@@ -22,7 +22,6 @@ const MidtransNotificationSchema = t.Object({
 	status_code: t.String({ error: "status code is required" }),
 	transaction_status: t.String({ error: "transaction status is required" }),
 	gross_amount: t.String({ error: "grossAmount is required" }),
-	transaction_id: t.String({ error: "transaction id is required" }),
 	fraud_status: t.Optional(t.String()),
 	payment_type: t.Optional(t.String()),
 	signature_key: t.String({ error: "signature_key is required" }),
