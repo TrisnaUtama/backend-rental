@@ -90,6 +90,22 @@ export const paymentRoute = new Elysia({
 			return GlobalErrorHandler.handleError(error, set);
 		}
 	})
+	.get("/order-id/:id", async ({ set, body, params }) => {
+		try {
+			const payments = await paymentService.getOne(params.id);
+			if (!payments) {
+				set.status = 400;
+				throw response.badRequest(
+					`Error while retreiving data payment with booking id ${params.id}`,
+				);
+			}
+			set.status = 200;
+			return StandardResponse.success(payments);
+		} catch (error) {
+			set.status = 500;
+			return GlobalErrorHandler.handleError(error, set);
+		}
+	})
 	.patch("/:id", async ({ set, user, params }) => {
 		try {
 			const startTime = getFormattedStartTime();
