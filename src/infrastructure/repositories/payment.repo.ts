@@ -43,7 +43,7 @@ export class PaymentRepository implements IPayments {
 	async getByOrderId(orderId: string) {
 		return await this.prisma.payments.findFirst({
 			where: {
-				booking_id: orderId
+				booking_id: orderId,
 			},
 			include: {
 				booking: true,
