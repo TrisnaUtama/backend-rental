@@ -78,10 +78,13 @@ export class PaymentService {
 			const exist_payment = await this.paymentRepo.getOne(id);
 			if (!exist_payment)
 				throw this.response.notFound(`Payment id ${id} not found`);
-			const update_payment = await this.paymentRepo.update(id, payload);
+			const update_payment = await this.paymentRepo.update(
+				exist_payment.id,
+				payload,
+			);
 			if (!update_payment)
 				throw this.response.badRequest(
-					`Error while updating payment with id ${id}`,
+					`Error while updating payment with id ${exist_payment.id}`,
 				);
 			return update_payment;
 		} catch (error) {
