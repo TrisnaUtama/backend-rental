@@ -215,14 +215,14 @@ export const paymentRoute = new Elysia({
 				if (body.signature_key !== localHash) {
 					console.warn("Invalid signature for order:", body.order_id);
 					set.status = 200;
-					return "OK";
+					return "not same";
 				}
 
 				const payment = await paymentService.getByOrderid(body.order_id);
 				if (!payment) {
 					console.warn("Payment not found for order:", body.order_id);
 					set.status = 200;
-					return "OK";
+					return "not found";
 				}
 
 				let statusToUpdate: Payment_Status;
