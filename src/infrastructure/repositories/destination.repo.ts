@@ -32,9 +32,12 @@ export class DestinationRepository implements IDestinations {
 
 	async getOne(id: string) {
 		try {
-			return await this.prisma.destinations.findUnique({ where: { id }, include: {
-				travel_package_destinations: true
-			} });
+			return await this.prisma.destinations.findUnique({
+				where: { id },
+				include: {
+					travel_package_destinations: true,
+				},
+			});
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
 		}
