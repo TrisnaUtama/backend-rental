@@ -69,6 +69,9 @@ export class TravelPackageRepository implements ITravelPackages {
 						where: {
 							deleted_at: null,
 						},
+						include: {
+							destination: true
+						}
 					},
 				},
 			});
