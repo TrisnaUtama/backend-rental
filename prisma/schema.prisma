@@ -334,7 +334,7 @@ model Bookings {
   Payments Payments[]
   Vehicles Vehicles[]
 
-  pax_option Travel_Packages_Pax[]
+  pax_option         Travel_Packages_Pax? @relation(fields: [pax_option_id], references: [id])
 }
 
 model Promos {
