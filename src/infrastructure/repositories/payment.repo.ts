@@ -21,7 +21,7 @@ export class PaymentRepository implements IPayments {
 	async getOne(id: string) {
 		try {
 			return await this.prisma.payments.findFirst({
-				where: { booking_id: id },
+				where: { id: id },
 				include: {
 					booking: {
 						include: {
