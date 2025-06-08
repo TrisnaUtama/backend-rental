@@ -270,10 +270,12 @@ export const paymentRoute = new Elysia({
 						statusToUpdate = Payment_Status.FAILED;
 				}
 
-				await paymentService.update(payment.booking_id, {
+				const data = await paymentService.update(payment.booking_id, {
 					payment_status: statusToUpdate,
 					total_amount: new Decimal(body.gross_amount),
 				});
+				console.log(data);
+
 
 				set.status = 200;
 				return "OK";
