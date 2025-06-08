@@ -22,7 +22,7 @@ const MidtransNotificationSchema = t.Object({
 	status_code: t.String({ error: "status code is required" }),
 	transaction_status: t.String({ error: "transaction status is required" }),
 	gross_amount: t.String({ error: "grossAmount is required" }),
-	transaction_id: t.String({error: "transaction id is required"}),
+	transaction_id: t.String({ error: "transaction id is required" }),
 	fraud_status: t.Optional(t.String()),
 	payment_type: t.Optional(t.String()),
 	signature_key: t.String({ error: "signature_key is required" }),
@@ -205,7 +205,6 @@ export const paymentRoute = new Elysia({
 		"/notification-handler",
 		async ({ body, set }) => {
 			try {
-
 				const payment = await paymentService.getByOrderid(body.order_id);
 
 				if (!payment) {
@@ -216,7 +215,9 @@ export const paymentRoute = new Elysia({
 				const serverKey = process.env.MIDTRANS_SERVER_KEY || "";
 				const localHash = crypto
 					.createHash("sha512")
-					.update(`${body.transaction_id}${body.status_code}${body.gross_amount}${serverKey}`)
+					.update(
+						`${body.transaction_id}${body.status_code}${body.gross_amount}${serverKey}`,
+					)
 					.digest("hex");
 
 				if (body.signature_key !== localHash) {
