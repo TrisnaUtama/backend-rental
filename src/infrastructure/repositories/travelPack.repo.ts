@@ -70,8 +70,8 @@ export class TravelPackageRepository implements ITravelPackages {
 							deleted_at: null,
 						},
 						include: {
-							destination: true
-						}
+							destination: true,
+						},
 					},
 				},
 			});
