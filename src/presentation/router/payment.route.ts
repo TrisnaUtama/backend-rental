@@ -211,11 +211,10 @@ export const paymentRoute = new Elysia({
 						`${body.order_id}${body.status_code}${body.gross_amount}${serverKey}`,
 					)
 					.digest("hex");
-					console.log("server key :", serverKey);
-					console.log("signature :", body.signature_key);
-					console.log("local hash :", localHash);
-					console.log("order_id :", body.order_id);
-					
+				console.log("server key :", serverKey);
+				console.log("signature :", body.signature_key);
+				console.log("local hash :", localHash);
+				console.log("order_id :", body.order_id);
 
 				if (body.signature_key !== localHash) {
 					console.warn("Invalid signature for order:", body.order_id);
