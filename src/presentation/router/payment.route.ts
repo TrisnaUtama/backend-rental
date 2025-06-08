@@ -6,6 +6,7 @@ import {
 	paymentService,
 	vehicleService,
 	midtrans,
+	bookingService,
 } from "../../application/instances";
 import { StandardResponse } from "../../infrastructure/utils/response/standard.response";
 import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.response";
@@ -269,13 +270,14 @@ export const paymentRoute = new Elysia({
 					default:
 						statusToUpdate = Payment_Status.FAILED;
 				}
-
-				const data = await paymentService.update(payment.booking_id, {
+				await paymentService.update(payment.booking_id, {
 					payment_status: statusToUpdate,
 					total_amount: new Decimal(body.gross_amount),
 				});
-				console.log(data);
 
+				await bookingService.update(payment.booking_id, {
+					status: "COMPLETE",
+				});
 
 				set.status = 200;
 				return "OK";
