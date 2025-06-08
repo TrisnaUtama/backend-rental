@@ -205,46 +205,50 @@ export const paymentRoute = new Elysia({
 		"/notification-handler",
 		async ({ body, set }) => {
 			try {
-				const payment = await paymentService.getByOrderid(body.order_id);
-
-				if (!payment) {
-					set.status = 404;
-					throw response.notFound("Payment not found");
-				}
-
 				const serverKey = process.env.MIDTRANS_SERVER_KEY || "";
 				const localHash = crypto
 					.createHash("sha512")
 					.update(
-						`${body.transaction_id}${body.status_code}${body.gross_amount}${serverKey}`,
+						`${body.order_id}${body.status_code}${body.gross_amount}${serverKey}`,
 					)
 					.digest("hex");
 
 				if (body.signature_key !== localHash) {
-					return StandardResponse.error("Invalid Signature", 400);
+					console.warn("Invalid signature for order:", body.order_id);
+					set.status = 200;
+					return "OK";
+				}
+
+				const payment = await paymentService.getByOrderid(body.order_id);
+				if (!payment) {
+					console.warn("Payment not found for order:", body.order_id);
+					set.status = 200;
+					return "OK";
 				}
 
 				let statusToUpdate: Payment_Status;
-
-				if (body.transaction_status === "capture") {
-					statusToUpdate =
-						body.fraud_status === "accept"
-							? Payment_Status.PAID
-							: body.fraud_status === "challenge"
-								? Payment_Status.PENDING
-								: Payment_Status.FAILED;
-				} else if (body.transaction_status === "settlement") {
-					statusToUpdate = Payment_Status.PAID;
-				} else if (
-					body.transaction_status === "cancel" ||
-					body.transaction_status === "deny" ||
-					body.transaction_status === "expire"
-				) {
-					statusToUpdate = Payment_Status.FAILED;
-				} else if (body.transaction_status === "pending") {
-					statusToUpdate = Payment_Status.PENDING;
-				} else {
-					statusToUpdate = Payment_Status.FAILED;
+				switch (body.transaction_status) {
+					case "capture":
+						statusToUpdate =
+							body.fraud_status === "accept"
+								? Payment_Status.PAID
+								: body.fraud_status === "challenge"
+									? Payment_Status.PENDING
+									: Payment_Status.FAILED;
+						break;
+					case "settlement":
+						statusToUpdate = Payment_Status.PAID;
+						break;
+					case "cancel":
+					case "deny":
+					case "expire":
+						statusToUpdate = Payment_Status.FAILED;
+						break;
+					case "pending":
+						statusToUpdate = Payment_Status.PENDING;
+						break;
+					default:
+						statusToUpdate = Payment_Status.FAILED;
 				}
 
 				await paymentService.update(payment.id, {
@@ -253,13 +257,11 @@ export const paymentRoute = new Elysia({
 				});
 
 				set.status = 200;
-				return StandardResponse.success(
-					null,
-					`Payment status updated to ${statusToUpdate}`,
-				);
+				return "OK";
 			} catch (error) {
-				set.status = 500;
-				return GlobalErrorHandler.handleError(error, set);
+				console.error("Midtrans notification error", error);
+				set.status = 200;
+				return "OK";
 			}
 		},
 		{
