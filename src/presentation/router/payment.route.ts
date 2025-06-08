@@ -211,17 +211,22 @@ export const paymentRoute = new Elysia({
 						`${body.order_id}${body.status_code}${body.gross_amount}${serverKey}`,
 					)
 					.digest("hex");
+					console.log("server key :", serverKey);
+					console.log("signature :", body.signature_key);
+					console.log("local hash :", localHash);
+					console.log("order_id :", body.order_id);
+					
 
 				if (body.signature_key !== localHash) {
 					console.warn("Invalid signature for order:", body.order_id);
-					set.status = 200;
+					set.status = 400;
 					return "not same";
 				}
 
 				const payment = await paymentService.getByOrderid(body.order_id);
 				if (!payment) {
 					console.warn("Payment not found for order:", body.order_id);
-					set.status = 200;
+					set.status = 404;
 					return "not found";
 				}
 
@@ -258,9 +263,8 @@ export const paymentRoute = new Elysia({
 				set.status = 200;
 				return "OK";
 			} catch (error) {
-				console.error("Midtrans notification error", error);
-				set.status = 200;
-				return "OK";
+				set.status = 500;
+				return GlobalErrorHandler.handleError(error, set);
 			}
 		},
 		{
