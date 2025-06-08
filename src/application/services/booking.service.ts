@@ -93,35 +93,36 @@ export class BookingService {
 		try {
 			const { travel_package_id, start_date, end_date } = payload;
 
-			if (!start_date || !end_date) {
-				throw this.response.badRequest("Start date and end date are required");
+			if (!start_date) {
+				throw this.response.badRequest("Start date is required");
 			}
 
 			let total_price = new Decimal(0);
+			let calculated_end_date: Date | null = end_date ?? null;
 
 			if (vehicle_ids && vehicle_ids.length > 0) {
+				if (!end_date) {
+					throw this.response.badRequest(
+						"End date is required for vehicle bookings",
+					);
+				}
 				const vehicles = await this.vehicleRepo.getManyByIds(vehicle_ids);
-
 				if (vehicles.length !== vehicle_ids?.length) {
 					throw this.response.badRequest("One or more vehicles not found");
 				}
-
 				const start = new Date(start_date);
 				const end = new Date(end_date);
 				if (start >= end) {
 					throw this.response.badRequest("End date must be after start date");
 				}
-
 				const durationInDays =
 					(end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
-
 				for (const vehicle of vehicles) {
 					if (vehicle.status !== "AVAILABLE") {
 						throw this.response.badRequest(
 							`Vehicle ${vehicle.name} is not available`,
 						);
 					}
-
 					total_price = total_price.plus(
 						vehicle.price_per_day.mul(durationInDays),
 					);
@@ -134,11 +135,9 @@ export class BookingService {
 				if (!travelPackage || !travelPackage.status) {
 					throw this.response.badRequest("Travel package not available");
 				}
-
 				if (!selected_pax_option_id) {
 					throw this.response.badRequest("Selected pax option is required");
 				}
-
 				const paxOption = await this.travelPaxRepo.getOne(
 					selected_pax_option_id,
 				);
@@ -147,18 +146,18 @@ export class BookingService {
 				}
 
 				const start = new Date(start_date);
-				const durationMs = travelPackage.duration * 60 * 60 * 1000;
-				const end = new Date(start.getTime() + durationMs);
-
-				payload.start_date = start;
-				payload.end_date = end;
+				const durationInDays = travelPackage.duration;
+				start.setDate(start.getDate() + durationInDays);
+				calculated_end_date = start;
 
 				total_price = total_price.plus(paxOption.price);
 			}
 
 			const booking = await this.bookingRepo.create({
 				...payload,
+				end_date: calculated_end_date,
 				total_price,
+				pax_option_id: selected_pax_option_id || null,
 			});
 
 			if (vehicle_ids && vehicle_ids.length > 0) {
