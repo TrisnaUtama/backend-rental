@@ -22,6 +22,7 @@ const MidtransNotificationSchema = t.Object({
 	status_code: t.String({ error: "status code is required" }),
 	transaction_status: t.String({ error: "transaction status is required" }),
 	gross_amount: t.String({ error: "grossAmount is required" }),
+	transaction_id: t.String({ error: "transaction id is required" }),
 	fraud_status: t.Optional(t.String()),
 	payment_type: t.Optional(t.String()),
 	signature_key: t.String({ error: "signature_key is required" }),
@@ -204,17 +205,7 @@ export const paymentRoute = new Elysia({
 		"/notification-handler",
 		async ({ body, set }) => {
 			try {
-				const notification = await midtrans.parseNotification(body);
-
-				const {
-					order_id,
-					transaction_status,
-					status_code,
-					gross_amount,
-					fraud_status,
-				} = notification;
-
-				const payment = await paymentService.getByOrderid(order_id);
+				const payment = await paymentService.getByOrderid(body.order_id);
 
 				if (!payment) {
 					set.status = 404;
@@ -224,7 +215,9 @@ export const paymentRoute = new Elysia({
 				const serverKey = process.env.MIDTRANS_SERVER_KEY || "";
 				const localHash = crypto
 					.createHash("sha512")
-					.update(order_id + status_code + gross_amount + serverKey)
+					.update(
+						`${body.transaction_id}${body.status_code}${body.gross_amount}${serverKey}`,
+					)
 					.digest("hex");
 
 				if (body.signature_key !== localHash) {
@@ -233,22 +226,22 @@ export const paymentRoute = new Elysia({
 
 				let statusToUpdate: Payment_Status;
 
-				if (transaction_status === "capture") {
+				if (body.transaction_status === "capture") {
 					statusToUpdate =
-						fraud_status === "accept"
+						body.fraud_status === "accept"
 							? Payment_Status.PAID
-							: fraud_status === "challenge"
+							: body.fraud_status === "challenge"
 								? Payment_Status.PENDING
 								: Payment_Status.FAILED;
-				} else if (transaction_status === "settlement") {
+				} else if (body.transaction_status === "settlement") {
 					statusToUpdate = Payment_Status.PAID;
 				} else if (
-					transaction_status === "cancel" ||
-					transaction_status === "deny" ||
-					transaction_status === "expire"
+					body.transaction_status === "cancel" ||
+					body.transaction_status === "deny" ||
+					body.transaction_status === "expire"
 				) {
 					statusToUpdate = Payment_Status.FAILED;
-				} else if (transaction_status === "pending") {
+				} else if (body.transaction_status === "pending") {
 					statusToUpdate = Payment_Status.PENDING;
 				} else {
 					statusToUpdate = Payment_Status.FAILED;
@@ -256,7 +249,7 @@ export const paymentRoute = new Elysia({
 
 				await paymentService.update(payment.id, {
 					payment_status: statusToUpdate,
-					total_amount: new Decimal(gross_amount),
+					total_amount: new Decimal(body.gross_amount),
 				});
 
 				set.status = 200;
