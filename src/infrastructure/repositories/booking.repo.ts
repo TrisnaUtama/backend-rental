@@ -91,10 +91,22 @@ export class BookingRepository implements IBookings {
 		try {
 			return await this.prisma.vehicles.findMany({
 				where: {
+					status: "AVAILABLE",
 					Booking_Vehicles: {
 						none: {
 							booking: {
 								deleted_at: null,
+								status: {
+									in: [
+										"SUBMITTED",
+										"PAYMENT_PENDING",
+										"RECEIVED",
+										"RESCHEDULE_REQUESTED",
+										"RESCHEDULED",
+										"REFUND_REQUESTED",
+										"COMPLETE",
+									],
+								},
 								OR: [
 									{
 										start_date: {
@@ -109,6 +121,32 @@ export class BookingRepository implements IBookings {
 											lt: endDate,
 										},
 										end_date: null,
+									},
+									{
+										start_date: {
+											lte: startDate,
+										},
+										end_date: {
+											gte: endDate,
+										},
+									},
+									{
+										start_date: {
+											gte: startDate,
+											lt: endDate,
+										},
+										end_date: {
+											gt: endDate,
+										},
+									},
+									{
+										start_date: {
+											lt: startDate,
+										},
+										end_date: {
+											gt: startDate,
+											lte: endDate,
+										},
 									},
 								],
 							},
