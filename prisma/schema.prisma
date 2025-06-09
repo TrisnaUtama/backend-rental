@@ -343,9 +343,7 @@ model Bookings {
   booking_vehicles Booking_Vehicles[]
 
   Payments Payments[]
-
   Refunds         Refunds[]
-
   pax_option         Travel_Packages_Pax? @relation(fields: [pax_option_id], references: [id])
 }
 
@@ -367,7 +365,6 @@ model Refunds {
   updated_at      DateTime      @updatedAt
   deleted_at      DateTime?
 
-  // Relasi
   booking         Bookings      @relation(fields: [booking_id], references: [id])
   user            Users         @relation(fields: [user_id], references: [id])
   payment         Payments?     @relation(fields: [payment_id], references: [id]) 
