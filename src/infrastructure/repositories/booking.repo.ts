@@ -88,38 +88,76 @@ export class BookingRepository implements IBookings {
 	}
 
 	async findAvailableVehicle(startDate: Date, endDate: Date) {
-		try {
-			return await this.prisma.vehicles.findMany({
-				where: {
-					Booking_Vehicles: {
-						none: {
-							booking: {
-								deleted_at: null,
-								OR: [
-									{
-										start_date: {
-											lt: endDate,
-										},
-										end_date: {
-											gt: startDate,
-										},
-									},
-									{
-										start_date: {
-											lt: endDate,
-										},
-										end_date: null,
-									},
-								],
-							},
-						},
-					},
-				},
-			});
-		} catch (error) {
-			this.errorHandler.handleRepositoryError(error);
-		}
-	}
+    try {
+        return await this.prisma.vehicles.findMany({
+            where: {
+                status: "AVAILABLE",
+                Booking_Vehicles: {
+                    none: {
+                        booking: {
+                            deleted_at: null, 
+                            status: {
+                                in: [
+                                    "SUBMITTED",
+                                    "PAYMENT_PENDING",
+                                    "RECEIVED",
+                                    "RESCHEDULE_REQUESTED",
+                                    "RESCHEDULED", 
+                                    "REFUND_REQUESTED",
+									"COMPLETE"
+                                ]
+                            },
+                            OR: [
+                                { 
+                                    start_date: {
+                                        lt: endDate,
+                                    },
+                                    end_date: {
+                                        gt: startDate,
+                                    },
+                                },
+                                { 
+                                    start_date: {
+                                        lt: endDate,
+                                    },
+                                    end_date: null,
+                                },
+                                { 
+                                    start_date: {
+                                        lte: startDate,
+                                    },
+                                    end_date: {
+                                        gte: endDate,
+                                    },
+                                },
+                                { 
+                                    start_date: {
+                                        gte: startDate,
+                                        lt: endDate,
+                                    },
+                                    end_date: {
+                                        gt: endDate,
+                                    },
+                                },
+                                { 
+                                    start_date: {
+                                        lt: startDate,
+                                    },
+                                    end_date: {
+                                        gt: startDate,
+                                        lte: endDate,
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                },
+            },
+        });
+    } catch (error) {
+        this.errorHandler.handleRepositoryError(error);
+    }
+}
 
 	async create(payload: CreateBooking) {
 		try {
