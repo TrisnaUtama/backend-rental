@@ -15,6 +15,7 @@ import type { TravelPaxRepository } from "../../infrastructure/repositories/trav
 import type { Bookings } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import type { PaymentRepository } from "../../infrastructure/repositories/payment.repo";
+import { eachDayOfInterval, format } from "date-fns";
 
 @injectable()
 export class BookingService {
@@ -218,6 +219,38 @@ export class BookingService {
 			);
 
 			return availableVehicles;
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
+
+	async getUnavailableVehicleDate(
+		vehicleId: string,
+		excludeBookingId: string,
+	): Promise<string[]> {
+		try {
+			const conflictingBookings =
+				await this.bookingRepo.getUnavailableVehicleDate(
+					vehicleId,
+					excludeBookingId,
+				);
+
+			const unavailableDatesSet = new Set<string>();
+
+			for (const booking of conflictingBookings) {
+				if (booking.start_date && booking.end_date) {
+					const datesInRange = eachDayOfInterval({
+						start: new Date(booking.start_date),
+						end: new Date(booking.end_date),
+					});
+
+					for (const date of datesInRange) {
+						unavailableDatesSet.add(format(date, "yyyy-MM-dd"));
+					}
+				}
+			}
+
+			return Array.from(unavailableDatesSet);
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
 		}

@@ -14,6 +14,7 @@ import type {
 } from "../../infrastructure/entity/types";
 import { Decimal } from "@prisma/client/runtime/library";
 import { Booking_Status } from "@prisma/client";
+import { query } from "winston";
 
 export const bookingRoute = new Elysia({
 	prefix: "/v1/bookings",
@@ -85,6 +86,38 @@ export const bookingRoute = new Elysia({
 			user,
 		};
 	})
+	.get(
+		"/unavailable/:id",
+		async ({ params, query, set }) => {
+			try {
+				const vehicleId = params.id;
+				const { excludeBookingId } = query;
+
+				const unavailableDates = await bookingService.getUnavailableVehicleDate(
+					vehicleId,
+					excludeBookingId,
+				);
+
+				set.status = 200;
+
+				return StandardResponse.success(
+					unavailableDates,
+					"Unavailable dates fetched successfully",
+				);
+			} catch (error) {
+				set.status = 500;
+				return GlobalErrorHandler.handleError(error, set);
+			}
+		},
+		{
+			query: t.Object({
+				excludeBookingId: t.String({
+					minLength: 1,
+					error: "excludeBookingId query parameter is required.",
+				}),
+			}),
+		},
+	)
 	.get("/", async ({ set }) => {
 		try {
 			const bookings = await bookingService.getAll();
