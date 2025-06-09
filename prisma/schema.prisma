@@ -96,6 +96,15 @@ enum Payment_Status {
   EXPIRED
 }
 
+enum Refund_Status {
+  PENDING      
+  APPROVED     
+  PROCESSING   
+  COMPLETED    
+  REJECTED     
+  CANCELED_BY_USER
+}
+
 enum Discount_Type {
   PERCENTAGE
   FIXED
@@ -138,7 +147,7 @@ model Users {
   otp              OTPs[]
   notification_broadcast Notification_Broadcast[]
   bookings         Bookings[]
-
+  Refunds         Refunds[]
   Rating Rating[]
 }
 
@@ -226,8 +235,6 @@ model Vehicles {
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
   deleted_at     DateTime? 
-
-  bookings        Bookings[]
 
   Booking_Vehicles Booking_Vehicles[]
 }
@@ -336,9 +343,34 @@ model Bookings {
   booking_vehicles Booking_Vehicles[]
 
   Payments Payments[]
-  Vehicles Vehicles[]
+
+  Refunds         Refunds[]
 
   pax_option         Travel_Packages_Pax? @relation(fields: [pax_option_id], references: [id])
+}
+
+model Refunds {
+  id              String        @id @default(cuid())
+  booking_id      String
+  user_id         String        
+  payment_id      String?       
+  refund_amount   Decimal       
+  request_date    DateTime      @default(now()) 
+  approval_date   DateTime?     
+  processed_by    String?       
+  status          Refund_Status @default(PENDING) 
+  reason          String?       
+  admin_notes     String?       
+  refund_method   Payment_Method? 
+
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+  deleted_at      DateTime?
+
+  // Relasi
+  booking         Bookings      @relation(fields: [booking_id], references: [id])
+  user            Users         @relation(fields: [user_id], references: [id])
+  payment         Payments?     @relation(fields: [payment_id], references: [id]) 
 }
 
 model Promos {
@@ -372,6 +404,8 @@ model Payments {
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
   deleted_at      DateTime?
+
+  Refunds         Refunds[]
 
   booking         Bookings @relation(fields: [booking_id], references: [id], onDelete: Cascade)
 }
