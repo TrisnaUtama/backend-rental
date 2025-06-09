@@ -98,7 +98,6 @@ export class BookingRepository implements IBookings {
 								deleted_at: null,
 								status: {
 									in: [
-										"SUBMITTED",
 										"PAYMENT_PENDING",
 										"RECEIVED",
 										"RESCHEDULE_REQUESTED",
