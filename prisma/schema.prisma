@@ -392,7 +392,7 @@ model Promos {
 model Payments {
   id              String   @id @default(cuid())
   booking_id      String
-  payment_method  Payment_Method?
+  payment_method  String
   payment_status  Payment_Status @default(PENDING)
   payment_date    DateTime?
   total_amount    Decimal
