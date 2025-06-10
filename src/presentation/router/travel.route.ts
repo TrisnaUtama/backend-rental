@@ -157,7 +157,7 @@ export const travelRoute = new Elysia({
 						}),
 						description: t.Optional(
 							t.String({
-								minLength:1,
+								minLength: 1,
 								error: "Description must be less than 500 characters",
 							}),
 						),
@@ -402,7 +402,7 @@ export const travelRoute = new Elysia({
 							}),
 							description: t.Optional(
 								t.String({
-									minLength:1,
+									minLength: 1,
 									error: "Description must filled",
 								}),
 							),

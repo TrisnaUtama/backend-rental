@@ -20,61 +20,61 @@ import { BaseHttpError } from "./infrastructure/utils/response/base.response";
 const app = new Elysia();
 
 app
-    .onError(({ code, error, set }) => {
-        console.error("Elysia Error caught:", code, error);
+	.onError(({ code, error, set }) => {
+		console.error("Elysia Error caught:", code, error);
 
-        if (code === 'VALIDATION') {
-            set.status = 422;
-            return StandardResponse.error("Validation Failed", 422, error.message);
-        }
+		if (code === "VALIDATION") {
+			set.status = 422;
+			return StandardResponse.error("Validation Failed", 422, error.message);
+		}
 
-        if (error instanceof BaseHttpError) {
-            set.status = error.statusCode;
-            return StandardResponse.error(error.message, error.statusCode);
-        }
+		if (error instanceof BaseHttpError) {
+			set.status = error.statusCode;
+			return StandardResponse.error(error.message, error.statusCode);
+		}
 
-        set.status = 500;
-        return StandardResponse.error("Internal Server Error", 500);
-    })
+		set.status = 500;
+		return StandardResponse.error("Internal Server Error", 500);
+	})
 
-    .use(
-        cors({
-            origin: "localhost:5173", 
-            methods: ["GET", "POST", "PATCH", "DELETE"],
-            allowedHeaders: ["Content-Type", "Authorization"],
-            credentials: true,
-        }),
-    )
-    .use(
-        staticPlugin({
-            prefix: "/",
-            assets: process.env.STORAGE_PATH,
-        }),
-    )
-    .use(
-        swagger({
-            path: "/docs",
-        }),
-    )
-    .group("/api", (app) =>
-        app
-            .use(authRouter)
-            .use(userRoute)
-            .use(notificationRoute)
-            .use(vehicleRoute)
-            .use(destinationRoute)
-            .use(travelRoute)
-            .use(bookingRoute)
-            .use(paymentRoute)
-            .use(storageRoute)
-            .use(accomodationRoute) 
-            .use(recommendationRoute)
-            .use(ratingRoute),
-    )
-    .listen({ port: 8000, hostname: "0.0.0.0" });
+	.use(
+		cors({
+			origin: "localhost:5173",
+			methods: ["GET", "POST", "PATCH", "DELETE"],
+			allowedHeaders: ["Content-Type", "Authorization"],
+			credentials: true,
+		}),
+	)
+	.use(
+		staticPlugin({
+			prefix: "/",
+			assets: process.env.STORAGE_PATH,
+		}),
+	)
+	.use(
+		swagger({
+			path: "/docs",
+		}),
+	)
+	.group("/api", (app) =>
+		app
+			.use(authRouter)
+			.use(userRoute)
+			.use(notificationRoute)
+			.use(vehicleRoute)
+			.use(destinationRoute)
+			.use(travelRoute)
+			.use(bookingRoute)
+			.use(paymentRoute)
+			.use(storageRoute)
+			.use(accomodationRoute)
+			.use(recommendationRoute)
+			.use(ratingRoute),
+	)
+	.listen({ port: 8000, hostname: "0.0.0.0" });
 
 console.log(
-    `🦊 🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port} 🦊 🦊`,
+	`🦊 🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port} 🦊 🦊`,
 );
 
 export { StandardResponse };
