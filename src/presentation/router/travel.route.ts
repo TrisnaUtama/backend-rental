@@ -55,7 +55,7 @@ export const travelRoute = new Elysia({
 					duration: body.duration,
 					name: body.name,
 					image: body.image,
-					accommodation_id: body.accomodation_id || null,
+					accommodation_id: body.accommodation_id || null,
 				};
 				const payload_dest = body.travel_package_destinations.map(
 					(travel_destination) => ({
@@ -112,9 +112,9 @@ export const travelRoute = new Elysia({
 					minLength: 1,
 					errorMessage: { minLength: "Description is required" },
 				}),
-				accomodation_id: t.Optional(
+				accommodation_id: t.Optional(
 					t.String({
-						errorMessage: { minLength: "Description is required" },
+						errorMessage: { minLength: "accomodation is can be included" },
 					}),
 				),
 				travel_package_destinations: t.Array(
@@ -157,7 +157,7 @@ export const travelRoute = new Elysia({
 						}),
 						description: t.Optional(
 							t.String({
-								maxLength: 500,
+								minLength:1,
 								error: "Description must be less than 500 characters",
 							}),
 						),
@@ -285,7 +285,7 @@ export const travelRoute = new Elysia({
 					name: body.name ?? travel_package.name,
 					image: body.image ?? travel_package.image,
 					accommodation_id:
-						body.accomodation_id ?? travel_package.accommodation_id,
+						body.accommodation_id ?? travel_package.accommodation_id,
 				};
 				const payload_dest: UpdateTravelPackageDestination[] = (
 					body.travel_package_destinations ?? []
@@ -354,7 +354,7 @@ export const travelRoute = new Elysia({
 						minLength: 1,
 						errorMessage: { minLength: "Description must not be empty" },
 					}),
-					accomodation_id: t.Optional(
+					accommodation_id: t.Optional(
 						t.String({
 							errorMessage: { minLength: "Description is required" },
 						}),
@@ -402,8 +402,8 @@ export const travelRoute = new Elysia({
 							}),
 							description: t.Optional(
 								t.String({
-									maxLength: 500,
-									error: "Description must be less than 500 characters",
+									minLength:1,
+									error: "Description must filled",
 								}),
 							),
 						}),
