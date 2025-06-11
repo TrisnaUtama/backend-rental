@@ -62,7 +62,7 @@ export class PaymentService {
 		}
 	}
 
-	async create(payload:any) {
+	async create(payload: any) {
 		try {
 			const created_payment = await this.paymentRepo.create(payload);
 			if (!created_payment)

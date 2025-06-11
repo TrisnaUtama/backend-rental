@@ -220,20 +220,29 @@ export interface IAccomodation {
 	update: (id: string, payload: UpdateAccomodation) => Promise<Accommodations>;
 }
 
-
-export interface  IRescheduleRequest{
+export interface IRescheduleRequest {
 	getAll: () => Promise<RescheduleRequest[]>;
 	getOne: (id: string) => Promise<RescheduleRequest | null>;
-	create: (payload: CreateResheduleRequest) => Promise<RescheduleRequest | null>;
-	update: (id: string, payload: UpdateRescheduleRequest) => Promise<RescheduleRequest>;
+	create: (
+		payload: CreateResheduleRequest,
+	) => Promise<RescheduleRequest | null>;
+	update: (
+		id: string,
+		payload: UpdateRescheduleRequest,
+	) => Promise<RescheduleRequest>;
 }
-export interface  IRescheduleRequest{
+export interface IRescheduleRequest {
 	getAll: () => Promise<RescheduleRequest[]>;
 	getOne: (id: string) => Promise<RescheduleRequest | null>;
-	create: (payload: CreateResheduleRequest) => Promise<RescheduleRequest | null>;
-	update: (id: string, payload: UpdateRescheduleRequest) => Promise<RescheduleRequest>;
+	create: (
+		payload: CreateResheduleRequest,
+	) => Promise<RescheduleRequest | null>;
+	update: (
+		id: string,
+		payload: UpdateRescheduleRequest,
+	) => Promise<RescheduleRequest>;
 }
-export interface  IRefund{
+export interface IRefund {
 	getAll: () => Promise<Refunds[]>;
 	getOne: (id: string) => Promise<Refunds | null>;
 	create: (payload: CreateRefund) => Promise<Refunds | null>;
@@ -241,12 +250,12 @@ export interface  IRefund{
 }
 
 export interface UnavailableDatesPayload {
-  vehicleIds: string[];
-  excludeBookingId: string;
+	vehicleIds: string[];
+	excludeBookingId: string;
 }
 export interface RequestRefundPayload {
-  reason: string;
-  bank_name: string;
-  account_holder: string;
-  account_number: string;
+	reason: string;
+	bank_name: string;
+	account_holder: string;
+	account_number: string;
 }

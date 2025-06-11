@@ -59,7 +59,7 @@ export class PaymentRepository implements IPayments {
 		}
 	}
 
-	async create(payload:any) {
+	async create(payload: any) {
 		try {
 			return await this.prisma.payments.create({ data: payload });
 		} catch (error) {

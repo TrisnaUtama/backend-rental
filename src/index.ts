@@ -71,7 +71,7 @@ app
 			.use(accomodationRoute)
 			.use(recommendationRoute)
 			.use(ratingRoute)
-			.use(refundRoute)
+			.use(refundRoute),
 	)
 	.listen({ port: 8000, hostname: "0.0.0.0" });
 

@@ -1,7 +1,11 @@
 import { Elysia, t } from "elysia";
 import jwt from "@elysiajs/jwt";
 import { verifyJwt } from "../../infrastructure/utils/jwt";
-import { paymentService, rescheduleService, userService } from "../../application/instances";
+import {
+	paymentService,
+	rescheduleService,
+	userService,
+} from "../../application/instances";
 import { bookingService } from "../../application/instances";
 import { StandardResponse } from "../../infrastructure/utils/response/standard.response";
 import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.response";
@@ -15,12 +19,11 @@ import type {
 import { Decimal } from "@prisma/client/runtime/library";
 import { Booking_Status } from "@prisma/client";
 
-
 const RequestRefundBody = t.Object({
-    reason: t.String({ error: "A reason is required for the refund request." }),
-    bank_name: t.String(),
-    account_holder: t.String(),
-    account_number: t.String(),
+	reason: t.String({ error: "A reason is required for the refund request." }),
+	bank_name: t.String(),
+	account_holder: t.String(),
+	account_number: t.String(),
 });
 
 export const bookingRoute = new Elysia({
@@ -94,25 +97,26 @@ export const bookingRoute = new Elysia({
 		};
 	})
 	.post(
-    "/unavailable-dates-for-vehicles", 
-    async ({ set, body }) => {
-        try {
-            const unavailableDates = await bookingService.getUnavailableDatesForVehicles(body);
-            return StandardResponse.success(
-                unavailableDates,
-                "Unavailable dates fetched successfully"
-            );
-        } catch (error) {
-            return GlobalErrorHandler.handleError(error, set);
-        }
-    },
-    {
-        body: t.Object({
-            vehicleIds: t.Array(t.String()),
-            excludeBookingId: t.String(),
-        })
-    }
-)
+		"/unavailable-dates-for-vehicles",
+		async ({ set, body }) => {
+			try {
+				const unavailableDates =
+					await bookingService.getUnavailableDatesForVehicles(body);
+				return StandardResponse.success(
+					unavailableDates,
+					"Unavailable dates fetched successfully",
+				);
+			} catch (error) {
+				return GlobalErrorHandler.handleError(error, set);
+			}
+		},
+		{
+			body: t.Object({
+				vehicleIds: t.Array(t.String()),
+				excludeBookingId: t.String(),
+			}),
+		},
+	)
 	.get("/", async ({ set }) => {
 		try {
 			const bookings = await bookingService.getAll();
@@ -169,74 +173,74 @@ export const bookingRoute = new Elysia({
 		}
 	})
 	.post(
-        "/:bookingId/refund-request",
-        async ({ set, params, body, user }) => {
-            try {
-                const newRefundRequest = await bookingService.requestRefund(
-                    user.id,
-                    params.bookingId, 
-                    body
-                );
+		"/:bookingId/refund-request",
+		async ({ set, params, body, user }) => {
+			try {
+				const newRefundRequest = await bookingService.requestRefund(
+					user.id,
+					params.bookingId,
+					body,
+				);
 
-                return StandardResponse.success(
-                    newRefundRequest,
-                    "Refund request submitted successfully."
-                );
-
-            } catch (error) {
-                return GlobalErrorHandler.handleError(error, set);
-            }
-        },
-        {
-            body: RequestRefundBody,
-            params: t.Object({
-                bookingId: t.String(),
-            })
-        }
-    )
+				return StandardResponse.success(
+					newRefundRequest,
+					"Refund request submitted successfully.",
+				);
+			} catch (error) {
+				return GlobalErrorHandler.handleError(error, set);
+			}
+		},
+		{
+			body: RequestRefundBody,
+			params: t.Object({
+				bookingId: t.String(),
+			}),
+		},
+	)
 	.post(
-        "/:bookingId/reschedule",
-        async ({ set, body, params, user }) => {
-            try {
-                const { bookingId } = params;
-                const userId = user.id;
-                const originalBooking = await bookingService.getOne(bookingId);
-                if (!originalBooking) {
-                    throw response.notFound("Booking not found.");
-                }
-                if (originalBooking.user_id !== userId) {
-                    throw response.forbidden("You are not authorized to modify this booking.");
-                }
-                const newRescheduleRequest = await bookingService.requestReschedule(
-                    bookingId,
-                    body
-                );
+		"/:bookingId/reschedule",
+		async ({ set, body, params, user }) => {
+			try {
+				const { bookingId } = params;
+				const userId = user.id;
+				const originalBooking = await bookingService.getOne(bookingId);
+				if (!originalBooking) {
+					throw response.notFound("Booking not found.");
+				}
+				if (originalBooking.user_id !== userId) {
+					throw response.forbidden(
+						"You are not authorized to modify this booking.",
+					);
+				}
+				const newRescheduleRequest = await bookingService.requestReschedule(
+					bookingId,
+					body,
+				);
 
-                return StandardResponse.success(
-                    newRescheduleRequest,
-                    "Reschedule request submitted successfully."
-                );
-
-            } catch (error) {
-                return GlobalErrorHandler.handleError(error, set);
-            }
-        },
-        {
-            body: t.Object({
-                new_start_date: t.Date({
+				return StandardResponse.success(
+					newRescheduleRequest,
+					"Reschedule request submitted successfully.",
+				);
+			} catch (error) {
+				return GlobalErrorHandler.handleError(error, set);
+			}
+		},
+		{
+			body: t.Object({
+				new_start_date: t.Date({
 					format: "date-time",
-                    error: "new_start_date must be a valid ISO date string."
-                }),
-                new_end_date: t.Date({
+					error: "new_start_date must be a valid ISO date string.",
+				}),
+				new_end_date: t.Date({
 					format: "date-time",
-                    error: "new_end_date must be a valid ISO date string."
-                }),
-            }),
-            params: t.Object({
-                bookingId: t.String(),
-            })
-        }
-    )
+					error: "new_end_date must be a valid ISO date string.",
+				}),
+			}),
+			params: t.Object({
+				bookingId: t.String(),
+			}),
+		},
+	)
 	.post(
 		"/",
 		async ({ set, body, user }) => {
@@ -310,53 +314,53 @@ export const bookingRoute = new Elysia({
 
 				if (update_booking.status === "RECEIVED") {
 					const paymentPayload = {
-                    expiry_date: null,
-                    payment_date: null,
-                    payment_method: "", 
-                    payment_status: "PENDING",
-                    total_amount: update_booking.total_price ?? new Decimal(0),
-                    booking: {
-                        connect: {
-                            id: update_booking.id
-                        }
-                    }
-                };
+						expiry_date: null,
+						payment_date: null,
+						payment_method: "",
+						payment_status: "PENDING",
+						total_amount: update_booking.total_price ?? new Decimal(0),
+						booking: {
+							connect: {
+								id: update_booking.id,
+							},
+						},
+					};
 					const create_payment = await paymentService.create(paymentPayload);
 					if (!create_payment) {
 						throw response.badRequest("Error while creating payment");
 					}
 				}
 				if (update_booking.status === "REJECTED_RESHEDULE") {
-                const pendingRequest = update_booking.RescheduleRequests?.find(
-                    (req) => req.status === 'PENDING'
-                );
+					const pendingRequest = update_booking.RescheduleRequests?.find(
+						(req) => req.status === "PENDING",
+					);
 					if (pendingRequest) {
 						await rescheduleService.update(pendingRequest.id, {
-							status: 'REJECTED'
+							status: "REJECTED",
 						});
 					}
-            	}
+				}
 				if (update_booking.status === "RESCHEDULED") {
-                const pendingRequest = update_booking.RescheduleRequests?.find(
-                    (req) => req.status === 'PENDING'
-                );
-                
-                if (!pendingRequest) {
-                    throw response.badRequest(
-                        "Cannot set status to RESCHEDULED: No pending reschedule request found."
-                    );
-                }
+					const pendingRequest = update_booking.RescheduleRequests?.find(
+						(req) => req.status === "PENDING",
+					);
 
-                await bookingService.update(update_booking.id, {
-                    start_date: pendingRequest.new_start_date,
-                    end_date: pendingRequest.new_end_date,
-                    status: 'RESCHEDULED'
-                });
+					if (!pendingRequest) {
+						throw response.badRequest(
+							"Cannot set status to RESCHEDULED: No pending reschedule request found.",
+						);
+					}
 
-                await rescheduleService.update(pendingRequest.id, {
-                    status: 'APPROVED'
-                });
-            }
+					await bookingService.update(update_booking.id, {
+						start_date: pendingRequest.new_start_date,
+						end_date: pendingRequest.new_end_date,
+						status: "RESCHEDULED",
+					});
+
+					await rescheduleService.update(pendingRequest.id, {
+						status: "APPROVED",
+					});
+				}
 				set.status = 200;
 				return StandardResponse.success(
 					update_booking,
