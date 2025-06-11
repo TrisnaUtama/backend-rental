@@ -15,6 +15,8 @@ import type {
 	Accommodations,
 	Booking_Vehicles,
 	Travel_Itineraries,
+	RescheduleRequest,
+	Refunds,
 } from "@prisma/client";
 import type {
 	CreateOTP,
@@ -49,6 +51,10 @@ import type {
 	UpdateBookingVehicle,
 	CreateTravelItineraries,
 	UpdateTravelItineraries,
+	CreateResheduleRequest,
+	UpdateRescheduleRequest,
+	CreateRefund,
+	UpdateRefund,
 } from "./types";
 
 // utils
@@ -190,7 +196,7 @@ export interface IPayments {
 	getAll: () => Promise<Payments[]>;
 	getOne: (id: string) => Promise<Payments | null>;
 	getByOrderId: (order_id: string) => Promise<Payments | null>;
-	create: (payload: CreatePayment) => Promise<Payments | null>;
+	create: (payload: any) => Promise<Payments | null>;
 	update: (id: string, payload: UpdatePayment) => Promise<Payments>;
 }
 
@@ -212,4 +218,35 @@ export interface IAccomodation {
 	getOne: (id: string) => Promise<Accommodations | null>;
 	create: (payload: CreateAccomodation) => Promise<Accommodations | null>;
 	update: (id: string, payload: UpdateAccomodation) => Promise<Accommodations>;
+}
+
+
+export interface  IRescheduleRequest{
+	getAll: () => Promise<RescheduleRequest[]>;
+	getOne: (id: string) => Promise<RescheduleRequest | null>;
+	create: (payload: CreateResheduleRequest) => Promise<RescheduleRequest | null>;
+	update: (id: string, payload: UpdateRescheduleRequest) => Promise<RescheduleRequest>;
+}
+export interface  IRescheduleRequest{
+	getAll: () => Promise<RescheduleRequest[]>;
+	getOne: (id: string) => Promise<RescheduleRequest | null>;
+	create: (payload: CreateResheduleRequest) => Promise<RescheduleRequest | null>;
+	update: (id: string, payload: UpdateRescheduleRequest) => Promise<RescheduleRequest>;
+}
+export interface  IRefund{
+	getAll: () => Promise<Refunds[]>;
+	getOne: (id: string) => Promise<Refunds | null>;
+	create: (payload: CreateRefund) => Promise<Refunds | null>;
+	update: (id: string, payload: UpdateRefund) => Promise<Refunds>;
+}
+
+export interface UnavailableDatesPayload {
+  vehicleIds: string[];
+  excludeBookingId: string;
+}
+export interface RequestRefundPayload {
+  reason: string;
+  bank_name: string;
+  account_holder: string;
+  account_number: string;
 }

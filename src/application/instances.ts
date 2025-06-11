@@ -24,6 +24,8 @@ import type {
 	IUser,
 	IVehicles,
 	ITravel_Itineraries,
+	IRescheduleRequest,
+	IRefund,
 } from "../infrastructure/entity/interfaces";
 import type { PrismaClient } from "@prisma/client";
 import { ErrorHandler } from "../infrastructure/entity/errors/global.error";
@@ -61,6 +63,10 @@ import { BookingVehiclesRepository } from "../infrastructure/repositories/bookin
 import { TravelItinerariesRepository } from "../infrastructure/repositories/travelItineraries.repo";
 import { HttpClient } from "../infrastructure/utils/response/http-client";
 import { RecomendationService } from "./services/recomendation.service";
+import { RescheduleRepostitory } from "../infrastructure/repositories/reschedule.repo";
+import { RescheduleService } from "./services/reschedule.service";
+import { RefundRepository } from "../infrastructure/repositories/refund.repo";
+import { RefundService } from "./services/refund.service";
 
 export const container = new Container();
 
@@ -96,6 +102,8 @@ container
 	.bind<ITravel_Itineraries>(TYPES.travelItinerariesRepo)
 	.to(TravelItinerariesRepository);
 container.bind<IPromos>(TYPES.promoRepo).to(PromoRepository);
+container.bind<IRescheduleRequest>(TYPES.rescheduleRepo).to(RescheduleRepostitory);
+container.bind<IRefund>(TYPES.refundRepo).to(RefundRepository);
 container.bind<IRating>(TYPES.ratingRepo).to(RatingRepostitory);
 container.bind<IBookings>(TYPES.bookingRepo).to(BookingRepository);
 container.bind<IPayments>(TYPES.paymentRepo).to(PaymentRepository);
@@ -124,6 +132,8 @@ container.bind<Http>(Http).toSelf();
 container.bind<MidtransService>(MidtransService).toSelf();
 container.bind<Logger>(Logger).toSelf();
 container.bind<RecomendationService>(RecomendationService).toSelf();
+container.bind<RescheduleService>(RescheduleService).toSelf();
+container.bind<RefundService>(RefundService).toSelf();
 
 //instance
 
@@ -151,3 +161,7 @@ export const accomodationService =
 	container.get<AccomodationService>(AccomodationService);
 export const recomendationService =
 	container.get<RecomendationService>(RecomendationService);
+export const rescheduleService =
+	container.get<RescheduleService>(RescheduleService);
+export const refundService =
+	container.get<RefundService>(RefundService);
