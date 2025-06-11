@@ -131,6 +131,46 @@ export class BookingRepository implements IBookings {
 		}
 	}
 
+	async findUnavailableDatesByVehicleIds(vehicleIds: string[]) {
+		try {
+			const records = await this.prisma.booking_Vehicles.findMany({
+				where: {
+					vehicle_id: { in: vehicleIds },
+					booking: {
+						deleted_at: null,
+						status: {
+							in: [
+								"RECEIVED",
+								"CONFIRMED",
+								"RESCHEDULE_REQUESTED",
+								"RESCHEDULED",
+								"REFUND_REQUESTED",
+								"REJECTED_RESHEDULE",
+								"REJECTED_REFUND",
+								"COMPLETE",
+							],
+						},
+					},
+				},
+				select: {
+					booking: {
+						select: {
+							start_date: true,
+							end_date: true,
+						},
+					},
+				},
+			});
+
+			return records.map((r) => ({
+				start_date: r.booking.start_date,
+				end_date: r.booking.end_date,
+			}));
+		} catch (error) {
+			this.errorHandler.handleRepositoryError(error);
+		}
+	}
+
 	async getUnavailableDatesForMultipleVehicles(payload: {
 		vehicleIds: string[];
 		excludeBookingId: string;

@@ -240,6 +240,33 @@ export class BookingService {
 		}
 	}
 
+	async findAvailableVehicleById(vehicleIds: string[]) {
+		try {
+			const bookings =
+				await this.bookingRepo.findUnavailableDatesByVehicleIds(vehicleIds);
+
+			const unavailableDatesSet = new Set<string>();
+
+			for (const booking of bookings) {
+				const { start_date, end_date } = booking;
+				if (!start_date || !end_date) continue;
+
+				const datesInRange = eachDayOfInterval({
+					start: new Date(start_date),
+					end: new Date(end_date),
+				});
+
+				for (const date of datesInRange) {
+					unavailableDatesSet.add(date.toISOString().split("T")[0]);
+				}
+			}
+
+			return Array.from(unavailableDatesSet).sort();
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
+
 	async getUnavailableDatesForVehicles(
 		payload: UnavailableDatesPayload,
 	): Promise<string[]> {

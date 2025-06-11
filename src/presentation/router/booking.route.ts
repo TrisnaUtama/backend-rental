@@ -69,6 +69,31 @@ export const bookingRoute = new Elysia({
 			}),
 		},
 	)
+	.get("/available-vehicles", async ({ query, set }) => {
+		try {
+			const { vehicleIds } = query;
+
+			if (!vehicleIds) {
+				set.status = 400;
+				return { error: "vehicleIds query parameter is required" };
+			}
+
+			const ids = vehicleIds.split(",").map((id) => id.trim());
+
+			if (ids.length === 0) {
+				set.status = 400;
+				return { error: "No valid vehicle IDs provided" };
+			}
+
+			const unavailableDates =
+				await bookingService.findAvailableVehicleById(ids);
+
+			return { unavailableDates };
+		} catch (error) {
+			set.status = 500;
+			return { error: "Internal server error" };
+		}
+	})
 	.use(
 		jwt({
 			name: `${process.env.JWT_NAME}`,
