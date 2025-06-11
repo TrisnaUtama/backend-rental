@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { injectable, inject } from "inversify";
 import type { IBookings } from "../entity/interfaces";
-import { Booking_Status, type PrismaClient } from "@prisma/client";
+import { Booking_Status, type Prisma, type PrismaClient } from "@prisma/client";
 import type { ErrorHandler } from "../entity/errors/global.error";
 import { type CreateBooking, TYPES, type UpdateBooking } from "../entity/types";
 
@@ -35,6 +35,8 @@ export class BookingRepository implements IBookings {
 					promos: true,
 					users: true,
 					pax_option: true,
+					Refunds: true,
+					RescheduleRequests: true,
 				},
 			});
 		} catch (error) {
@@ -59,6 +61,8 @@ export class BookingRepository implements IBookings {
 					promos: true,
 					users: true,
 					pax_option: true,
+					Refunds: true,
+					RescheduleRequests: true,
 				},
 			});
 		} catch (error) {
@@ -80,6 +84,8 @@ export class BookingRepository implements IBookings {
 					promos: true,
 					users: true,
 					pax_option: true,
+					Refunds: true,
+					RescheduleRequests: true,
 				},
 			});
 		} catch (error) {
@@ -98,56 +104,23 @@ export class BookingRepository implements IBookings {
 								deleted_at: null,
 								status: {
 									in: [
-										"PAYMENT_PENDING",
 										"RECEIVED",
+										"CONFIRMED",
 										"RESCHEDULE_REQUESTED",
 										"RESCHEDULED",
+										"RESCHEDULE_REQUESTED",
 										"REFUND_REQUESTED",
+										"REJECTED_RESHEDULE",
+										"REJECTED_REFUND",
 										"COMPLETE",
 									],
 								},
-								OR: [
-									{
-										start_date: {
-											lt: endDate,
-										},
-										end_date: {
-											gt: startDate,
-										},
-									},
-									{
-										start_date: {
-											lt: endDate,
-										},
-										end_date: null,
-									},
-									{
-										start_date: {
-											lte: startDate,
-										},
-										end_date: {
-											gte: endDate,
-										},
-									},
-									{
-										start_date: {
-											gte: startDate,
-											lt: endDate,
-										},
-										end_date: {
-											gt: endDate,
-										},
-									},
-									{
-										start_date: {
-											lt: startDate,
-										},
-										end_date: {
-											gt: startDate,
-											lte: endDate,
-										},
-									},
-								],
+								start_date: {
+									lt: endDate,
+								},
+								end_date: {
+									gte: startDate,
+								},
 							},
 						},
 					},
@@ -158,23 +131,32 @@ export class BookingRepository implements IBookings {
 		}
 	}
 
-	async getUnavailableVehicleDate(vehicleId: string, excludeBookingId: string) {
+	async getUnavailableDatesForMultipleVehicles(payload: {
+		vehicleIds: string[];
+		excludeBookingId: string;
+	}) {
 		try {
 			return await this.prisma.bookings.findMany({
 				where: {
 					booking_vehicles: {
 						some: {
-							vehicle_id: vehicleId,
+							vehicle_id: {
+								in: payload.vehicleIds,
+							},
 						},
 					},
 					id: {
-						not: excludeBookingId,
+						not: payload.excludeBookingId,
 					},
 					status: {
 						in: [
-							Booking_Status.RECEIVED,
-							Booking_Status.COMPLETE,
-							Booking_Status.RESCHEDULED,
+							"RECEIVED",
+							"PAYMENT_PENDING",
+							"CONFIRMED",
+							"RESCHEDULE_REQUESTED",
+							"RESCHEDULED",
+							"REJECTED_REFUND",
+							"COMPLETE",
 						],
 					},
 					deleted_at: null,
@@ -189,21 +171,33 @@ export class BookingRepository implements IBookings {
 		}
 	}
 
-	async create(payload: CreateBooking) {
+	async create(payload: CreateBooking, tx?: Prisma.TransactionClient) {
 		try {
-			return await this.prisma.bookings.create({ data: payload });
+			const client = tx || this.prisma;
+
+			return await client.bookings.create({ data: payload });
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
 		}
 	}
 
-	async update(id: string, payload: UpdateBooking) {
+	async update(
+		id: string,
+		payload: UpdateBooking,
+		tx?: Prisma.TransactionClient,
+	) {
 		try {
-			return await this.prisma.bookings.update({
+			const client = tx || this.prisma;
+
+			return await client.bookings.update({
 				where: {
 					id,
 				},
 				data: payload,
+				include: {
+					RescheduleRequests: true,
+					Refunds: true,
+				},
 			});
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);

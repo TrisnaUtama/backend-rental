@@ -15,6 +15,9 @@ import type {
 	Accommodations,
 	Booking_Vehicles,
 	Travel_Itineraries,
+	RescheduleRequest,
+	Prisma,
+	Refunds,
 } from "@prisma/client";
 
 export const TYPES = {
@@ -52,6 +55,8 @@ export const TYPES = {
 	paymentRepo: Symbol.for("PaymentRepository"),
 	ratingRepo: Symbol.for("RatingRepository"),
 	accomodationRepo: Symbol.for("AccomodationRepository"),
+	rescheduleRepo: Symbol.for("RescheduleRepostitory"),
+	refundRepo: Symbol.for("RefundRepository"),
 	storageRepo: Symbol.for("StorageRepository"),
 };
 
@@ -119,6 +124,7 @@ export type CreateAccomodation = Omit<
 	Accommodations,
 	"id" | "created_at" | "updated_at" | "deleted_at"
 >;
+export type CreateResheduleRequest = Prisma.RescheduleRequestCreateInput;
 export type CreateBookingVehicle = Omit<
 	Booking_Vehicles,
 	"id" | "created_at" | "updated_at" | "deleted_at"
@@ -135,6 +141,11 @@ export type CreateTravelItinerariesnput = Omit<
 	Travel_Itineraries,
 	"id" | "travel_package_id" | "created_at" | "updated_at" | "deleted_at"
 >;
+export type CreateRefund = Prisma.RefundsCreateInput;
+export type RequestReschedulePayload = {
+	new_start_date: Date;
+	new_end_date: Date;
+};
 
 // UPDATES //
 export type UpdateUser = Partial<Users>;
@@ -152,5 +163,7 @@ export type UpdatePayment = Partial<Payments>;
 export type UpdatePax = Partial<Travel_Packages_Pax>;
 export type UpdateRating = Partial<Rating>;
 export type UpdateAccomodation = Partial<Accommodations>;
+export type UpdateRescheduleRequest = Partial<RescheduleRequest>;
 export type UpdateBookingVehicle = Partial<Booking_Vehicles>;
-export type UpdateTravelItineraries = Partial<Travel_Itineraries>;
+export type UpdateTravelItineraries = Prisma.RescheduleRequestUpdateInput;
+export type UpdateRefund = Prisma.RefundsUpdateInput;

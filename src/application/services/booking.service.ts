@@ -3,6 +3,7 @@ import { inject, injectable } from "inversify";
 import type { ErrorHandler } from "../../infrastructure/entity/errors/global.error";
 import type { BookingRepository } from "../../infrastructure/repositories/booking.repo";
 import {
+	type RequestReschedulePayload,
 	TYPES,
 	type CreateBooking,
 	type UpdateBooking,
@@ -12,10 +13,16 @@ import type { VehicleRepository } from "../../infrastructure/repositories/vehicl
 import type { TravelPackageRepository } from "../../infrastructure/repositories/travelPack.repo";
 import type { BookingVehiclesRepository } from "../../infrastructure/repositories/bookingVehicle.repo";
 import type { TravelPaxRepository } from "../../infrastructure/repositories/travelPax.repo";
-import type { Bookings } from "@prisma/client";
+import type { Booking_Status, Bookings, PrismaClient } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import type { PaymentRepository } from "../../infrastructure/repositories/payment.repo";
-import { eachDayOfInterval, format } from "date-fns";
+import { differenceInHours, eachDayOfInterval, format } from "date-fns";
+import type { RescheduleRepostitory } from "../../infrastructure/repositories/reschedule.repo";
+import type {
+	RequestRefundPayload,
+	UnavailableDatesPayload,
+} from "../../infrastructure/entity/interfaces";
+import type { RefundRepository } from "../../infrastructure/repositories/refund.repo";
 
 @injectable()
 export class BookingService {
@@ -27,6 +34,9 @@ export class BookingService {
 	private bookingVehicleRepo: BookingVehiclesRepository;
 	private travelPaxRepo: TravelPaxRepository;
 	private paymentrepo: PaymentRepository;
+	private rescheduleRepo: RescheduleRepostitory;
+	private prisma: PrismaClient;
+	private refundRepo: RefundRepository;
 
 	constructor(
 		@inject(TYPES.errorHandler) errorHandler: ErrorHandler,
@@ -38,6 +48,9 @@ export class BookingService {
 		bookingVehicleRepo: BookingVehiclesRepository,
 		@inject(TYPES.travelPaxRepo) travelPaxRepo: TravelPaxRepository,
 		@inject(TYPES.paymentRepo) paymentrepo: PaymentRepository,
+		@inject(TYPES.rescheduleRepo) rescheduleRepo: RescheduleRepostitory,
+		@inject(TYPES.prisma) prisma: PrismaClient,
+		@inject(TYPES.refundRepo) refundRepo: RefundRepository,
 	) {
 		this.errorHandler = errorHandler;
 		this.response = response;
@@ -47,6 +60,9 @@ export class BookingService {
 		this.bookingVehicleRepo = bookingVehicleRepo;
 		this.travelPaxRepo = travelPaxRepo;
 		this.paymentrepo = paymentrepo;
+		this.rescheduleRepo = rescheduleRepo;
+		this.prisma = prisma;
+		this.refundRepo = refundRepo;
 	}
 
 	async getOne(id: string) {
@@ -224,17 +240,16 @@ export class BookingService {
 		}
 	}
 
-	async getUnavailableVehicleDate(
-		vehicleId: string,
-		excludeBookingId: string,
+	async getUnavailableDatesForVehicles(
+		payload: UnavailableDatesPayload,
 	): Promise<string[]> {
 		try {
 			const conflictingBookings =
-				await this.bookingRepo.getUnavailableVehicleDate(
-					vehicleId,
-					excludeBookingId,
-				);
+				await this.bookingRepo.getUnavailableDatesForMultipleVehicles(payload);
 
+			if (!conflictingBookings) {
+				return [];
+			}
 			const unavailableDatesSet = new Set<string>();
 
 			for (const booking of conflictingBookings) {
@@ -290,15 +305,155 @@ export class BookingService {
 				throw this.errorHandler.handleServiceError("total price still empty");
 
 			await this.paymentrepo.create({
-				booking_id: bookingId,
+				booking: {
+					connect: {
+						id: updatedBooking.id,
+					},
+				},
 				payment_status: "PENDING",
 				payment_date: null,
-				payment_method: null,
+				payment_method: "",
 				expiry_date: null,
 				total_amount: updatedBooking.total_price,
 			});
 
 			return updatedBooking;
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
+
+	async requestReschedule(
+		bookingId: string,
+		payload: RequestReschedulePayload,
+	) {
+		try {
+			const existingBooking = await this.bookingRepo.getOne(bookingId);
+			if (!existingBooking) {
+				throw this.response.notFound(
+					"The booking you are trying to reschedule does not exist.",
+				);
+			}
+			const nonReschedulableStatuses: Booking_Status[] = [
+				"CANCELED",
+				"REJECTED_BOOKING",
+			];
+			if (nonReschedulableStatuses.includes(existingBooking.status)) {
+				throw this.response.badRequest(
+					`Cannot reschedule a booking with status '${existingBooking.status}'.`,
+				);
+			}
+			const newRescheduleRequest = await this.prisma.$transaction(
+				async (tx) => {
+					await this.bookingRepo.update(
+						bookingId,
+						{
+							status: "RESCHEDULE_REQUESTED",
+						},
+						tx,
+					);
+
+					const createdRequest = await this.rescheduleRepo.create(
+						{
+							new_start_date: payload.new_start_date,
+							new_end_date: payload.new_end_date,
+							booking: {
+								connect: {
+									id: bookingId,
+								},
+							},
+						},
+						tx,
+					);
+
+					return createdRequest;
+				},
+			);
+
+			if (!newRescheduleRequest) {
+				throw this.response.badRequest("Failed to create reschedule request.");
+			}
+
+			return newRescheduleRequest;
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
+
+	async requestRefund(
+		userId: string,
+		bookingId: string,
+		payload: RequestRefundPayload,
+	) {
+		try {
+			const existingBooking = await this.bookingRepo.getOne(bookingId);
+
+			if (!existingBooking) {
+				throw this.response.notFound("Booking not found.");
+			}
+
+			if (existingBooking.user_id !== userId) {
+				throw this.response.forbidden(
+					"You are not authorized to request a refund for this booking.",
+				);
+			}
+
+			const refundableStatuses: Booking_Status[] = [
+				"CONFIRMED",
+				"RESCHEDULED",
+				"REJECTED_REFUND",
+			];
+			if (!refundableStatuses.includes(existingBooking.status)) {
+				throw this.response.badRequest(
+					`Cannot request a refund for a booking with status '${existingBooking.status}'.`,
+				);
+			}
+			const hoursUntilBooking = differenceInHours(
+				new Date(existingBooking.start_date),
+				new Date(),
+			);
+			if (hoursUntilBooking < 48) {
+				throw this.response.badRequest(
+					"Refunds can only be requested up to 48 hours before the booking starts.",
+				);
+			}
+			const REFUND_PERCENTAGE = new Decimal(0.7);
+			const TRANSFER_FEE = new Decimal(5000);
+			const totalPaid = existingBooking.total_price ?? new Decimal(0);
+			const calculatedRefundAmount = totalPaid
+				.mul(REFUND_PERCENTAGE)
+				.sub(TRANSFER_FEE);
+			const finalRefundAmount = calculatedRefundAmount.isNegative()
+				? new Decimal(0)
+				: calculatedRefundAmount;
+			const newRefundRequest = await this.prisma.$transaction(async (tx) => {
+				await this.bookingRepo.update(
+					bookingId,
+					{ status: "REFUND_REQUESTED" },
+					tx,
+				);
+				const createdRequest = await this.refundRepo.create(
+					{
+						refund_amount: finalRefundAmount,
+						reason: payload.reason,
+						bank_name: payload.bank_name,
+						account_holder: payload.account_holder,
+						account_number: payload.account_number,
+						user: { connect: { id: userId } },
+						booking: { connect: { id: bookingId } },
+						payment: existingBooking.Payments?.[0]
+							? { connect: { id: existingBooking.Payments[0].id } }
+							: undefined,
+					},
+					tx,
+				);
+
+				return createdRequest;
+			});
+			if (!newRefundRequest) {
+				throw this.response.badRequest("Failed to create refund request.");
+			}
+			return newRefundRequest;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
 		}

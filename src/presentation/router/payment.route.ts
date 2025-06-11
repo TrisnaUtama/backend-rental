@@ -85,11 +85,12 @@ export const paymentRoute = new Elysia({
 				}
 				await paymentService.update(payment.booking_id, {
 					payment_status: statusToUpdate,
+					payment_method: body.payment_type,
 					total_amount: new Decimal(body.gross_amount),
 				});
 
 				await bookingService.update(payment.booking_id, {
-					status: "COMPLETE",
+					status: "CONFIRMED",
 				});
 
 				set.status = 200;
@@ -273,9 +274,7 @@ export const paymentRoute = new Elysia({
 					duration: EXPIRY_DATE_MIDTRANS,
 				},
 			};
-
 			const snapResponse = await midtrans.charge(parameter);
-
 			set.status = 200;
 			return StandardResponse.success(
 				{ token: snapResponse, payment_id: payment.id },

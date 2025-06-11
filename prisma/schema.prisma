@@ -7,6 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum RescheduleStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum Roles {
   SUPERADMIN
   ADMIN_OPERATIONAL
@@ -58,21 +64,6 @@ enum Fuel {
   PERTAMAXTURBO 
 }
 
-enum Booking_Status {
-  SUBMITTED
-  PAYMENT_PENDING 
-  RECEIVED
-  COMPLETE
-  CANCELED
-  REJECTED_BOOKING
-  REJECTED_REFUND
-  REJECTED_RESHECULE
-  RESCHEDULE_REQUESTED 
-  RESCHEDULED
-  REFUND_REQUESTED 
-  REFUNDED
-}
-
 enum Promo_Status {
   ACTIVE
   EXPIRED
@@ -99,10 +90,25 @@ enum Payment_Status {
 enum Refund_Status {
   PENDING      
   APPROVED     
-  PROCESSING   
   COMPLETED    
   REJECTED     
   CANCELED_BY_USER
+}
+
+enum Booking_Status {
+  SUBMITTED
+  PAYMENT_PENDING 
+  RECEIVED
+  COMPLETE
+  CANCELED
+  CONFIRMED
+  REJECTED_BOOKING
+  REJECTED_REFUND
+  REJECTED_RESHEDULE
+  RESCHEDULE_REQUESTED 
+  RESCHEDULED
+  REFUND_REQUESTED 
+  REFUNDED
 }
 
 enum Discount_Type {
@@ -344,7 +350,20 @@ model Bookings {
 
   Payments Payments[]
   Refunds         Refunds[]
+  RescheduleRequests RescheduleRequest[]
   pax_option         Travel_Packages_Pax? @relation(fields: [pax_option_id], references: [id])
+}
+
+model RescheduleRequest {
+  id              String   @id @default(cuid())
+  booking_id      String
+  new_start_date  DateTime
+  new_end_date    DateTime
+  status          RescheduleStatus @default(PENDING)
+
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  booking         Bookings @relation(fields: [booking_id], references: [id], onDelete: Cascade)
 }
 
 model Refunds {
@@ -352,14 +371,18 @@ model Refunds {
   booking_id      String
   user_id         String        
   payment_id      String?       
-  refund_amount   Decimal       
+  refund_amount   Decimal      
   request_date    DateTime      @default(now()) 
   approval_date   DateTime?     
   processed_by    String?       
+  bank_name       String      
+  account_holder  String      
+  account_number  String
   status          Refund_Status @default(PENDING) 
-  reason          String?       
+  reason          String      
   admin_notes     String?       
-  refund_method   Payment_Method? 
+  refund_method   String? 
+  transfer_proof  String?
 
   created_at      DateTime      @default(now())
   updated_at      DateTime      @updatedAt
@@ -369,7 +392,6 @@ model Refunds {
   user            Users         @relation(fields: [user_id], references: [id])
   payment         Payments?     @relation(fields: [payment_id], references: [id]) 
 }
-
 model Promos {
   id              String   @id @default(cuid())
   code            String
