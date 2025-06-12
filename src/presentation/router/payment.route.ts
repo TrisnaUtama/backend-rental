@@ -216,7 +216,7 @@ export const paymentRoute = new Elysia({
 				}
 
 				const matchedPax = paxOptions.find(
-					(pax) => Number(pax.price) === Number(payment.total_amount),
+					(pax) => pax.id === booking.pax_option_id,
 				);
 
 				if (!matchedPax) {
