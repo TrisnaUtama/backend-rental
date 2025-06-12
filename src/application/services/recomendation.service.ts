@@ -24,7 +24,7 @@ export class RecomendationService {
 	async getAll(userId: string) {
 		try {
 			const data = await this.httpClient.post(
-				"https://cf.trisnautama.site/recommend",
+				"http://localhost:8888/recommend",
 				{
 					userId,
 					ratings: [],
@@ -39,7 +39,7 @@ export class RecomendationService {
 	async retrainModel() {
 		try {
 			const result = await this.httpClient.post(
-				"https://cf.trisnautama.site/retrain-model",
+				"http://localhost:8888/retrain-model",
 				{},
 			);
 			return result;
