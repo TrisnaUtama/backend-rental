@@ -39,7 +39,7 @@ export class RecomendationService {
 	async retrainModel() {
 		try {
 			const result = await this.httpClient.post(
-				"http://cf.trisnautama.site/retrain-model",
+				"https://cf.trisnautama.site/retrain-model",
 				{},
 			);
 			return result;
