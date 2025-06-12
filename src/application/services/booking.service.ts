@@ -428,6 +428,8 @@ export class BookingService {
 			const refundableStatuses: Booking_Status[] = [
 				"CONFIRMED",
 				"RESCHEDULED",
+				"REJECTED_RESHEDULE",
+				"RESCHEDULED",
 				"REJECTED_REFUND",
 			];
 			if (!refundableStatuses.includes(existingBooking.status)) {
