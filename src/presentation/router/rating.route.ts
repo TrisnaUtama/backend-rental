@@ -106,7 +106,6 @@ export const ratingRoute = new Elysia({
 					status: true,
 					comment: body.comment,
 				};
-
 				const new_account = await ratingServie.create(payload);
 				if (!new_account) {
 					throw response.badRequest("Error while creating user data");
