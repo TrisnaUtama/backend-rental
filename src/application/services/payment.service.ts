@@ -2,10 +2,7 @@ import "reflect-metadata";
 import { inject, injectable } from "inversify";
 import type { PaymentRepository } from "./../../infrastructure/repositories/payment.repo";
 import type { ErrorHandler } from "../../infrastructure/entity/errors/global.error";
-import {
-	TYPES,
-	type UpdatePayment,
-} from "../../infrastructure/entity/types";
+import { TYPES, type UpdatePayment } from "../../infrastructure/entity/types";
 import type { Http } from "../../infrastructure/utils/response/http.response";
 
 @injectable()

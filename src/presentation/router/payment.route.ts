@@ -69,28 +69,31 @@ export const paymentRoute = new Elysia({
 								: body.fraud_status === "challenge"
 									? Payment_Status.PENDING
 									: Payment_Status.FAILED;
-						statusBooking = body.fraud_status === "accept" ? Booking_Status.CONFIRMED : Booking_Status.PAYMENT_PENDING
-						break
+						statusBooking =
+							body.fraud_status === "accept"
+								? Booking_Status.CONFIRMED
+								: Booking_Status.PAYMENT_PENDING;
+						break;
 					case "settlement":
 						statusToUpdate = Payment_Status.PAID;
-						statusBooking = Booking_Status.CONFIRMED
+						statusBooking = Booking_Status.CONFIRMED;
 						break;
 					case "cancel":
 						statusToUpdate = Payment_Status.EXPIRED;
-						statusBooking = Booking_Status.PAYMENT_PENDING
+						statusBooking = Booking_Status.PAYMENT_PENDING;
 						break;
 					case "deny":
 					case "expire":
 						statusToUpdate = Payment_Status.FAILED;
-						statusBooking = Booking_Status.PAYMENT_PENDING
+						statusBooking = Booking_Status.PAYMENT_PENDING;
 						break;
 					case "pending":
 						statusToUpdate = Payment_Status.PENDING;
-						statusBooking = Booking_Status.PAYMENT_PENDING
+						statusBooking = Booking_Status.PAYMENT_PENDING;
 						break;
 					default:
 						statusToUpdate = Payment_Status.FAILED;
-						statusBooking = Booking_Status.PAYMENT_PENDING
+						statusBooking = Booking_Status.PAYMENT_PENDING;
 				}
 				await paymentService.update(payment.booking_id, {
 					payment_status: statusToUpdate,
