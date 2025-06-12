@@ -301,7 +301,7 @@ export const paymentRoute = new Elysia({
 			set.status = 200;
 			return StandardResponse.success(
 				{ token: snapResponse, payment_id: payment.id },
-				"Payment created & Midtrans token generated successfully",
+				"Payment created & Midtrans token generated successfully ",
 			);
 		} catch (error) {
 			set.status = 500;
