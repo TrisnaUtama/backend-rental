@@ -34,10 +34,10 @@ export class BookingRepository implements IBookings {
 						include: {
 							travel_package_destinations: {
 								include: {
-									destination: true
-								}
-							}
-						}
+									destination: true,
+								},
+							},
+						},
 					},
 					Payments: true,
 					promos: true,
@@ -68,10 +68,10 @@ export class BookingRepository implements IBookings {
 						include: {
 							travel_package_destinations: {
 								include: {
-									destination: true
-								}
-							}
-						}
+									destination: true,
+								},
+							},
+						},
 					},
 					Payments: true,
 					promos: true,
@@ -99,10 +99,10 @@ export class BookingRepository implements IBookings {
 						include: {
 							travel_package_destinations: {
 								include: {
-									destination: true
-								}
-							}
-						}
+									destination: true,
+								},
+							},
+						},
 					},
 					Payments: true,
 					promos: true,
