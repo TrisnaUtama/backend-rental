@@ -28,7 +28,7 @@ export class PromoRepository implements IPromos {
 
 	async getOne(id: string) {
 		try {
-			return await this.prisma.promos.findUnique({ where: { id } });
+			return await this.prisma.promos.findFirst({ where: { id } });
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
 		}

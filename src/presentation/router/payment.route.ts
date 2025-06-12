@@ -12,7 +12,7 @@ import { StandardResponse } from "../../infrastructure/utils/response/standard.r
 import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.response";
 import { response } from "../../application/instances";
 import type { IJwtPayload } from "../../infrastructure/entity/interfaces";
-import { Payment_Status } from "@prisma/client";
+import { Booking_Status, Payment_Status } from "@prisma/client";
 import { EXPIRY_DATE_MIDTRANS } from "../../infrastructure/utils/constant";
 import { getFormattedStartTime } from "../../infrastructure/utils/time-formater";
 import crypto from "node:crypto";
@@ -60,6 +60,7 @@ export const paymentRoute = new Elysia({
 				}
 
 				let statusToUpdate: Payment_Status;
+				let statusBooking: Booking_Status;
 				switch (body.transaction_status) {
 					case "capture":
 						statusToUpdate =
@@ -68,20 +69,28 @@ export const paymentRoute = new Elysia({
 								: body.fraud_status === "challenge"
 									? Payment_Status.PENDING
 									: Payment_Status.FAILED;
-						break;
+						statusBooking = body.fraud_status === "accept" ? Booking_Status.CONFIRMED : Booking_Status.PAYMENT_PENDING
+						break
 					case "settlement":
 						statusToUpdate = Payment_Status.PAID;
+						statusBooking = Booking_Status.CONFIRMED
 						break;
 					case "cancel":
+						statusToUpdate = Payment_Status.EXPIRED;
+						statusBooking = Booking_Status.PAYMENT_PENDING
+						break;
 					case "deny":
 					case "expire":
 						statusToUpdate = Payment_Status.FAILED;
+						statusBooking = Booking_Status.PAYMENT_PENDING
 						break;
 					case "pending":
 						statusToUpdate = Payment_Status.PENDING;
+						statusBooking = Booking_Status.PAYMENT_PENDING
 						break;
 					default:
 						statusToUpdate = Payment_Status.FAILED;
+						statusBooking = Booking_Status.PAYMENT_PENDING
 				}
 				await paymentService.update(payment.booking_id, {
 					payment_status: statusToUpdate,
@@ -90,7 +99,7 @@ export const paymentRoute = new Elysia({
 				});
 
 				await bookingService.update(payment.booking_id, {
-					status: "CONFIRMED",
+					status: statusBooking,
 				});
 
 				set.status = 200;
@@ -181,7 +190,6 @@ export const paymentRoute = new Elysia({
 		try {
 			const startTime = getFormattedStartTime();
 			const payment = await paymentService.getOne(params.id);
-
 			const booking = payment.booking;
 
 			if (!booking.start_date || !booking.end_date) {
@@ -191,7 +199,6 @@ export const paymentRoute = new Elysia({
 			const durationInMs =
 				booking.end_date.getTime() - booking.start_date.getTime();
 			const durationInDays = Math.ceil(durationInMs / (1000 * 60 * 60 * 24));
-
 			let item_details: any[] = [];
 			let gross_amount = 0;
 

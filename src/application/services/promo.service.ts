@@ -79,7 +79,7 @@ export class PromoService {
 
 			return await this.promoRepo.update(id, {
 				...exist_promo,
-				status: "UNACTIVE",
+				status: false,
 			});
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);

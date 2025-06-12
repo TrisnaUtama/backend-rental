@@ -4,7 +4,6 @@ import type { PaymentRepository } from "./../../infrastructure/repositories/paym
 import type { ErrorHandler } from "../../infrastructure/entity/errors/global.error";
 import {
 	TYPES,
-	type CreatePayment,
 	type UpdatePayment,
 } from "../../infrastructure/entity/types";
 import type { Http } from "../../infrastructure/utils/response/http.response";
