@@ -30,7 +30,15 @@ export class BookingRepository implements IBookings {
 							vehicle: true,
 						},
 					},
-					travel_package: true,
+					travel_package: {
+						include: {
+							travel_package_destinations: {
+								include: {
+									destination: true
+								}
+							}
+						}
+					},
 					Payments: true,
 					promos: true,
 					users: true,
@@ -56,7 +64,15 @@ export class BookingRepository implements IBookings {
 							vehicle: true,
 						},
 					},
-					travel_package: true,
+					travel_package: {
+						include: {
+							travel_package_destinations: {
+								include: {
+									destination: true
+								}
+							}
+						}
+					},
 					Payments: true,
 					promos: true,
 					users: true,
@@ -79,7 +95,15 @@ export class BookingRepository implements IBookings {
 							vehicle: true,
 						},
 					},
-					travel_package: true,
+					travel_package: {
+						include: {
+							travel_package_destinations: {
+								include: {
+									destination: true
+								}
+							}
+						}
+					},
 					Payments: true,
 					promos: true,
 					users: true,
