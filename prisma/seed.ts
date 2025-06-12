@@ -4,7 +4,7 @@ import { prisma } from "../src/infrastructure/utils/prisma"; // Assuming this pa
 async function main() {
   try {
     // Seed User (keep this if you still need it)
-    const hashed_password = await Bun.password.hash("password", "bcrypt");
+    const hashed_password = await Bun.password.hash("passwordadmin@ex.com", "bcrypt");
     await prisma.users.create({
       data: {
         email: "admin@ex.com",
@@ -19,7 +19,6 @@ async function main() {
     });
     console.log("Successfully seeded admin user.");
 
-    // Destination data you provided
     const destinations = [
       {
         "id": "cmbi8isi90000sd5aj9o0k2gn",
