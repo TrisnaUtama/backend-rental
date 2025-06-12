@@ -264,7 +264,19 @@ export const paymentRoute = new Elysia({
 			} else {
 				return response.badRequest("Unsupported or unknown booking type");
 			}
+			if (booking.promos) {
+				const discountAmount = gross_amount - Number(payment.total_amount);
 
+				if (discountAmount > 0) {
+					item_details.push({
+						id: `DISC-${booking.promos.id}`,
+						name: `Promo: ${booking.promos.code}`,
+						price: -discountAmount,
+						quantity: 1,
+					});
+					gross_amount = Number(payment.total_amount);
+				}
+			}
 			const parameter = {
 				transaction_details: {
 					order_id: booking.id,
@@ -284,6 +296,7 @@ export const paymentRoute = new Elysia({
 					duration: EXPIRY_DATE_MIDTRANS,
 				},
 			};
+
 			const snapResponse = await midtrans.charge(parameter);
 			set.status = 200;
 			return StandardResponse.success(
