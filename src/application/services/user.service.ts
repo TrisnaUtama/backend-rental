@@ -59,7 +59,9 @@ export class UserService {
 			if (existing_user)
 				throw this.response.badRequest("email already exist !");
 
-			const hashed_password = await this.hashed.hash(payload.password);
+			const hashed_password = await this.hashed.hash(
+				`${payload.password}${payload.email}`,
+			);
 			const new_payload = {
 				...payload,
 				password: hashed_password,
@@ -81,14 +83,17 @@ export class UserService {
 			const get_user = await this.userRepo.getOne(id);
 			if (!get_user) throw this.response.notFound("User not found !");
 
-			const hashed_password =
-				payload.password && !payload.password.startsWith("$2b$")
-					? await this.hashed.hash(payload.password)
-					: payload.password;
+			let hashed_password: string | undefined = undefined;
+			if (payload.password) {
+				const isHashed = payload.password.startsWith("$2b$");
+				hashed_password = isHashed
+					? payload.password
+					: await this.hashed.hash(`${payload.password}${payload.email}`);
+			}
 
 			const new_payload: UpdateUser = {
 				...payload,
-				password: hashed_password,
+				...(hashed_password && { password: hashed_password }),
 			};
 
 			const updated_user = await this.userRepo.update(id, new_payload);

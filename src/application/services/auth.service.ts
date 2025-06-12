@@ -51,7 +51,9 @@ export class AuthService {
 			if (existing_user)
 				throw this.response.badRequest("email already exist !");
 
-			const hashed_password = await this.hashed.hash(payload.password);
+			const hashed_password = await this.hashed.hash(
+				`${payload.password}${payload.email}`,
+			);
 			const new_payload = {
 				...payload,
 				password: hashed_password,
@@ -78,7 +80,7 @@ export class AuthService {
 			if (!get_payload) throw this.response.badRequest("Invalid Credentials !");
 
 			const compare_password = await Bun.password.verify(
-				password,
+				`${password}${email}`,
 				get_payload.password,
 				"bcrypt",
 			);
