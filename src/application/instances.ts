@@ -102,7 +102,9 @@ container
 	.bind<ITravel_Itineraries>(TYPES.travelItinerariesRepo)
 	.to(TravelItinerariesRepository);
 container.bind<IPromos>(TYPES.promoRepo).to(PromoRepository);
-container.bind<IRescheduleRequest>(TYPES.rescheduleRepo).to(RescheduleRepostitory);
+container
+	.bind<IRescheduleRequest>(TYPES.rescheduleRepo)
+	.to(RescheduleRepostitory);
 container.bind<IRefund>(TYPES.refundRepo).to(RefundRepository);
 container.bind<IRating>(TYPES.ratingRepo).to(RatingRepostitory);
 container.bind<IBookings>(TYPES.bookingRepo).to(BookingRepository);
@@ -163,5 +165,4 @@ export const recomendationService =
 	container.get<RecomendationService>(RecomendationService);
 export const rescheduleService =
 	container.get<RescheduleService>(RescheduleService);
-export const refundService =
-	container.get<RefundService>(RefundService);
+export const refundService = container.get<RefundService>(RefundService);
