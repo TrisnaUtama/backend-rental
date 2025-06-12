@@ -2,12 +2,10 @@ import { RatedEntityType, Roles } from "@prisma/client";
 import jwt from "@elysiajs/jwt";
 import type { IJwtPayload } from "../../infrastructure/entity/interfaces";
 import type {
-	CreateRating,
 	UpdateRating,
-	UpdateUser,
 } from "../../infrastructure/entity/types";
 import { Elysia, t } from "elysia";
-import { userService, ratingServie } from "../../application/instances";
+import { userService, ratingServie, recomendationService } from "../../application/instances";
 import { StandardResponse } from "../../infrastructure/utils/response/standard.response";
 import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.response";
 import { verifyJwt } from "../../infrastructure/utils/jwt";
@@ -107,11 +105,15 @@ export const ratingRoute = new Elysia({
 					comment: body.comment,
 				};
 
+				
 				const new_account = await ratingServie.create(payload);
 				if (!new_account) {
 					throw response.badRequest("Error while creating user data");
 				}
-
+				if(new_account.ratedType === "DESTINATION"){
+					await recomendationService.retrainModel()
+				}
+				
 				set.status = 201;
 				return StandardResponse.success(
 					new_account,

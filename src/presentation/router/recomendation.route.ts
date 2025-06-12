@@ -58,7 +58,7 @@ export const recommendationRoute = new Elysia({
 
 				const recomendationDestination =
 					await destinationService.getRecomendation(destinationIds);
-
+					
 				set.status = 200;
 				return StandardResponse.success(
 					recomendationDestination,
