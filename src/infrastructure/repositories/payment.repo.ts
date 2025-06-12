@@ -31,7 +31,7 @@ export class PaymentRepository implements IPayments {
 								},
 							},
 							booking_vehicles: true,
-							promos: true
+							promos: true,
 						},
 					},
 				},
