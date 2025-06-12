@@ -98,7 +98,7 @@ export type CreateTravelPackageDesinationInput = Omit<
 >;
 export type CreatePromo = Omit<
 	Promos,
-	"id" | "created_at" | "updated_at" | "status"
+	"id" | "created_at" | "updated_at" | "deleted_at"
 >;
 export type CreateBooking = Omit<
 	Bookings,

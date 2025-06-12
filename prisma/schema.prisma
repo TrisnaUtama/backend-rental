@@ -87,14 +87,6 @@ enum Payment_Status {
   EXPIRED
 }
 
-enum Refund_Status {
-  PENDING      
-  APPROVED     
-  COMPLETED    
-  REJECTED     
-  CANCELED_BY_USER
-}
-
 enum Booking_Status {
   SUBMITTED
   PAYMENT_PENDING 
@@ -111,9 +103,12 @@ enum Booking_Status {
   REFUNDED
 }
 
-enum Discount_Type {
-  PERCENTAGE
-  FIXED
+enum Refund_Status {
+  PENDING      
+  APPROVED     
+  COMPLETED    
+  REJECTED     
+  CANCELED_BY_USER
 }
 
 enum Travel_Status {
@@ -295,6 +290,7 @@ model Travel_Packages {
   travel_package_destinations Travel_Packages_Destinations[]
   bookings        Bookings[]
 }
+
 model Rating {
   id          String          @id @default(cuid())
   user        Users         @relation(fields: [userId], references: [id])
@@ -396,13 +392,11 @@ model Promos {
   id              String   @id @default(cuid())
   code            String
   description     String 
-  discount_type   Discount_Type
-  discount_value  Decimal
+  discount_value  Int
   start_date      DateTime
   end_date        DateTime
   min_booking_amount Decimal
-  max_discount    Decimal
-  status          Promo_Status @default(ACTIVE)
+  status          Boolean @default(true)
   
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt

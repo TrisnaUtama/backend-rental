@@ -17,6 +17,7 @@ import { recommendationRoute } from "./presentation/router/recomendation.route";
 import { StandardResponse } from "./infrastructure/utils/response/standard.response";
 import { BaseHttpError } from "./infrastructure/utils/response/base.response";
 import { refundRoute } from "./presentation/router/refund.route";
+import { promoRoute } from "./presentation/router/promo.route";
 
 const app = new Elysia();
 
@@ -65,7 +66,8 @@ app
 			.use(accomodationRoute)
 			.use(recommendationRoute)
 			.use(ratingRoute)
-			.use(refundRoute),
+			.use(refundRoute)
+			.use(promoRoute),
 	)
 	.use(
 		staticPlugin({

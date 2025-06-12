@@ -23,6 +23,7 @@ import type {
 	UnavailableDatesPayload,
 } from "../../infrastructure/entity/interfaces";
 import type { RefundRepository } from "../../infrastructure/repositories/refund.repo";
+import type { PromoRepository } from "../../infrastructure/repositories/promo.repo";
 
 @injectable()
 export class BookingService {
@@ -37,6 +38,7 @@ export class BookingService {
 	private rescheduleRepo: RescheduleRepostitory;
 	private prisma: PrismaClient;
 	private refundRepo: RefundRepository;
+	private promoRepo: PromoRepository;
 
 	constructor(
 		@inject(TYPES.errorHandler) errorHandler: ErrorHandler,
@@ -51,6 +53,7 @@ export class BookingService {
 		@inject(TYPES.rescheduleRepo) rescheduleRepo: RescheduleRepostitory,
 		@inject(TYPES.prisma) prisma: PrismaClient,
 		@inject(TYPES.refundRepo) refundRepo: RefundRepository,
+		@inject(TYPES.promoRepo) promoRepo: PromoRepository,
 	) {
 		this.errorHandler = errorHandler;
 		this.response = response;
@@ -63,6 +66,7 @@ export class BookingService {
 		this.rescheduleRepo = rescheduleRepo;
 		this.prisma = prisma;
 		this.refundRepo = refundRepo;
+		this.promoRepo = promoRepo;
 	}
 
 	async getOne(id: string) {
@@ -108,7 +112,7 @@ export class BookingService {
 		selected_pax_option_id?: string,
 	) {
 		try {
-			const { travel_package_id, start_date, end_date } = payload;
+			const { travel_package_id, start_date, end_date, promo_id } = payload;
 
 			if (!start_date) {
 				throw this.response.badRequest("Start date is required");
@@ -169,12 +173,23 @@ export class BookingService {
 
 				total_price = total_price.plus(paxOption.price);
 			}
+			let applied_promo_id: string | null = null;
+			if (promo_id) {
+				const promo = await this.promoRepo.getOne(promo_id);
+				if (promo) {
+					const discountPercent = new Decimal(promo.discount_value);
+					const discountAmount = total_price.mul(discountPercent).div(100);
+					total_price = total_price.minus(discountAmount);
+					applied_promo_id = promo_id;
+				}
+			}
 
 			const booking = await this.bookingRepo.create({
 				...payload,
 				end_date: calculated_end_date,
 				total_price,
 				pax_option_id: selected_pax_option_id || null,
+				promo_id: applied_promo_id,
 			});
 
 			if (vehicle_ids && vehicle_ids.length > 0) {
@@ -182,7 +197,6 @@ export class BookingService {
 					booking_id: booking.id,
 					vehicle_id,
 				}));
-
 				await this.bookingVehicleRepo.create(relations);
 			}
 
