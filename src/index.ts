@@ -47,12 +47,6 @@ app
 		}),
 	)
 	.use(
-		staticPlugin({
-			prefix: "/",
-			assets: process.env.STORAGE_PATH,
-		}),
-	)
-	.use(
 		swagger({
 			path: "/docs",
 		}),
@@ -72,6 +66,12 @@ app
 			.use(recommendationRoute)
 			.use(ratingRoute)
 			.use(refundRoute),
+	)
+	.use(
+		staticPlugin({
+			prefix: "/",
+			assets: process.env.STORAGE_PATH,
+		}),
 	)
 	.listen({ port: 8000, hostname: "0.0.0.0" });
 
