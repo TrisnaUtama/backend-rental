@@ -20,7 +20,11 @@ export class RatingRepostitory implements IRating {
 
 	async getAll() {
 		try {
-			return await this.prisma.rating.findMany();
+			return await this.prisma.rating.findMany({
+				include: {
+					user: true
+				}
+			});
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
 		}

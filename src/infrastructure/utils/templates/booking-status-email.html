@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pembaruan Booking Anda | Bintang Transport Service</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #f0f4f8; /* Light blue-gray background */
+      color: #333;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1); /* Stronger shadow */
+      border: 1px solid #dae3ec; /* Subtle border */
+    }
+    .header {
+      background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); /* Tailwind blue-500 inspired */
+      padding: 35px 25px; /* More padding */
+      text-align: center;
+      color: white;
+      border-bottom: 5px solid {{STATUS_COLOR}}; /* Dynamic border color for status */
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px; /* Larger title */
+      font-weight: 700; /* Bolder */
+      line-height: 1.2;
+    }
+    .status-badge {
+      display: inline-block;
+      background-color: {{STATUS_COLOR}}; /* Dynamic color for badge */
+      color: white;
+      padding: 10px 20px; /* More padding */
+      border-radius: 25px; /* More rounded */
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 15px; /* More space */
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for badge */
+    }
+    .content {
+      padding: 35px;
+      text-align: left; /* Align text left */
+    }
+    .content p {
+        margin-bottom: 15px;
+        font-size: 15px;
+        color: #4a5568; /* Darker gray for text */
+    }
+    .content strong {
+        color: #2d3748; /* Even darker for emphasis */
+    }
+    .button-section {
+      text-align: center;
+      margin-top: 30px; /* More spacing */
+    }
+    .button {
+      display: inline-block;
+      background: #3B82F6; /* Tailwind blue-500 */
+      color: white;
+      text-decoration: none;
+      padding: 15px 30px; /* Larger button */
+      border-radius: 8px; /* More rounded corners */
+      font-weight: 600; /* Bolder text */
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); /* Blue shadow */
+    }
+    .button:hover {
+      background: #2563EB; /* Darker blue on hover */
+    }
+    .footer {
+      text-align: center;
+      padding: 25px;
+      background: #e2e8f0; /* Light gray background */
+      font-size: 13px;
+      color: #718096; /* Gray text */
+      border-top: 1px solid #cbd5e0;
+    }
+    .footer a {
+        color: #3B82F6;
+        text-decoration: none;
+    }
+    .footer a:hover {
+        text-decoration: underline;
+    }
+    .divider {
+      height: 1px;
+      background: #e2e8f0;
+      margin: 30px 0;
+    }
+    .details-section {
+        background-color: #f7fafc; /* Very light gray */
+        border: 1px solid #edf2f7;
+        border-radius: 8px;
+        padding: 25px;
+        margin-top: 25px;
+    }
+    .details-section h2 {
+        font-size: 18px;
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #2d3748;
+        font-weight: 600;
+    }
+    .details-section p {
+        margin: 0 0 10px 0;
+        font-size: 14px;
+        color: #4a5568;
+    }
+    .details-section strong {
+        color: #2d3748;
+        font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <h1>Pembaruan Booking Anda</h1>
+      <div class="status-badge">Booking ID: #{{BOOKING_ID}} - {{STATUS_TEXT}}</div>
+    </div>
+    
+    <div class="content">
+      <p>Halo {{USER_NAME}},</p>
+      <p>{{MAIN_MESSAGE}}</p>
+      
+      {{REASON_SECTION}} <!-- Akan muncul hanya jika ada alasan (untuk penolakan) -->
+
+      <div class="details-section">
+        <h2>Detail Booking</h2>
+        {{ADDITIONAL_DETAILS}} <!-- Detail booking/reschedule/refund -->
+      </div>
+      
+      <div class="button-section">
+        <a href="{{CTA_LINK}}" class="button">{{CALL_TO_ACTION_TEXT}}</a>
+      </div>
+      
+      <div class="divider"></div>
+      
+      <p style="font-size: 14px; color: #666; text-align: center;">Jika Anda memiliki pertanyaan lebih lanjut, jangan ragu untuk menghubungi tim dukungan kami di <a href="mailto:support@bintangtransportservice.club" style="color: #3B82F6; text-decoration: none;">support@bintangtransportservice.club</a></p>
+    </div>
+    
+    <div class="footer">
+      <p>Ini adalah email otomatis. Mohon jangan membalas email ini.</p>
+      <p>&copy; 2025 Bintang Transport Service. Semua hak dilindungi.</p>
+      <p>Jl. Toyaning No. 15, Kedonganan, Bali, Indonesia</p>
+    </div>
+  </div>
+</body>
+</html>

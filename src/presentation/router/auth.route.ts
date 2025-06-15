@@ -170,11 +170,11 @@ export const authRouter = new Elysia({
 	.post("/refresh", async ({ set, cookie }) => {
 		try {
 			const refreshToken = cookie.refresh_token;
-			if (!refreshToken) {
+			if (!refreshToken.value) {
 				set.status = 401;
 				throw response.unauthorized("Unauthorized");
 			}
-			const token = await authService.refresh(refreshToken.toString());
+			const token = await authService.refresh(refreshToken.value.toString());
 			set.status = 200;
 			return StandardResponse.login(
 				token.user,
@@ -182,7 +182,7 @@ export const authRouter = new Elysia({
 				"Successfully Refreshed",
 			);
 		} catch (error) {
-			set.status = 500;
+			set.status = 401;
 			return GlobalErrorHandler.handleError(error, set);
 		}
 	});
