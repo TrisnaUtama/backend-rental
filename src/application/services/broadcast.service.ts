@@ -131,7 +131,6 @@ export class BroadcastService {
 		}
 	}
 
-
 	async getOne(id: string) {
 		try {
 			const broadcast = await this.broadcastRepo.getOne(id);

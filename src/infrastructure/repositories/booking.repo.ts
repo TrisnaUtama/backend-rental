@@ -196,46 +196,46 @@ export class BookingRepository implements IBookings {
 	}
 
 	async findBookingsForVehicleIds(vehicleIds: string[]) {
-    try {
-        const records = await this.prisma.booking_Vehicles.findMany({
-            where: {
-                vehicle_id: { in: vehicleIds },
-                booking: {
-                    deleted_at: null,
-                    status: {
-                        in: [
-                            "RECEIVED",
-                            "CONFIRMED",
-                            "RESCHEDULE_REQUESTED",
-                            "RESCHEDULED",
-                            "REFUND_REQUESTED",
-                            "REJECTED_RESHEDULE",
-                            "REJECTED_REFUND",
-                            "COMPLETE",
-                        ],
-                    },
-                },
-            },
-            select: {
-                vehicle_id: true,
-                booking: {
-                    select: {
-                        start_date: true,
-                        end_date: true,
-                    },
-                },
-            },
-        });
+		try {
+			const records = await this.prisma.booking_Vehicles.findMany({
+				where: {
+					vehicle_id: { in: vehicleIds },
+					booking: {
+						deleted_at: null,
+						status: {
+							in: [
+								"RECEIVED",
+								"CONFIRMED",
+								"RESCHEDULE_REQUESTED",
+								"RESCHEDULED",
+								"REFUND_REQUESTED",
+								"REJECTED_RESHEDULE",
+								"REJECTED_REFUND",
+								"COMPLETE",
+							],
+						},
+					},
+				},
+				select: {
+					vehicle_id: true,
+					booking: {
+						select: {
+							start_date: true,
+							end_date: true,
+						},
+					},
+				},
+			});
 
-        return records.map((r) => ({
-            vehicleId: r.vehicle_id,
-            startDate: r.booking.start_date,
-            endDate: r.booking.end_date,
-        }));
-    } catch (error) {
-        this.errorHandler.handleRepositoryError(error);
-    }
-}
+			return records.map((r) => ({
+				vehicleId: r.vehicle_id,
+				startDate: r.booking.start_date,
+				endDate: r.booking.end_date,
+			}));
+		} catch (error) {
+			this.errorHandler.handleRepositoryError(error);
+		}
+	}
 
 	async getUnavailableDatesForMultipleVehicles(payload: {
 		vehicleIds: string[];
