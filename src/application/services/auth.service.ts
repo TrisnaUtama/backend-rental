@@ -162,25 +162,25 @@ export class AuthService {
 	}
 
 	async refresh(token: string) {
-    try {
-        const payload = verifyJwt(token); 
-        if (!payload || !payload.user_id) {
-            throw this.response.badRequest("Invalid refresh token payload");
-        }
-        const user = await this.userRepo.getOne(payload.user_id); 
-        if (!user) {
-            throw this.response.badRequest("User for this token not found");
-        }
-        const newAccessTokenPayload = {
-            user_id: user.id,
-            role: user.role,
-            email: user.email,
-            name: user.name,
-        };
-        const access_token = signJwt(newAccessTokenPayload, ACCESS_TOKEN_EXP);
-        return { user, access_token };
-    } catch (error) {
-        this.errorHandler.handleServiceError(error);
-    }
-}
+		try {
+			const payload = verifyJwt(token);
+			if (!payload || !payload.user_id) {
+				throw this.response.badRequest("Invalid refresh token payload");
+			}
+			const user = await this.userRepo.getOne(payload.user_id);
+			if (!user) {
+				throw this.response.badRequest("User for this token not found");
+			}
+			const newAccessTokenPayload = {
+				user_id: user.id,
+				role: user.role,
+				email: user.email,
+				name: user.name,
+			};
+			const access_token = signJwt(newAccessTokenPayload, ACCESS_TOKEN_EXP);
+			return { user, access_token };
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
 }

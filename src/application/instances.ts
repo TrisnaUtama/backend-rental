@@ -171,5 +171,5 @@ export const rescheduleService =
 export const refundService = container.get<RefundService>(RefundService);
 export const reportService = container.get<ReportService>(ReportService);
 export const emailService = container.get<EmailService>(EmailService);
-export const broadcastService = container.get<BroadcastService>(BroadcastService);
-
+export const broadcastService =
+	container.get<BroadcastService>(BroadcastService);

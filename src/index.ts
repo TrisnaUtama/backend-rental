@@ -69,7 +69,7 @@ app
 			.use(ratingRoute)
 			.use(refundRoute)
 			.use(promoRoute)
-			.use(reportRoute)
+			.use(reportRoute),
 	)
 	.use(
 		staticPlugin({

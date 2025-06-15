@@ -19,8 +19,8 @@ export class BroadcastService {
 	private response: Http;
 	private userRepo: UserRepository;
 	private broadcastRepo: BroadcastRepository;
-	private notificationRepo: NotificationRepository
-	private promoRepo: PromoRepository
+	private notificationRepo: NotificationRepository;
+	private promoRepo: PromoRepository;
 	private emailService: EmailService;
 
 	constructor(
@@ -62,76 +62,74 @@ export class BroadcastService {
 	}
 
 	async broadcastToSpecificUsers(notification_id: string, user_ids: string[]) {
-        try {
-            if (user_ids.length === 0) {
-                throw this.response.badRequest("User ID list cannot be empty.");
-            }
+		try {
+			if (user_ids.length === 0) {
+				throw this.response.badRequest("User ID list cannot be empty.");
+			}
 
-            const broadcastPayload: CreateNotificationBroadcast[] = user_ids.map(
-                (userId) => ({
-                    notification_id: notification_id,
-                    user_id: userId,
-                    sent_at: new Date(),
-                    read_at: null,
-                    status: true,
-                }),
-            );
+			const broadcastPayload: CreateNotificationBroadcast[] = user_ids.map(
+				(userId) => ({
+					notification_id: notification_id,
+					user_id: userId,
+					sent_at: new Date(),
+					read_at: null,
+					status: true,
+				}),
+			);
 
-            const createdBroadcasts = await this.broadcastRepo.createMany(
-                broadcastPayload,
-            );
-            if (!createdBroadcasts) {
-                throw this.response.badRequest(
-                    "Error while creating broadcast records.",
-                );
-            }
-            await this.emailService.send_broadcast(notification_id);
-            return {
-                message: `Promo notification sent successfully to ${createdBroadcasts.count} user(s).`,
-                data: createdBroadcasts,
-            };
-        } catch (error) {
-            this.errorHandler.handleServiceError(error);
-        }
-    }
+			const createdBroadcasts =
+				await this.broadcastRepo.createMany(broadcastPayload);
+			if (!createdBroadcasts) {
+				throw this.response.badRequest(
+					"Error while creating broadcast records.",
+				);
+			}
+			await this.emailService.send_broadcast(notification_id);
+			return {
+				message: `Promo notification sent successfully to ${createdBroadcasts.count} user(s).`,
+				data: createdBroadcasts,
+			};
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
 
 	async sendPromoNotification(
-        promoId: string,
-        targetUserIds: string[] | "all",
-    ) {
-        try {
-            const promo = await this.promoRepo.getOne(promoId);
-            if (!promo) {
-                throw this.response.notFound("Promo not found!");
-            }
-            const notificationPayload: CreateNotification = {
+		promoId: string,
+		targetUserIds: string[] | "all",
+	) {
+		try {
+			const promo = await this.promoRepo.getOne(promoId);
+			if (!promo) {
+				throw this.response.notFound("Promo not found!");
+			}
+			const notificationPayload: CreateNotification = {
 				title: `🎉 Special Promo Just For You: ${promo.code}!`,
 				message: promo.description,
 				type: "PROMO",
 				promo_id: promo.id,
-				status: true
+				status: true,
 			};
-            const newNotification = await this.notificationRepo.create(
-                notificationPayload,
-            );
-            if (!newNotification) {
-                throw this.response.badRequest(
-                    "Failed to create notification content.",
-                );
-            }
-            if (targetUserIds === "all") {
-                return await this.broadcastToAll(newNotification.id);
-            // biome-ignore lint/style/noUselessElse: <explanation>
-            } else {
-                return await this.broadcastToSpecificUsers(
-                    newNotification.id,
-                    targetUserIds,
-                );
-            }
-        } catch (error) {
-            this.errorHandler.handleServiceError(error);
-        }
-    }
+			const newNotification =
+				await this.notificationRepo.create(notificationPayload);
+			if (!newNotification) {
+				throw this.response.badRequest(
+					"Failed to create notification content.",
+				);
+			}
+			if (targetUserIds === "all") {
+				return await this.broadcastToAll(newNotification.id);
+				// biome-ignore lint/style/noUselessElse: <explanation>
+			} else {
+				return await this.broadcastToSpecificUsers(
+					newNotification.id,
+					targetUserIds,
+				);
+			}
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
 
 	async getOne(id: string) {
 		try {
@@ -156,16 +154,16 @@ export class BroadcastService {
 	}
 
 	async broadcastToAll(notification_id: string) {
-        try {
-            const users = await this.userRepo.getAll();
-            if (!users || users.length === 0) {
-                throw this.response.notFound("No users found to broadcast to.");
-            }
+		try {
+			const users = await this.userRepo.getAll();
+			if (!users || users.length === 0) {
+				throw this.response.notFound("No users found to broadcast to.");
+			}
 
-            const user_ids = users.map((user) => user.id);
-            return await this.broadcastToSpecificUsers(notification_id, user_ids);
-        } catch (error) {
-            this.errorHandler.handleServiceError(error);
-        }
-    }
+			const user_ids = users.map((user) => user.id);
+			return await this.broadcastToSpecificUsers(notification_id, user_ids);
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
 }
