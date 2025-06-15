@@ -67,6 +67,7 @@ import { RescheduleRepostitory } from "../infrastructure/repositories/reschedule
 import { RescheduleService } from "./services/reschedule.service";
 import { RefundRepository } from "../infrastructure/repositories/refund.repo";
 import { RefundService } from "./services/refund.service";
+import { ReportService } from "./services/report.service";
 
 export const container = new Container();
 
@@ -136,6 +137,8 @@ container.bind<Logger>(Logger).toSelf();
 container.bind<RecomendationService>(RecomendationService).toSelf();
 container.bind<RescheduleService>(RescheduleService).toSelf();
 container.bind<RefundService>(RefundService).toSelf();
+container.bind<ReportService>(ReportService).toSelf();
+container.bind<EmailService>(EmailService).toSelf();
 
 //instance
 
@@ -166,3 +169,7 @@ export const recomendationService =
 export const rescheduleService =
 	container.get<RescheduleService>(RescheduleService);
 export const refundService = container.get<RefundService>(RefundService);
+export const reportService = container.get<ReportService>(ReportService);
+export const emailService = container.get<EmailService>(EmailService);
+export const broadcastService =
+	container.get<BroadcastService>(BroadcastService);

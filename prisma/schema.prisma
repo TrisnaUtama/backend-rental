@@ -153,14 +153,18 @@ model Users {
 }
 
 model Notifications {
-  id          String   @id @default(cuid())
-  title       String
-  message     String
-  type        Notification_Type
-  status      Boolean @default(true)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  deleted_at  DateTime? 
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      Notification_Type
+  status    Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  deleted_at DateTime?
+
+  // Add these two lines
+  promo_id   String?
+  promo      Promos?  @relation(fields: [promo_id], references: [id])
   
   notification_broadcast Notification_Broadcast[]
 }
@@ -170,7 +174,6 @@ model Notification_Broadcast {
   notification_id String
   user_id        String
   status         Boolean @default(true)
-
   read_at        DateTime?
   sent_at        DateTime?
 
@@ -403,6 +406,8 @@ model Promos {
   deleted_at      DateTime? 
 
   bookings        Bookings[]
+
+  Notifications Notifications[]
 }
 
 model Payments {

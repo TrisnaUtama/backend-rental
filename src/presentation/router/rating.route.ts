@@ -19,6 +19,22 @@ export const ratingRoute = new Elysia({
 		tags: ["RATING"],
 	},
 })
+	.get("/", async ({ set }) => {
+		try {
+			const users = await ratingServie.getAll();
+			if (!users) {
+				throw response.badRequest(
+					"Something went wrong while retreived ratings",
+				);
+			}
+
+			set.status = 200;
+			return StandardResponse.success(users, "Successfully retreived ratings");
+		} catch (error) {
+			set.status = 500;
+			return GlobalErrorHandler.handleError(error, set);
+		}
+	})
 	.use(
 		jwt({
 			name: `${process.env.JWT_NAME}`,
@@ -41,22 +57,6 @@ export const ratingRoute = new Elysia({
 		return {
 			user,
 		};
-	})
-	.get("/", async ({ set }) => {
-		try {
-			const users = await ratingServie.getAll();
-			if (!users) {
-				throw response.badRequest(
-					"Something went wrong while retreived ratings",
-				);
-			}
-
-			set.status = 200;
-			return StandardResponse.success(users, "Successfully retreived ratings");
-		} catch (error) {
-			set.status = 500;
-			return GlobalErrorHandler.handleError(error, set);
-		}
 	})
 	.get("/:id", async ({ set, params }) => {
 		try {

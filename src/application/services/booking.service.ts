@@ -24,6 +24,7 @@ import type {
 } from "../../infrastructure/entity/interfaces";
 import type { RefundRepository } from "../../infrastructure/repositories/refund.repo";
 import type { PromoRepository } from "../../infrastructure/repositories/promo.repo";
+import { emailService } from "../instances";
 
 @injectable()
 export class BookingService {
@@ -337,7 +338,18 @@ export class BookingService {
 					vehicle_id: id,
 				})),
 			);
-
+			await emailService.sendBookingStatusNotification(
+				booking.user_id,
+				{
+					id: booking.id,
+					travel_package_name: booking.travel_package?.name,
+					vehicle_name: booking.booking_vehicles?.[0]?.vehicle?.name,
+					start_date: booking.start_date,
+					end_date: booking.end_date as Date,
+					total_price: booking.total_price ?? new Decimal(0),
+				},
+				"RECEIVED",
+			);
 			const updatedBooking = await this.bookingRepo.update(bookingId, {
 				status: "RECEIVED",
 			});
@@ -424,7 +436,7 @@ export class BookingService {
 	async requestRefund(
 		userId: string,
 		bookingId: string,
-		payload: RequestRefundPayload,
+		payload: RequestRefundPayload, // Assuming RequestRefundPayload is defined
 	) {
 		try {
 			const existingBooking = await this.bookingRepo.getOne(bookingId);
@@ -443,28 +455,37 @@ export class BookingService {
 				"CONFIRMED",
 				"RESCHEDULED",
 				"REJECTED_RESHEDULE",
-				"RESCHEDULED",
 				"REJECTED_REFUND",
 			];
 			if (!refundableStatuses.includes(existingBooking.status)) {
 				throw this.response.badRequest(
-					`Cannot request a refund for a booking with status '${existingBooking.status}'.`,
+					`Cannot request a refund for a booking with status '${
+						existingBooking.status
+					}'. Only bookings with status ${refundableStatuses.join(
+						", ",
+					)} can be refunded.`,
 				);
 			}
+
 			const hoursUntilBooking = differenceInHours(
 				new Date(existingBooking.start_date),
 				new Date(),
 			);
-			if (hoursUntilBooking < 48) {
+			if (hoursUntilBooking <= 0) {
 				throw this.response.badRequest(
-					"Refunds can only be requested up to 48 hours before the booking starts.",
+					"Cannot request a refund for a booking that has already started or passed.",
 				);
 			}
-			const REFUND_PERCENTAGE = new Decimal(0.7);
+			let refundPercentage: Decimal;
 			const TRANSFER_FEE = new Decimal(5000);
+			if (hoursUntilBooking >= 48) {
+				refundPercentage = new Decimal(0.5);
+			} else {
+				refundPercentage = new Decimal(0.7);
+			}
 			const totalPaid = existingBooking.total_price ?? new Decimal(0);
 			const calculatedRefundAmount = totalPaid
-				.mul(REFUND_PERCENTAGE)
+				.mul(refundPercentage)
 				.sub(TRANSFER_FEE);
 			const finalRefundAmount = calculatedRefundAmount.isNegative()
 				? new Decimal(0)
@@ -490,12 +511,12 @@ export class BookingService {
 					},
 					tx,
 				);
-
 				return createdRequest;
 			});
 			if (!newRefundRequest) {
 				throw this.response.badRequest("Failed to create refund request.");
 			}
+
 			return newRefundRequest;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);

@@ -3,17 +3,19 @@ import type {
 	CreateNotification,
 	UpdateNotification,
 } from "../../infrastructure/entity/types";
-import { notificationService } from "../../application/instances";
-import { braodcastService } from "../../application/instances";
+import {
+	notificationService,
+	broadcastService,
+	response,
+} from "../../application/instances";
 import { StandardResponse } from "../../infrastructure/utils/response/standard.response";
 import { GlobalErrorHandler } from "../../infrastructure/utils/response/global.response";
 import { Notification_Type } from "@prisma/client";
-import { response } from "../../application/instances";
 
 export const notificationRoute = new Elysia({
 	prefix: "/v1/notifications",
 	detail: {
-		tags: ["NOTIFICATION"],
+		tags: ["NOTIFICATION & BROADCAST"],
 	},
 })
 	.get("/", async ({ set }) => {
@@ -21,7 +23,7 @@ export const notificationRoute = new Elysia({
 			const notifications = await notificationService.getAll();
 			if (!notifications) {
 				throw response.badRequest(
-					"Somethig went wrong while retreived notifications",
+					"Something went wrong while retrieving notifications",
 				);
 			}
 
@@ -32,7 +34,7 @@ export const notificationRoute = new Elysia({
 			set.status = 200;
 			return StandardResponse.success(
 				notifications,
-				"Successfully retreived notifications",
+				"Successfully retrieved notifications",
 			);
 		} catch (error) {
 			return GlobalErrorHandler.handleError(error, set);
@@ -43,16 +45,15 @@ export const notificationRoute = new Elysia({
 			const notification = await notificationService.getOne(params.id);
 			if (!notification) {
 				throw response.badRequest(
-					"Something went wrong while retreived notification",
+					"Something went wrong while retrieving notification",
 				);
 			}
 			set.status = 200;
 			return StandardResponse.success(
 				notification,
-				"Successfully retreived notification",
+				"Successfully retrieved notification",
 			);
 		} catch (error) {
-			set.status = 500;
 			return GlobalErrorHandler.handleError(error, set);
 		}
 	})
@@ -64,6 +65,7 @@ export const notificationRoute = new Elysia({
 					message: body.message,
 					title: body.title,
 					type: body.type,
+					promo_id: body.promo_id as string,
 					status: true,
 				};
 
@@ -71,13 +73,12 @@ export const notificationRoute = new Elysia({
 				if (!notification) {
 					throw response.badRequest("Error while creating notification !");
 				}
-				set.status = 200;
+				set.status = 201; // Use 201 Created for successful post requests
 				return StandardResponse.success(
 					notification,
-					"Successfuly creating notification",
+					"Successfully creating notification",
 				);
 			} catch (error) {
-				set.status = 500;
 				return GlobalErrorHandler.handleError(error, set);
 			}
 		},
@@ -85,56 +86,112 @@ export const notificationRoute = new Elysia({
 			body: t.Object({
 				title: t.String({
 					minLength: 5,
-					error: "tittle must be at least 5 character",
+					error: "title must be at least 5 characters",
 				}),
 				message: t.String({
 					minLength: 20,
-					error: "message must be at least 20 character",
+					error: "message must be at least 20 characters",
 				}),
 				type: t.Enum(Notification_Type, {
-					error: "notification type must be at least picked",
+					error: "A valid notification type must be selected",
 				}),
+				// Add optional promo_id to validation schema
+				promo_id: t.Optional(t.String()),
 			}),
 		},
 	)
+	// NEW ENDPOINT: Broadcast a specific promo to ALL users
 	.post(
-		"/broadcast",
+		"/promo/all",
 		async ({ body, set }) => {
 			try {
-				const notification = await braodcastService.broadcastToAll(
-					body.notification_id,
+				// This single service call handles everything: creating the notification,
+				// creating the broadcast records, and triggering the emails.
+				const result = await broadcastService.sendPromoNotification(
+					body.promoId,
+					"all",
 				);
-				if (!notification) {
-					throw response.badRequest("Error while creating notification !");
+				if (!result) {
+					throw response.badRequest(
+						"Error while broadcasting promo notification!",
+					);
 				}
 				set.status = 200;
 				return StandardResponse.success(
-					notification,
-					"Successfuly creating notification",
+					result,
+					"Successfully broadcasted promo to all users.",
 				);
 			} catch (error) {
-				set.status = 500;
 				return GlobalErrorHandler.handleError(error, set);
 			}
 		},
 		{
 			body: t.Object({
-				notification_id: t.String({
-					minLength: 5,
-					error: "id must be filled",
+				promoId: t.String({
+					minLength: 1,
+					error: "promoId must be provided.",
 				}),
 			}),
+			detail: {
+				summary: "Broadcast a Promo to All Users",
+				description:
+					"Takes a promo ID and sends a notification and email to every user in the system.",
+			},
 		},
 	)
+	// NEW ENDPOINT: Broadcast a specific promo to a list of users
+	.post(
+		"/promo/specific",
+		async ({ body, set }) => {
+			try {
+				const result = await broadcastService.sendPromoNotification(
+					body.promoId,
+					body.userIds,
+				);
+				if (!result) {
+					throw response.badRequest(
+						"Error while broadcasting promo notification!",
+					);
+				}
+				set.status = 200;
+				return StandardResponse.success(
+					result,
+					`Successfully broadcasted promo to ${body.userIds.length} specific users.`,
+				);
+			} catch (error) {
+				return GlobalErrorHandler.handleError(error, set);
+			}
+		},
+		{
+			body: t.Object({
+				promoId: t.String({
+					minLength: 1,
+					error: "promoId must be provided.",
+				}),
+				userIds: t.Array(t.String(), {
+					minItems: 1,
+					error: "userIds must be an array with at least one user ID.",
+				}),
+			}),
+			detail: {
+				summary: "Broadcast a Promo to Specific Users",
+				description:
+					"Takes a promo ID and a list of user IDs to send a targeted notification and email.",
+			},
+		},
+	)
+	// PATCH /:id - Updates an existing notification
 	.patch(
 		"/:id",
 		async ({ params, body, set }) => {
 			try {
+				// The service layer already performs this check, so this is redundant
+				// but kept for explicitness.
 				const existing_notification = await notificationService.getOne(
 					params.id,
 				);
 				if (!existing_notification) {
-					throw response.badRequest("Error while retreiving Notification");
+					throw response.notFound("Notification to update not found!");
 				}
 
 				const payload: UpdateNotification = {
@@ -153,10 +210,9 @@ export const notificationRoute = new Elysia({
 
 				return StandardResponse.success(
 					updated_notification,
-					"Successfuly updating notification",
+					"Successfully updating notification",
 				);
 			} catch (error) {
-				set.status = 500;
 				return GlobalErrorHandler.handleError(error, set);
 			}
 		},
@@ -165,25 +221,26 @@ export const notificationRoute = new Elysia({
 				t.Object({
 					title: t.String({
 						minLength: 5,
-						error: "tittle must be at least 5 character",
+						error: "title must be at least 5 characters",
 					}),
 					message: t.String({
 						minLength: 20,
-						error: "message must be at least 20 character",
+						error: "message must be at least 20 characters",
 					}),
 					type: t.Enum(Notification_Type, {
-						error: "notification type must be at least picked",
+						error: "A valid notification type must be selected",
 					}),
 				}),
 			),
 		},
 	)
+	// DELETE /:id - Deletes a notification (soft delete)
 	.delete("/:id", async ({ params, set }) => {
 		try {
-			set.status = 204;
 			await notificationService.delete(params.id);
+			set.status = 204; // No Content is appropriate for a successful delete
+			return;
 		} catch (error) {
-			set.status = 500;
 			return GlobalErrorHandler.handleError(error, set);
 		}
 	});

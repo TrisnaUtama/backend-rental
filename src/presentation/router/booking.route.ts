@@ -13,11 +13,11 @@ import { response } from "../../application/instances";
 import type { IJwtPayload } from "../../infrastructure/entity/interfaces";
 import type {
 	CreateBooking,
-	CreatePayment,
 	UpdateBooking,
 } from "../../infrastructure/entity/types";
 import { Decimal } from "@prisma/client/runtime/library";
 import { Booking_Status } from "@prisma/client";
+import { emailService } from "../../application/instances";
 
 const RequestRefundBody = t.Object({
 	reason: t.String({ error: "A reason is required for the refund request." }),
@@ -336,7 +336,6 @@ export const bookingRoute = new Elysia({
 				if (!update_booking) {
 					throw response.badRequest("Error while updating booking!");
 				}
-
 				if (update_booking.status === "RECEIVED") {
 					const paymentPayload = {
 						expiry_date: null,
@@ -350,12 +349,48 @@ export const bookingRoute = new Elysia({
 							},
 						},
 					};
+					await emailService.sendBookingStatusNotification(
+						existing_booking.user_id,
+						{
+							id: update_booking.id,
+							travel_package_name: existing_booking.travel_package?.name,
+							vehicle_name:
+								existing_booking.booking_vehicles?.[0]?.vehicle?.name,
+							start_date: update_booking.start_date,
+							end_date: update_booking.end_date as Date,
+							total_price: update_booking.total_price ?? new Decimal(0),
+						},
+						"RECEIVED",
+					);
 					const create_payment = await paymentService.create(paymentPayload);
 					if (!create_payment) {
 						throw response.badRequest("Error while creating payment");
 					}
 				}
+				if (update_booking.status === "REJECTED_BOOKING") {
+					await emailService.sendBookingStatusNotification(
+						existing_booking.user_id,
+						{
+							id: update_booking.id,
+							travel_package_name: existing_booking.travel_package?.name,
+							vehicle_name:
+								existing_booking.booking_vehicles?.[0]?.vehicle?.name,
+							start_date: update_booking.start_date,
+							end_date: update_booking.end_date as Date,
+							total_price: update_booking.total_price ?? new Decimal(0),
+						},
+						"REJECTED",
+					);
+				}
 				if (update_booking.status === "REJECTED_RESHEDULE") {
+					const latestReschedule = [...update_booking.RescheduleRequests].sort(
+						(a, b) =>
+							new Date(b.created_at).getTime() -
+							new Date(a.created_at).getTime(),
+					)[0];
+
+					const new_start_date = latestReschedule.new_start_date;
+					const new_end_date = latestReschedule.new_end_date;
 					const pendingRequest = update_booking.RescheduleRequests?.find(
 						(req) => req.status === "PENDING",
 					);
@@ -364,8 +399,31 @@ export const bookingRoute = new Elysia({
 							status: "REJECTED",
 						});
 					}
+					await emailService.sendRescheduleStatusNotification(
+						existing_booking.user_id,
+						{
+							id: update_booking.id,
+							travel_package_name: existing_booking.travel_package?.name,
+							vehicle_name:
+								existing_booking.booking_vehicles?.[0]?.vehicle?.name,
+							start_date: update_booking.start_date,
+							new_start_date: new_start_date,
+							new_end_date: new_end_date,
+							end_date: update_booking.end_date as Date,
+							total_price: update_booking.total_price ?? new Decimal(0),
+						},
+						"REJECTED",
+					);
 				}
 				if (update_booking.status === "RESCHEDULED") {
+					const latestReschedule = [...update_booking.RescheduleRequests].sort(
+						(a, b) =>
+							new Date(b.created_at).getTime() -
+							new Date(a.created_at).getTime(),
+					)[0];
+
+					const new_start_date = latestReschedule.new_start_date;
+					const new_end_date = latestReschedule.new_end_date;
 					const pendingRequest = update_booking.RescheduleRequests?.find(
 						(req) => req.status === "PENDING",
 					);
@@ -385,6 +443,22 @@ export const bookingRoute = new Elysia({
 					await rescheduleService.update(pendingRequest.id, {
 						status: "APPROVED",
 					});
+
+					await emailService.sendRescheduleStatusNotification(
+						existing_booking.user_id,
+						{
+							id: update_booking.id,
+							travel_package_name: existing_booking.travel_package?.name,
+							vehicle_name:
+								existing_booking.booking_vehicles?.[0]?.vehicle?.name,
+							start_date: update_booking.start_date,
+							end_date: update_booking.end_date as Date,
+							new_start_date: new_start_date,
+							new_end_date: new_end_date,
+							total_price: update_booking.total_price ?? new Decimal(0),
+						},
+						"APPROVED",
+					);
 				}
 				set.status = 200;
 				return StandardResponse.success(

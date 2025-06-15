@@ -15,6 +15,8 @@ import {
 import type { Http } from "../../infrastructure/utils/response/http.response";
 import type { BookingRepository } from "../../infrastructure/repositories/booking.repo";
 import type { RefundRepository } from "./../../infrastructure/repositories/refund.repo";
+import { emailService } from "../instances";
+import { Decimal } from "@prisma/client/runtime/library";
 
 @injectable()
 export class RefundService {
@@ -82,6 +84,7 @@ export class RefundService {
 				if (!exists_refund) {
 					throw this.response.notFound("Refund request not found.");
 				}
+				const booking = await this.bookingRepo.getOne(exists_refund.booking_id);
 				if (exists_refund.status !== "PENDING") {
 					throw this.response.badRequest(
 						`This refund has already been processed with status: ${exists_refund.status}`,
@@ -111,12 +114,39 @@ export class RefundService {
 						approval_date: new Date(),
 					};
 					bookingStatusUpdate = { status: "REFUNDED" as Booking_Status };
+					await emailService.sendRefundStatusNotification(
+						exists_refund.user_id,
+						{
+							id: booking?.id as string,
+							travel_package_name: booking?.travel_package?.name,
+							vehicle_name: booking?.booking_vehicles[0]?.vehicle?.name,
+							start_date: booking?.start_date as Date,
+							end_date: booking?.end_date as Date,
+							total_price: booking?.total_price ?? new Decimal(0),
+						},
+						"APPROVED",
+					);
 				}
 				await this.bookingRepo.update(
 					exists_refund.booking_id,
 					bookingStatusUpdate,
 					trx,
 				);
+
+				if (refundUpdateData.status === "REJECTED") {
+					await emailService.sendRefundStatusNotification(
+						exists_refund.user_id,
+						{
+							id: booking?.id as string,
+							travel_package_name: booking?.travel_package?.name,
+							vehicle_name: booking?.booking_vehicles[0]?.vehicle?.name,
+							start_date: booking?.start_date as Date,
+							end_date: booking?.end_date as Date,
+							total_price: booking?.total_price ?? new Decimal(0),
+						},
+						"REJECTED",
+					);
+				}
 				const final_refund = await this.refundRepo.update(
 					id,
 					refundUpdateData,

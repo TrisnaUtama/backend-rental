@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Special Promotion Alert!</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #f7f9fc; 
+      color: #333333; 
+    }
+    
+    .email-container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e0e0e0;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%);
+      padding: 30px 20px;
+      text-align: center;
+      color: white;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .header p {
+      margin: 5px 0 0;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    
+    .content {
+      padding: 30px;
+    }
+    
+    .promo-banner {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 25px;
+    }
+    
+    .cta-button {
+      display: inline-block;
+      background: #3B82F6; 
+      color: #ffffff;
+      text-decoration: none;
+      padding: 14px 30px;
+      border-radius: 50px; 
+      font-weight: 600;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+      transition: background-color 0.3s ease; 
+    }
+
+    .cta-button:hover {
+      background: #2563EB;
+    }
+    
+    .footer {
+      text-align: center;
+      padding: 20px;
+      background: #f5f5f5; 
+      font-size: 12px;
+      color: #777777;
+    }
+    
+    .divider {
+      height: 1px;
+      background: #eeeeee;
+      margin: 25px 0;
+    }
+    
+    .promo-details {
+      background: #EFF6FF;
+      border-left: 4px solid #3B82F6; 
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .promo-details p {
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <h1>{{TITLE}}</h1>
+      <p>A Special Offer Just For You!</p>
+    </div>
+    
+    <div class="content">
+      <img src="{{BANNER_IMAGE_URL}}" alt="Special Promotion" class="promo-banner" onerror="this.style.display='none'">
+      <p>Hello Valued Customer,</p>
+      <p>{{MESSAGE}}</p>
+      
+      <div class="promo-details">
+        <p><strong>Promo Period:</strong> {{START_DATE}} to {{END_DATE}}</p>
+        <p><strong>Your Promo Code:</strong> <span style="color: #3B82F6; font-weight: 700; font-size: 18px;">{{PROMO_CODE}}</span></p>
+      </div>
+      
+      <div style="text-align: center;">
+        <a href="{{CTA_LINK}}" class="cta-button">Claim Your Discount</a>
+      </div>
+      
+      <div class="divider"></div>
+      
+      <p>Terms & Conditions apply. This offer is valid until {{END_DATE}}.</p>
+      <p>Need help? Contact our support team at <a href="mailto:support@bintangtransportservice.club" style="color: #3B82F6;">support@bintangtransportservice.club</a></p>
+    </div>
+    
+    <div class="footer">
+      <p>&copy; 2025 Bintang Transport Service. All rights reserved.</p>
+      <p>Depok, Special Region of Yogyakarta, Indonesia</p>
+    </div>
+  </div>
+</body>
+</html>
