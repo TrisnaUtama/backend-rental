@@ -282,6 +282,49 @@ export class BookingService {
 		}
 	}
 
+	async findFullyBookedDates(vehicleIds: string[]) {
+		try {
+			const totalVehicles = vehicleIds.length;
+			if (totalVehicles === 0) {
+				return [];
+			}
+
+			const bookings =
+				await this.bookingRepo.findBookingsForVehicleIds(vehicleIds);
+			if (!bookings) {
+				return [];
+			}
+			const dailyBookingMap = new Map<string, Set<string>>();
+			for (const booking of bookings) {
+				const { vehicleId, startDate, endDate } = booking;
+				if (!startDate || !endDate) continue;
+
+				const datesInRange = eachDayOfInterval({
+					start: new Date(startDate),
+					end: new Date(endDate),
+				});
+
+				for (const date of datesInRange) {
+					const dateString = date.toISOString().split("T")[0];
+					if (!dailyBookingMap.has(dateString)) {
+						dailyBookingMap.set(dateString, new Set());
+					}
+					dailyBookingMap.get(dateString)?.add(vehicleId);
+				}
+			}
+			const fullyBookedDates: string[] = [];
+			for (const [dateString, bookedVehicleIds] of dailyBookingMap.entries()) {
+				if (bookedVehicleIds.size === totalVehicles) {
+					fullyBookedDates.push(dateString);
+				}
+			}
+
+			return fullyBookedDates.sort();
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
+
 	async getUnavailableDatesForVehicles(
 		payload: UnavailableDatesPayload,
 	): Promise<string[]> {
