@@ -94,6 +94,38 @@ export const bookingRoute = new Elysia({
 			return { error: "Internal server error" };
 		}
 	})
+	.get(
+    "/fully-booked-dates",
+    async ({ query, set }) => {
+        try {
+            const ids = query.vehicleIds
+                .split(",")
+                .map((id) => id.trim())
+                .filter(Boolean); 
+
+            if (ids.length === 0) {
+                set.status = 400;
+                return { error: "No valid vehicle IDs provided" };
+            }
+
+            const datesToDisable =
+                await bookingService.findFullyBookedDates(ids);
+
+            return { data: datesToDisable }; 
+        } catch (error) {
+            console.error("Error in /fully-booked-dates:", error);
+            set.status = 500;
+            return { error: "Internal server error" };
+        }
+    },
+    {
+        query: t.Object({
+            vehicleIds: t.String({
+                minLength: 1,
+                error: "vehicleIds query parameter is required and cannot be empty."
+            })
+        })
+    })
 	.use(
 		jwt({
 			name: `${process.env.JWT_NAME}`,
