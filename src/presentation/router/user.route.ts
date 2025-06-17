@@ -200,33 +200,43 @@ export const userRoute = new Elysia({
 				}),
 			),
 		},
-	).post(
-        "/upload",
-        async ({ body, set }) => {
-            try {
-                const { file } = body;
-                if (!file) {
-                    throw response.badRequest("No file uploaded.");
-                }
-                const fileBuffer = Buffer.from(await file.arrayBuffer());
-                const results = await userService.createFromUpload(fileBuffer, file.name);
-                
-                set.status = 201;
-                return StandardResponse.success(results, "Successfully processed file and created users.");
-            } catch (error) {
-                set.status = 500;
-                return GlobalErrorHandler.handleError(error, set);
-            }
-        },
-        {
-            body: t.Object({
-                file: t.File({
-                    type: ['text/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
-                    maxSize: '5m' 
-                })
-            }),
-        },
-    )
+	)
+	.post(
+		"/upload",
+		async ({ body, set }) => {
+			try {
+				const { file } = body;
+				if (!file) {
+					throw response.badRequest("No file uploaded.");
+				}
+				const fileBuffer = Buffer.from(await file.arrayBuffer());
+				const results = await userService.createFromUpload(
+					fileBuffer,
+					file.name,
+				);
+
+				set.status = 201;
+				return StandardResponse.success(
+					results,
+					"Successfully processed file and created users.",
+				);
+			} catch (error) {
+				set.status = 500;
+				return GlobalErrorHandler.handleError(error, set);
+			}
+		},
+		{
+			body: t.Object({
+				file: t.File({
+					type: [
+						"text/csv",
+						"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+					],
+					maxSize: "5m",
+				}),
+			}),
+		},
+	)
 	.delete("/:id", async ({ params, set }) => {
 		try {
 			set.status = 204;
