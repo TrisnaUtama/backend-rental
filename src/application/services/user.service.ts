@@ -10,6 +10,9 @@ import type { HashService } from "../../infrastructure/utils/hashed_password";
 import type { ErrorHandler } from "../../infrastructure/entity/errors/global.error";
 import type { Http } from "../../infrastructure/utils/response/http.response";
 import { UserDTO } from "../dtos/userDTO";
+import csv from 'csv-parser';
+import * as xlsx from 'xlsx';
+import { Readable } from 'node:stream';
 
 @injectable()
 export class UserService {
@@ -110,10 +113,57 @@ export class UserService {
 				throw this.response.badRequest(
 					"Error while trying to delete user account !",
 				);
-
 			return deleted_user;
 		} catch (error) {
 			this.error.handleServiceError(error);
 		}
 	}
+
+	async createFromUpload(fileBuffer: Buffer, originalname: string) {
+        const fileExtension = originalname.split('.').pop()?.toLowerCase();
+        let usersData: CreateUser[];
+        if (fileExtension === 'csv') {
+            usersData = await this.parseCsv(fileBuffer);
+        } else if (fileExtension === 'xlsx' || fileExtension === 'xls') {
+            usersData = this.parseExcel(fileBuffer);
+        } else {
+            throw this.response.badRequest('Unsupported file type. Please upload a CSV or Excel file.');
+        }
+        const creationResults = [];
+        for (const userData of usersData) {
+            try {
+                if (!userData.email || !userData.name) {
+                    continue; 
+                }
+                const payloadWithCorrectTypes = {
+                    ...userData,
+                    phone_number: String(userData.phone_number), 
+                };
+                const newUser = await this.create(payloadWithCorrectTypes); 
+                creationResults.push({ status: 'success', email: userData.email, data: newUser });
+            } catch (error: any) {
+                creationResults.push({ status: 'error', email: userData.email, reason: error.message });
+            }
+        }
+        return creationResults;
+    }
+
+    private async parseCsv(buffer: Buffer): Promise<CreateUser[]> {
+        return new Promise((resolve, reject) => {
+            const results: CreateUser[] = [];
+            const stream = Readable.from(buffer);
+            stream
+                .pipe(csv())
+                .on('data', (data:any) => results.push(data))
+                .on('end', () => resolve(results))
+                .on('error', (error: any) => reject(error));
+        });
+    }
+
+    private parseExcel(buffer: Buffer): CreateUser[] {
+        const workbook = xlsx.read(buffer, { type: 'buffer' });
+        const sheetName = workbook.SheetNames[0]; 
+        const worksheet = workbook.Sheets[sheetName];
+        return xlsx.utils.sheet_to_json<CreateUser>(worksheet);
+    }
 }
