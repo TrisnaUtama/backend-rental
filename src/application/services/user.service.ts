@@ -119,50 +119,50 @@ export class UserService {
 		}
 	}
 
-async createFromUpload(fileBuffer: Buffer, originalname: string) {
-    // Bagian parsing file tetap sama
-    const fileExtension = originalname.split(".").pop()?.toLowerCase();
-    let usersData: CreateUser[];
-    if (fileExtension === "csv") {
-        usersData = await this.parseCsv(fileBuffer);
-    } else if (fileExtension === "xlsx" || fileExtension === "xls") {
-        usersData = this.parseExcel(fileBuffer);
-    } else {
-        throw this.response.badRequest(
-            "Unsupported file type. Please upload a CSV or Excel file.",
-        );
-    }
+	async createFromUpload(fileBuffer: Buffer, originalname: string) {
+		// Bagian parsing file tetap sama
+		const fileExtension = originalname.split(".").pop()?.toLowerCase();
+		let usersData: CreateUser[];
+		if (fileExtension === "csv") {
+			usersData = await this.parseCsv(fileBuffer);
+		} else if (fileExtension === "xlsx" || fileExtension === "xls") {
+			usersData = this.parseExcel(fileBuffer);
+		} else {
+			throw this.response.badRequest(
+				"Unsupported file type. Please upload a CSV or Excel file.",
+			);
+		}
 
-    const creationResults = [];
-    for (const userData of usersData) {
-        try {
-            if (!userData.email || !userData.name) {
-                continue;
-            }
-            const existingUser = await this.userRepo.getOne(userData.email);
-            if (existingUser) {
-                continue; 
-            }
-            const payloadWithCorrectTypes = {
-                ...userData,
-                phone_number: String(userData.phone_number),
-            };
-            const newUser = await this.create(payloadWithCorrectTypes);
-            creationResults.push({
-                status: "success",
-                email: userData.email,
-                data: newUser,
-            });
-        } catch (error: any) {
-            creationResults.push({
-                status: "error",
-                email: userData.email,
-                reason: error.message,
-            });
-        }
-    }
-    return creationResults;
-}
+		const creationResults = [];
+		for (const userData of usersData) {
+			try {
+				if (!userData.email || !userData.name) {
+					continue;
+				}
+				const existingUser = await this.userRepo.getOne(userData.email);
+				if (existingUser) {
+					continue;
+				}
+				const payloadWithCorrectTypes = {
+					...userData,
+					phone_number: String(userData.phone_number),
+				};
+				const newUser = await this.create(payloadWithCorrectTypes);
+				creationResults.push({
+					status: "success",
+					email: userData.email,
+					data: newUser,
+				});
+			} catch (error: any) {
+				creationResults.push({
+					status: "error",
+					email: userData.email,
+					reason: error.message,
+				});
+			}
+		}
+		return creationResults;
+	}
 
 	private async parseCsv(buffer: Buffer): Promise<CreateUser[]> {
 		return new Promise((resolve, reject) => {
