@@ -193,25 +193,20 @@ export const paymentRoute = new Elysia({
 	.patch("/:id", async ({ set, user, params }) => {
 		try {
 			const payment = await paymentService.getOne(params.id);
-
 			if (!payment) {
 				return response.notFound("Payment record not found");
 			}
-
 			if (
 				payment.token &&
 				payment.expiry_date &&
 				new Date() < new Date(payment.expiry_date)
 			) {
-				console.log("Returning existing, valid Midtrans token.");
 				set.status = 200;
 				return StandardResponse.success(
 					{ token: payment.token, payment_id: payment.id },
 					"Existing Midtrans token returned successfully",
 				);
 			}
-			console.log("Generating a new Midtrans token.");
-
 			const booking = payment.booking;
 			const startTime = getFormattedStartTime();
 
@@ -279,7 +274,6 @@ export const paymentRoute = new Elysia({
 				}
 			}
 			gross_amount = Number(payment.total_amount);
-
 			const parameter = {
 				transaction_details: {
 					order_id: booking.id,
@@ -299,17 +293,13 @@ export const paymentRoute = new Elysia({
 					duration: EXPIRY_DATE_MIDTRANS,
 				},
 			};
-
 			const snapResponse = await midtrans.charge(parameter);
-
 			const expiryDate = new Date();
 			expiryDate.setMinutes(expiryDate.getMinutes() + EXPIRY_DATE_MIDTRANS);
-
-			await paymentService.update(payment.id, {
+			await paymentService.update(params.id, {
 				token: snapResponse,
 				expiry_date: expiryDate,
 			});
-
 			set.status = 200;
 			return StandardResponse.success(
 				{ token: snapResponse, payment_id: payment.id },
