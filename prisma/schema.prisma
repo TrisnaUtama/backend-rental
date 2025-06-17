@@ -413,6 +413,7 @@ model Promos {
 model Payments {
   id              String   @id @default(cuid())
   booking_id      String
+  token           String?
   payment_method  String
   payment_status  Payment_Status @default(PENDING)
   payment_date    DateTime?
