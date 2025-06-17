@@ -120,6 +120,7 @@ export class UserService {
 	}
 
 	async createFromUpload(fileBuffer: Buffer, originalname: string) {
+		// Bagian parsing file tetap sama
 		const fileExtension = originalname.split(".").pop()?.toLowerCase();
 		let usersData: CreateUser[];
 		if (fileExtension === "csv") {
@@ -131,10 +132,15 @@ export class UserService {
 				"Unsupported file type. Please upload a CSV or Excel file.",
 			);
 		}
+
 		const creationResults = [];
 		for (const userData of usersData) {
 			try {
 				if (!userData.email || !userData.name) {
+					continue;
+				}
+				const existingUser = await this.userRepo.getOne(userData.email);
+				if (existingUser) {
 					continue;
 				}
 				const payloadWithCorrectTypes = {
