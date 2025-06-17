@@ -192,9 +192,28 @@ export const paymentRoute = new Elysia({
 	})
 	.patch("/:id", async ({ set, user, params }) => {
 		try {
-			const startTime = getFormattedStartTime();
 			const payment = await paymentService.getOne(params.id);
+
+			if (!payment) {
+				return response.notFound("Payment record not found");
+			}
+
+			if (
+				payment.token &&
+				payment.expiry_date &&
+				new Date() < new Date(payment.expiry_date)
+			) {
+				console.log("Returning existing, valid Midtrans token.");
+				set.status = 200;
+				return StandardResponse.success(
+					{ token: payment.token, payment_id: payment.id },
+					"Existing Midtrans token returned successfully",
+				);
+			}
+			console.log("Generating a new Midtrans token.");
+
 			const booking = payment.booking;
+			const startTime = getFormattedStartTime();
 
 			if (!booking.start_date || !booking.end_date) {
 				return response.badRequest("Start date and end date must be provided");
@@ -208,24 +227,12 @@ export const paymentRoute = new Elysia({
 
 			if (booking.travel_package) {
 				const pkg = booking.travel_package;
-				const paxOptions = pkg.pax_options;
-
-				if (!paxOptions || paxOptions.length === 0) {
-					return response.badRequest(
-						"Pax options not found for travel package",
-					);
-				}
-
-				const matchedPax = paxOptions.find(
+				const matchedPax = pkg.pax_options.find(
 					(pax) => pax.id === booking.pax_option_id,
 				);
-
 				if (!matchedPax) {
-					return response.badRequest(
-						"No matching Pax option found for the given payment total",
-					);
+					return response.badRequest("No matching Pax option found.");
 				}
-
 				item_details = [
 					{
 						id: `${pkg.id}-${matchedPax.pax}`,
@@ -234,7 +241,6 @@ export const paymentRoute = new Elysia({
 						quantity: 1,
 					},
 				];
-
 				gross_amount = Number(matchedPax.price);
 			} else if (
 				!booking.travel_package_id &&
@@ -242,32 +248,27 @@ export const paymentRoute = new Elysia({
 				booking.booking_vehicles.length > 0
 			) {
 				const bookingVehicles = booking.booking_vehicles;
-				item_details = [];
-
 				for (const bv of bookingVehicles) {
 					const vehicle = await vehicleService.getOne(bv.vehicle_id);
-
 					if (!vehicle) {
 						return response.badRequest(
 							`Vehicle with id ${bv.vehicle_id} not found`,
 						);
 					}
-
 					item_details.push({
 						id: vehicle.id,
 						name: `Rental - ${vehicle.name}`,
 						price: Number(vehicle.price_per_day),
 						quantity: durationInDays,
 					});
-
 					gross_amount += Number(vehicle.price_per_day) * durationInDays;
 				}
 			} else {
 				return response.badRequest("Unsupported or unknown booking type");
 			}
+
 			if (booking.promos) {
 				const discountAmount = gross_amount - Number(payment.total_amount);
-
 				if (discountAmount > 0) {
 					item_details.push({
 						id: `DISC-${booking.promos.id}`,
@@ -275,9 +276,10 @@ export const paymentRoute = new Elysia({
 						price: -discountAmount,
 						quantity: 1,
 					});
-					gross_amount = Number(payment.total_amount);
 				}
 			}
+			gross_amount = Number(payment.total_amount);
+
 			const parameter = {
 				transaction_details: {
 					order_id: booking.id,
@@ -299,10 +301,19 @@ export const paymentRoute = new Elysia({
 			};
 
 			const snapResponse = await midtrans.charge(parameter);
+
+			const expiryDate = new Date();
+			expiryDate.setMinutes(expiryDate.getMinutes() + EXPIRY_DATE_MIDTRANS);
+
+			await paymentService.update(payment.id, {
+				token: snapResponse,
+				expiry_date: expiryDate,
+			});
+
 			set.status = 200;
 			return StandardResponse.success(
 				{ token: snapResponse, payment_id: payment.id },
-				"Payment created & Midtrans token generated successfully ",
+				"Payment created & Midtrans token generated successfully",
 			);
 		} catch (error) {
 			set.status = 500;
