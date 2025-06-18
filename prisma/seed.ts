@@ -29,7 +29,7 @@ async function main() {
 
     const customers = [];
     for (let i = 1; i <= 10; i++) {
-      const password = `password${i}`;
+      const password = `password${i}customer${i}@ex.com`;
       const hashed_password = await Bun.password.hash(password, "bcrypt");
       const customer = await prisma.users.create({
         data: {
@@ -1345,7 +1345,7 @@ async function main() {
         code: "JOGJAIstimewa",
         description:
           "Potongan harga Rp 75.000 untuk rental mobil di area Yogyakarta. Jelajahi Jogja tanpa batas!",
-        discount_value: 10, // Assuming a 10% discount for consistency, though description implies fixed amount
+        discount_value: 10, 
         start_date: new Date("2025-06-01T00:00:00Z"),
         end_date: new Date("2025-06-30T23:59:59Z"),
         min_booking_amount: 400000.0,
@@ -1382,50 +1382,10 @@ async function main() {
         status: true,
       },
       {
-        code: "FLASHSALE66",
-        description:
-          "Flash Sale! Diskon spesial 30% hanya berlaku 3 hari. Jangan sampai ketinggalan!",
-        discount_value: 30,
-        start_date: new Date("2025-06-06T00:00:00Z"),
-        end_date: new Date("2025-06-08T23:59:59Z"),
-        min_booking_amount: 700000.0,
-        status: false, // This promo is already expired
-      },
-      {
-        code: "PAYDAYFEST",
-        description:
-          "Promo gajian! Diskon 18% untuk semua produk. Berlaku di akhir bulan.",
-        discount_value: 18,
-        start_date: new Date("2025-06-25T00:00:00Z"),
-        end_date: new Date("2025-07-02T23:59:59Z"),
-        min_booking_amount: 800000.0,
-        status: true, // This promo is upcoming
-      },
-      {
-        code: "MUDIKLEBARAN",
-        description:
-          "Promo spesial mudik Lebaran. Diskon untuk pemesanan jangka panjang.",
-        discount_value: 20,
-        start_date: new Date("2026-03-10T00:00:00Z"), // Example for next year's Lebaran
-        end_date: new Date("2026-04-10T23:59:59Z"),
-        min_booking_amount: 2500000.0,
-        status: true, // For future use
-      },
-      {
-        code: "NONAKTIF01",
-        description:
-          "Contoh promo yang sudah tidak aktif dan tidak akan ditampilkan.",
-        discount_value: 50,
-        start_date: new Date("2025-01-01T00:00:00Z"),
-        end_date: new Date("2025-01-31T23:59:59Z"),
-        min_booking_amount: 100000.0,
-        status: false,
-      },
-      {
         code: "LONGSTAYDEAL",
         description:
           "Sewa lebih dari 7 hari dan dapatkan diskon 22%. Cocok untuk liburan panjang atau perjalanan dinas.",
-        discount_value: 22,
+        discount_value: 13,
         start_date: new Date("2025-02-01T00:00:00Z"),
         end_date: new Date("2025-12-31T23:59:59Z"),
         min_booking_amount: 3000000.0,
@@ -1440,6 +1400,7 @@ async function main() {
       });
     }
     console.log("Finished seeding promos.");
+
     console.log("Start seeding vehicles...");
     for (const v of vehiclesData) {
       await prisma.vehicles.create({
