@@ -82,10 +82,8 @@ export class AuthService {
 				get_payload.password,
 				"bcrypt",
 			);
-			if (!compare_password)
-				throw this.response.badRequest("2 !");
-			if (!get_payload.is_verified)
-				throw this.response.badRequest("3 !");
+			if (!compare_password) throw this.response.badRequest("2 !");
+			if (!get_payload.is_verified) throw this.response.badRequest("3 !");
 
 			const payload = {
 				user_id: get_payload.id,
