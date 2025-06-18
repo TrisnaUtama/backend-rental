@@ -11,7 +11,7 @@ import {
 async function main() {
   try {
     const hashed_password = await Bun.password.hash(
-      "passwordadmin@ex.com",
+      "password",
       "bcrypt"
     );
     await prisma.users.create({
