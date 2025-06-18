@@ -479,7 +479,7 @@ export class BookingService {
 	async requestRefund(
 		userId: string,
 		bookingId: string,
-		payload: RequestRefundPayload, 
+		payload: RequestRefundPayload,
 	) {
 		try {
 			const existingBooking = await this.bookingRepo.getOne(bookingId);
