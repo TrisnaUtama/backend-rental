@@ -479,7 +479,7 @@ export class BookingService {
 	async requestRefund(
 		userId: string,
 		bookingId: string,
-		payload: RequestRefundPayload, // Assuming RequestRefundPayload is defined
+		payload: RequestRefundPayload,
 	) {
 		try {
 			const existingBooking = await this.bookingRepo.getOne(bookingId);
@@ -521,10 +521,10 @@ export class BookingService {
 			}
 			let refundPercentage: Decimal;
 			const TRANSFER_FEE = new Decimal(5000);
-			if (hoursUntilBooking >= 48) {
-				refundPercentage = new Decimal(0.5);
-			} else {
+			if (hoursUntilBooking > 48) {
 				refundPercentage = new Decimal(0.7);
+			} else {
+				refundPercentage = new Decimal(0.5);
 			}
 			const totalPaid = existingBooking.total_price ?? new Decimal(0);
 			const calculatedRefundAmount = totalPaid
