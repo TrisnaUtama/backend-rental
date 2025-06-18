@@ -76,20 +76,14 @@ export class AuthService {
 	async signIn(email: string, password: string) {
 		try {
 			const get_payload = await this.userRepo.getOne(email);
-
-			if (!get_payload) throw this.response.badRequest("Invalid Credentials !");
-
+			if (!get_payload) throw this.response.badRequest("1!");
 			const compare_password = await Bun.password.verify(
 				`${password}${email}`,
 				get_payload.password,
 				"bcrypt",
 			);
-
-			if (!compare_password)
-				throw this.response.badRequest("Invalid Credentials !");
-
-			if (!get_payload.is_verified)
-				throw this.response.badRequest("Your account not verified !");
+			if (!compare_password) throw this.response.badRequest("2 !");
+			if (!get_payload.is_verified) throw this.response.badRequest("3 !");
 
 			const payload = {
 				user_id: get_payload.id,

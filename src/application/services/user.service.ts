@@ -85,20 +85,19 @@ export class UserService {
 		try {
 			const get_user = await this.userRepo.getOne(id);
 			if (!get_user) throw this.response.notFound("User not found !");
-
 			let hashed_password: string | undefined = undefined;
 			if (payload.password) {
 				const isHashed = payload.password.startsWith("$2b$");
 				hashed_password = isHashed
 					? payload.password
-					: await this.hashed.hash(`${payload.password}${payload.email}`);
+					: await this.hashed.hash(`${payload.password}${get_user.email}`);
 			}
-
+			console.log(get_user.email);
+			console.log(payload.password);
 			const new_payload: UpdateUser = {
 				...payload,
 				...(hashed_password && { password: hashed_password }),
 			};
-
 			const updated_user = await this.userRepo.update(id, new_payload);
 			return updated_user;
 		} catch (error) {
@@ -120,7 +119,6 @@ export class UserService {
 	}
 
 	async createFromUpload(fileBuffer: Buffer, originalname: string) {
-		// Bagian parsing file tetap sama
 		const fileExtension = originalname.split(".").pop()?.toLowerCase();
 		let usersData: CreateUser[];
 		if (fileExtension === "csv") {
