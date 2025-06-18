@@ -92,8 +92,6 @@ export class UserService {
 					? payload.password
 					: await this.hashed.hash(`${payload.password}${get_user.email}`);
 			}
-			console.log(get_user.email);
-			console.log(payload.password);
 			const new_payload: UpdateUser = {
 				...payload,
 				...(hashed_password && { password: hashed_password }),
