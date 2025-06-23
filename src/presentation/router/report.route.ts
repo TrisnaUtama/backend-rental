@@ -110,6 +110,52 @@ export const reportRoute = new Elysia({
 	)
 
 	.get(
+        "/monthly-financial-summary",
+        async ({ query, user, set }) => {
+            try {
+                if (
+                    user.role !== Roles.SUPERADMIN &&
+                    user.role !== Roles.ADMIN_FINANCE
+                ) {
+                    set.status = 403;
+                    throw response.forbidden();
+                }
+
+                const year = Number.parseInt(query.year, 10);
+                if (Number.isNaN(year)) {
+                    set.status = 400;
+                    throw new Error("Invalid year format. Must be a number.");
+                }
+
+                const result = await reportService.getMonthlyFinancialSummary(year);
+
+                if (result === undefined) {
+                    set.status = 500;
+                    throw new Error("Failed to retrieve monthly financial summary data.");
+                }
+
+                return StandardResponse.success(
+                    result,
+                    `Monthly financial summary for ${year} retrieved successfully.`,
+                );
+            } catch (error) {
+                return GlobalErrorHandler.handleError(error, set);
+            }
+        },
+        {
+            query: t.Object({
+                year: t.String({
+                    description: "The year for the report (e.g., '2024')",
+                    pattern: "^\\d{4}$" 
+                }),
+            }),
+            detail: {
+                summary: "Get monthly financial summary by year (SUPERADMIN, ADMIN_FINANCE)",
+            },
+        },
+    )
+
+	.get(
 		"/financial-summary",
 		async ({ query, user, set }) => {
 			try {
@@ -167,79 +213,79 @@ export const reportRoute = new Elysia({
 		},
 	)
 
-	.get(
-		"/ratings-report",
-		async ({ query, user, set }) => {
-			try {
-				if (user.role !== Roles.SUPERADMIN) {
-					set.status = 403;
-					throw response.forbidden();
-				}
+	// .get(
+	// 	"/ratings-report",
+	// 	async ({ query, user, set }) => {
+	// 		try {
+	// 			if (user.role !== Roles.SUPERADMIN) {
+	// 				set.status = 403;
+	// 				throw response.forbidden();
+	// 			}
 
-				const ratedType = query.ratedType as RatedEntityType | undefined;
+	// 			const ratedType = query.ratedType as RatedEntityType | undefined;
 
-				const result = await reportService.getRatingsReport(ratedType);
+	// 			const result = await reportService.getRatingsReport(ratedType);
 
-				if (result === undefined) {
-					set.status = 500;
-					throw new Error("Failed to retrieve ratings report data.");
-				}
+	// 			if (result === undefined) {
+	// 				set.status = 500;
+	// 				throw new Error("Failed to retrieve ratings report data.");
+	// 			}
 
-				return StandardResponse.success(
-					result,
-					"Ratings report retrieved successfully.",
-				);
-			} catch (error) {
-				return GlobalErrorHandler.handleError(error, set);
-			}
-		},
-		{
-			query: t.Object({
-				ratedType: t.Optional(
-					t.Enum(RatedEntityType, {
-						description: "Filter ratings by entity type",
-					}),
-				),
-			}),
-			detail: {
-				summary: "Get overall ratings report (SUPERADMIN)",
-			},
-		},
-	)
+	// 			return StandardResponse.success(
+	// 				result,
+	// 				"Ratings report retrieved successfully.",
+	// 			);
+	// 		} catch (error) {
+	// 			return GlobalErrorHandler.handleError(error, set);
+	// 		}
+	// 	},
+	// 	{
+	// 		query: t.Object({
+	// 			ratedType: t.Optional(
+	// 				t.Enum(RatedEntityType, {
+	// 					description: "Filter ratings by entity type",
+	// 				}),
+	// 			),
+	// 		}),
+	// 		detail: {
+	// 			summary: "Get overall ratings report (SUPERADMIN)",
+	// 		},
+	// 	},
+	// )
 
-	.get(
-		"/average-ratings-per-entity",
-		async ({ user, set }) => {
-			try {
-				// Authorization: Only SUPERADMIN
-				if (user.role !== Roles.SUPERADMIN) {
-					set.status = 403;
-					throw response.forbidden();
-				}
+	// .get(
+	// 	"/average-ratings-per-entity",
+	// 	async ({ user, set }) => {
+	// 		try {
+	// 			// Authorization: Only SUPERADMIN
+	// 			if (user.role !== Roles.SUPERADMIN) {
+	// 				set.status = 403;
+	// 				throw response.forbidden();
+	// 			}
 
-				const result = await reportService.getAverageRatingsPerEntity();
+	// 			const result = await reportService.getAverageRatingsPerEntity();
 
-				if (result === undefined) {
-					set.status = 500;
-					throw new Error(
-						"Failed to retrieve average ratings per entity report data.",
-					);
-				}
+	// 			if (result === undefined) {
+	// 				set.status = 500;
+	// 				throw new Error(
+	// 					"Failed to retrieve average ratings per entity report data.",
+	// 				);
+	// 			}
 
-				return StandardResponse.success(
-					result,
-					"Average ratings per entity report retrieved successfully.",
-				);
-			} catch (error) {
-				return GlobalErrorHandler.handleError(error, set);
-			}
-		},
-		{
-			detail: {
-				summary: "Get average ratings per entity (SUPERADMIN)",
-			},
-		},
-	)
+	// 			return StandardResponse.success(
+	// 				result,
+	// 				"Average ratings per entity report retrieved successfully.",
+	// 			);
+	// 		} catch (error) {
+	// 			return GlobalErrorHandler.handleError(error, set);
+	// 		}
+	// 	},
+	// 	{
+	// 		detail: {
+	// 			summary: "Get average ratings per entity (SUPERADMIN)",
+	// 		},
+	// 	},
+	// )
 
 	// --- ADMIN_OPERATIONAL Reports ---
 	.get(

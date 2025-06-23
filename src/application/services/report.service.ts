@@ -169,6 +169,55 @@ export class ReportService {
 		}
 	}
 
+	async getMonthlyFinancialSummary(year: number) {
+        try {
+            const bookings = await this._getAllBookingsAndTheirPayments();
+            if (!bookings) {
+                return undefined;
+            }
+
+            const monthNames = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+
+            const monthlyData = Array.from({ length: 12 }, (_, i) => ({
+                month: monthNames[i],
+                monthIndex: i,
+                totalPaidAmount: 0,
+                totalRefundedAmount: 0,
+                netRevenue: 0,
+            }));
+
+            for (const booking of bookings) {
+                for (const payment of booking.Payments) {
+                    const paymentDate = new Date(payment.payment_date || payment.created_at);
+                    if (payment.payment_status === Payment_Status.PAID && paymentDate.getFullYear() === year) {
+                        const monthIndex = paymentDate.getMonth(); // 0-11
+                        monthlyData[monthIndex].totalPaidAmount += payment.total_amount.toNumber();
+                    }
+                }
+
+                for (const refund of booking.Refunds) {
+                    const refundDate = new Date(refund.approval_date || refund.created_at);
+                    if ((refund.status === Refund_Status.APPROVED || refund.status === Refund_Status.COMPLETED) && refundDate.getFullYear() === year) {
+                        const monthIndex = refundDate.getMonth(); // 0-11
+                        monthlyData[monthIndex].totalRefundedAmount += refund.refund_amount.toNumber();
+                    }
+                }
+            }
+            
+            for (const month of monthlyData) {
+                month.netRevenue = month.totalPaidAmount - month.totalRefundedAmount;
+            }
+
+            return monthlyData;
+
+        } catch (error) {
+            this.errorHandler.handleServiceError(error);
+        }
+    }
+
 	async getOperationalBookingStatus(
 		status?: Booking_Status,
 		startDate?: Date,
