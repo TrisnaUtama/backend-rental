@@ -42,14 +42,6 @@ export class ReportService {
 		}
 	}
 
-	/**
-	 * Laporan Ringkasan Bisnis (Untuk SUPERADMIN)
-	 * Provides a high-level overview of bookings, cancellations, and revenue within a date range.
-	 * @param startDate - The start date for the report.
-	 * @param endDate - The end date for the report.
-	 * @returns A summary object containing total bookings, confirmed bookings, canceled bookings,
-	 * total revenue, and total refunds, or `undefined` on error.
-	 */
 	async getOverallBusinessSummary(startDate: Date, endDate: Date) {
 		try {
 			const allBookings = await this._getAllBookingsAndTheirPayments();
@@ -111,14 +103,6 @@ export class ReportService {
 		}
 	}
 
-	/**
-	 * Laporan Kinerja Keuangan Agregat (Untuk SUPERADMIN & ADMIN_FINANCE)
-	 * Provides detailed financial performance metrics within a date range.
-	 * @param startDate - The start date for the report.
-	 * @param endDate - The end date for the report.
-	 * @returns An object containing total paid amount, total refunded amount,
-	 * and a breakdown of payments by method, or `undefined` on error.
-	 */
 	async getFinancialSummary(startDate: Date, endDate: Date) {
 		try {
 			const bookings = await this._getAllBookingsAndTheirPayments();
@@ -185,14 +169,6 @@ export class ReportService {
 		}
 	}
 
-	/**
-	 * Laporan Status Pemesanan (Untuk ADMIN_OPERATIONAL)
-	 * Retrieves a list of bookings filtered by their current status and an optional date range.
-	 * @param status - The booking status to filter by (e.g., Booking_Status.PENDING).
-	 * @param startDate - Optional start date for filtering bookings.
-	 * @param endDate - Optional end date for filtering bookings.
-	 * @returns A list of bookings matching the criteria, or `undefined` on error.
-	 */
 	async getOperationalBookingStatus(
 		status?: Booking_Status,
 		startDate?: Date,
@@ -275,14 +251,6 @@ export class ReportService {
 		}
 	}
 
-	/**
-	 * Laporan Permintaan Reschedule (Untuk ADMIN_OPERATIONAL)
-	 * Retrieves all reschedule requests, optionally filtered by their status and date range.
-	 * @param status - Optional reschedule status to filter by (e.g., RescheduleStatus.PENDING).
-	 * @param startDate - Optional start date for the original booking or reschedule request date.
-	 * @param endDate - Optional end date for the original booking or reschedule request date.
-	 * @returns A list of reschedule requests, or `undefined` on error.
-	 */
 	async getRescheduleRequestsReport(
 		status?: RescheduleStatus,
 		startDate?: Date,
@@ -310,14 +278,6 @@ export class ReportService {
 		}
 	}
 
-	/**
-	 * Laporan Transaksi Pembayaran (Untuk ADMIN_FINANCE)
-	 * Retrieves all payment transactions, optionally filtered by their status and date range.
-	 * @param status - Optional payment status to filter by (e.g., Payment_Status.PAID).
-	 * @param startDate - Optional start date for the payment transaction.
-	 * @param endDate - Optional end date for the payment transaction.
-	 * @returns A list of payment transactions, or `undefined` on error.
-	 */
 	async getPaymentTransactionsReport(
 		status?: Payment_Status,
 		startDate?: Date,
@@ -354,14 +314,6 @@ export class ReportService {
 		}
 	}
 
-	/**
-	 * Laporan Pengembalian Dana (Untuk ADMIN_FINANCE)
-	 * Retrieves all refund requests, optionally filtered by their status and date range.
-	 * @param status - Optional refund status to filter by (e.g., Refund_Status.PENDING).
-	 * @param startDate - Optional start date for the refund request.
-	 * @param endDate - Optional end date for the refund request.
-	 * @returns A list of refund requests, or `undefined` on error.
-	 */
 	async getRefundRequestsReport(
 		status?: Refund_Status,
 		startDate?: Date,
@@ -393,17 +345,6 @@ export class ReportService {
 		}
 	}
 
-	/**
-	 * Laporan Pemanfaatan Kendaraan (Untuk ADMIN_OPERATIONAL)
-	 * Analyzes vehicle utilization based on booked vehicles within a specified date range.
-	 * NOTE: This report relies on the booking data. For a complete vehicle utilization,
-	 * you might need a separate VehicleRepository that can fetch all vehicles
-	 * regardless of their booking status, and then merge with booking data.
-	 * For now, it shows which vehicles were booked.
-	 * @param startDate - The start date for the report.
-	 * @param endDate - The end date for the report.
-	 * @returns An object mapping vehicle IDs to their booking counts and total booked days, or `undefined` on error.
-	 */
 	async getVehicleUtilizationReport(startDate: Date, endDate: Date) {
 		try {
 			const bookings = await this._getAllBookingsAndTheirPayments();
@@ -465,13 +406,6 @@ export class ReportService {
 		}
 	}
 
-	/**
-	 * Laporan Penggunaan Promo (Untuk ADMIN_FINANCE)
-	 * Provides insights into which promotions are being used and their impact on bookings.
-	 * @param startDate - The start date for the report.
-	 * @param endDate - The end date for the report.
-	 * @returns An object containing promo usage statistics, or `undefined` on error.
-	 */
 	async getPromoUsageReport(startDate: Date, endDate: Date) {
 		try {
 			const bookings = await this._getAllBookingsAndTheirPayments();
@@ -519,68 +453,6 @@ export class ReportService {
 				: users;
 
 			return filteredUsers;
-		} catch (error) {
-			this.errorHandler.handleServiceError(error);
-		}
-	}
-
-	async getRatingsReport(ratedType?: RatedEntityType) {
-		try {
-			const ratings = await this.ratingRepo.getAll();
-			if (!ratings) {
-				return undefined;
-			}
-			const filteredRatings = ratedType
-				? ratings.filter((rating) => rating.ratedType === ratedType)
-				: ratings;
-			return filteredRatings;
-		} catch (error) {
-			this.errorHandler.handleServiceError(error);
-		}
-	}
-
-	/**
-	 * Laporan Rata-rata Rating per Entitas (Untuk SUPERADMIN)
-	 * Calculates the average rating for each type of entity (e.g., Vehicles, Destinations, Packages).
-	 * @returns An object containing average ratings grouped by RatedEntityType, or `undefined` on error.
-	 */
-	async getAverageRatingsPerEntity() {
-		try {
-			const allRatings = await this.ratingRepo.getAll();
-			if (!allRatings) {
-				return undefined;
-			}
-
-			const aggregatedRatings: {
-				[key in RatedEntityType]?: {
-					totalRating: number;
-					count: number;
-					average: number;
-				};
-			} = {};
-
-			for (const rating of allRatings) {
-				if (!aggregatedRatings[rating.ratedType]) {
-					aggregatedRatings[rating.ratedType] = {
-						totalRating: 0,
-						count: 0,
-						average: 0,
-					};
-				}
-				// biome-ignore lint/style/noNonNullAssertion: <explanation>
-				aggregatedRatings[rating.ratedType]!.totalRating += rating.ratingValue;
-				// biome-ignore lint/style/noNonNullAssertion: <explanation>
-				aggregatedRatings[rating.ratedType]!.count++;
-			}
-
-			// Calculate average for each type
-			for (const type in aggregatedRatings) {
-				// biome-ignore lint/style/noNonNullAssertion: <explanation>
-				const data = aggregatedRatings[type as RatedEntityType]!;
-				data.average = data.count > 0 ? data.totalRating / data.count : 0;
-			}
-
-			return aggregatedRatings;
 		} catch (error) {
 			this.errorHandler.handleServiceError(error);
 		}

@@ -40,7 +40,6 @@ export class RefundService {
 		this.prisma = prisma;
 	}
 
-	// ... getAll, getOne, and create methods ...
 	async getAll() {
 		try {
 			const refunds = await this.refundRepo.getAll();

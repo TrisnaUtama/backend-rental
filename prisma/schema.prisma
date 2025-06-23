@@ -197,20 +197,6 @@ model Accommodations {
   Travel_Packages Travel_Packages[]
 }
 
-model Travel_Itineraries {
-  id                String    @id @default(cuid())
-  travel_package_id  String
-  day_number        Int
-  destination_id    String
-  description       String?
-  created_at        DateTime  @default(now())
-  updated_at        DateTime  @updatedAt
-  deleted_at        DateTime?
-
-  travel_package    Travel_Packages @relation(fields: [travel_package_id], references: [id])
-  destination       Destinations    @relation(fields: [destination_id], references: [id])
-}
-
 model Booking_Vehicles {
   id         String   @id @default(cuid())
   booking_id String
@@ -261,19 +247,6 @@ model Destinations {
   travel_package_destinations Travel_Packages_Destinations[]
 }
 
-model Travel_Packages_Destinations {
-  id              String   @id @default(cuid())
-  travel_package_id String 
-  destination_id  String
-  
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-  deleted_at      DateTime? 
-
-  travel_packages Travel_Packages @relation(fields: [travel_package_id], references: [id])
-  destination     Destinations @relation(fields: [destination_id], references: [id])
-}
-
 model Travel_Packages {
   id              String   @id @default(cuid())
   name            String
@@ -294,6 +267,46 @@ model Travel_Packages {
   bookings        Bookings[]
 }
 
+model Travel_Packages_Destinations {
+  id              String   @id @default(cuid())
+  travel_package_id String 
+  destination_id  String
+  
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  deleted_at      DateTime? 
+
+  travel_packages Travel_Packages @relation(fields: [travel_package_id], references: [id])
+  destination     Destinations @relation(fields: [destination_id], references: [id])
+}
+
+model Travel_Itineraries {
+  id                String    @id @default(cuid())
+  travel_package_id  String
+  day_number        Int
+  destination_id    String
+  description       String?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+  deleted_at        DateTime?
+
+  travel_package    Travel_Packages @relation(fields: [travel_package_id], references: [id])
+  destination       Destinations    @relation(fields: [destination_id], references: [id])
+}
+model Travel_Packages_Pax {
+  id               String   @id @default(cuid())
+  travel_package_id String
+  pax              Int
+  price            Decimal
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  deleted_at  DateTime? 
+
+  booking     Bookings[]
+  travel_package   Travel_Packages @relation(fields: [travel_package_id], references: [id])
+}
+
+
 model Rating {
   id          String          @id @default(cuid())
   user        Users         @relation(fields: [userId], references: [id])
@@ -309,18 +322,6 @@ model Rating {
   deleted_at  DateTime? 
 
   @@unique([userId, ratedType, targetId])
-}
-model Travel_Packages_Pax {
-  id               String   @id @default(cuid())
-  travel_package_id String
-  pax              Int
-  price            Decimal
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
-  deleted_at  DateTime? 
-
-  booking     Bookings[]
-  travel_package   Travel_Packages @relation(fields: [travel_package_id], references: [id])
 }
 
 model Bookings {
