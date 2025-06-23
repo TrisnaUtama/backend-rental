@@ -169,7 +169,7 @@ export class BookingService {
 
 				const start = new Date(start_date);
 				const durationInDays = travelPackage.duration;
-				start.setDate(start.getDate() + durationInDays);
+				start.setDate(start.getDate() + durationInDays - 1);
 				calculated_end_date = start;
 
 				total_price = total_price.plus(paxOption.price);
