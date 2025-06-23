@@ -72,7 +72,7 @@ export class AuthService {
 			this.errorHandler.handleServiceError(error);
 		}
 	}
-	
+
 	// sending otp code
 	async sendOtp(userId: string, emailRecepient: string) {
 		try {
@@ -95,7 +95,7 @@ export class AuthService {
 			this.errorHandler.handleServiceError(error);
 		}
 	}
-	
+
 	async signIn(email: string, password: string) {
 		try {
 			const get_payload = await this.userRepo.getOne(email);
@@ -158,7 +158,6 @@ export class AuthService {
 			this.errorHandler.handleServiceError(error);
 		}
 	}
-
 
 	async refresh(token: string) {
 		try {
