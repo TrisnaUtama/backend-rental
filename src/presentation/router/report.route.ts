@@ -110,50 +110,51 @@ export const reportRoute = new Elysia({
 	)
 
 	.get(
-        "/monthly-financial-summary",
-        async ({ query, user, set }) => {
-            try {
-                if (
-                    user.role !== Roles.SUPERADMIN &&
-                    user.role !== Roles.ADMIN_FINANCE
-                ) {
-                    set.status = 403;
-                    throw response.forbidden();
-                }
+		"/monthly-financial-summary",
+		async ({ query, user, set }) => {
+			try {
+				if (
+					user.role !== Roles.SUPERADMIN &&
+					user.role !== Roles.ADMIN_FINANCE
+				) {
+					set.status = 403;
+					throw response.forbidden();
+				}
 
-                const year = Number.parseInt(query.year, 10);
-                if (Number.isNaN(year)) {
-                    set.status = 400;
-                    throw new Error("Invalid year format. Must be a number.");
-                }
+				const year = Number.parseInt(query.year, 10);
+				if (Number.isNaN(year)) {
+					set.status = 400;
+					throw new Error("Invalid year format. Must be a number.");
+				}
 
-                const result = await reportService.getMonthlyFinancialSummary(year);
+				const result = await reportService.getMonthlyFinancialSummary(year);
 
-                if (result === undefined) {
-                    set.status = 500;
-                    throw new Error("Failed to retrieve monthly financial summary data.");
-                }
+				if (result === undefined) {
+					set.status = 500;
+					throw new Error("Failed to retrieve monthly financial summary data.");
+				}
 
-                return StandardResponse.success(
-                    result,
-                    `Monthly financial summary for ${year} retrieved successfully.`,
-                );
-            } catch (error) {
-                return GlobalErrorHandler.handleError(error, set);
-            }
-        },
-        {
-            query: t.Object({
-                year: t.String({
-                    description: "The year for the report (e.g., '2024')",
-                    pattern: "^\\d{4}$" 
-                }),
-            }),
-            detail: {
-                summary: "Get monthly financial summary by year (SUPERADMIN, ADMIN_FINANCE)",
-            },
-        },
-    )
+				return StandardResponse.success(
+					result,
+					`Monthly financial summary for ${year} retrieved successfully.`,
+				);
+			} catch (error) {
+				return GlobalErrorHandler.handleError(error, set);
+			}
+		},
+		{
+			query: t.Object({
+				year: t.String({
+					description: "The year for the report (e.g., '2024')",
+					pattern: "^\\d{4}$",
+				}),
+			}),
+			detail: {
+				summary:
+					"Get monthly financial summary by year (SUPERADMIN, ADMIN_FINANCE)",
+			},
+		},
+	)
 
 	.get(
 		"/financial-summary",
