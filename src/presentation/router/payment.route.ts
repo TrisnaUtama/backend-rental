@@ -292,6 +292,9 @@ export const paymentRoute = new Elysia({
 					unit: "minutes",
 					duration: EXPIRY_DATE_MIDTRANS,
 				},
+				callbacks: {
+					finish: "fe.trisnautama.site/car-travel"
+				}
 			};
 			const snapResponse = await midtrans.charge(parameter);
 			const expiryDate = new Date();

@@ -72,7 +72,30 @@ export class AuthService {
 			this.errorHandler.handleServiceError(error);
 		}
 	}
+	
+	// sending otp code
+	async sendOtp(userId: string, emailRecepient: string) {
+		try {
+			const randomCode = Math.floor(100000 + Math.random() * 900000);
+			const expiryTimeUTC = new Date(Date.now() + 5 * 60 * 1000);
 
+			const otp = await this.otpRepo.getOne(userId);
+
+			const otpData: Omit<OTPs, "id" | "created_at"> = {
+				user_id: userId,
+				otp_code: randomCode.toString(),
+				expiry_time: expiryTimeUTC,
+			};
+
+			if (!otp) await this.otpRepo.create(otpData);
+			if (otp) await this.otpRepo.update(otp.id, otpData);
+
+			await this.emailService.send_otp(randomCode.toString(), emailRecepient);
+		} catch (error) {
+			this.errorHandler.handleServiceError(error);
+		}
+	}
+	
 	async signIn(email: string, password: string) {
 		try {
 			const get_payload = await this.userRepo.getOne(email);
@@ -136,28 +159,6 @@ export class AuthService {
 		}
 	}
 
-	// sending otp code
-	async sendOtp(userId: string, emailRecepient: string) {
-		try {
-			const randomCode = Math.floor(100000 + Math.random() * 900000);
-			const expiryTimeUTC = new Date(Date.now() + 5 * 60 * 1000);
-
-			const otp = await this.otpRepo.getOne(userId);
-
-			const otpData: Omit<OTPs, "id" | "created_at"> = {
-				user_id: userId,
-				otp_code: randomCode.toString(),
-				expiry_time: expiryTimeUTC,
-			};
-
-			if (!otp) await this.otpRepo.create(otpData);
-			if (otp) await this.otpRepo.update(otp.id, otpData);
-
-			await this.emailService.send_otp(randomCode.toString(), emailRecepient);
-		} catch (error) {
-			this.errorHandler.handleServiceError(error);
-		}
-	}
 
 	async refresh(token: string) {
 		try {
