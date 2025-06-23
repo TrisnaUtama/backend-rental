@@ -42,7 +42,7 @@ app
 
 	.use(
 		cors({
-			origin: "fe.trisnautama.site",
+			origin: "localhost:5173",
 			methods: ["GET", "POST", "PATCH", "DELETE"],
 			allowedHeaders: ["Content-Type", "Authorization"],
 			credentials: true,
