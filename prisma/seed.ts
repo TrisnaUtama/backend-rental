@@ -449,7 +449,7 @@ async function main() {
     const destinations = [
       {
         id: "cmbi8isi90000sd5aj9o0k2gn",
-        name: "Jimbaran Bay",
+        name: "Destinasi 1",
         open_hour: "08:00 - 17:00",
         description: "Known for its rich history and cultural attractions.",
         image_urls: [
@@ -466,7 +466,7 @@ async function main() {
       },
       {
         id: "cmbi8isip0001sd5af5wlxfl1",
-        name: "Waterbom Bali",
+        name: "Destinasi 2",
         open_hour: "09:00 - 18:00",
         description: "Perfect for family vacations and relaxing getaways.",
         image_urls: [
@@ -483,7 +483,7 @@ async function main() {
       },
       {
         id: "cmbi8isju0002sd5a4qy9sut3",
-        name: "Balangan Beach",
+        name: "Destinasi 3",
         open_hour: "08:00 - 17:00",
         description: "Perfect for family vacations and relaxing getaways.",
         image_urls: ["https://dummyimage.com/500x500"],
@@ -497,7 +497,7 @@ async function main() {
       },
       {
         id: "cmbi8isiy0003sd5azop7ryvg",
-        name: "Tirta Empul Temple",
+        name: "Destinasi 4",
         open_hour: "08:00 - 17:00",
         description:
           "A beautiful destination with stunning views and exciting experiences.",
@@ -515,7 +515,7 @@ async function main() {
       },
       {
         id: "cmbi8isj10004sd5adr8xfahb",
-        name: "Gunung Payung Cultural Park",
+        name: "Destinasi 5",
         open_hour: "08:00 - 17:00",
         description:
           "A beautiful destination with stunning views and exciting experiences.",
@@ -533,7 +533,7 @@ async function main() {
       },
       {
         id: "cmbi8isj50005sd5a907kkfl7",
-        name: "Uluwatu Temple",
+        name: "Destinasi 6",
         open_hour: "09:00 - 18:00",
         description: "Perfect for family vacations and relaxing getaways.",
         image_urls: [
@@ -550,7 +550,7 @@ async function main() {
       },
       {
         id: "cmbi8isj80006sd5a98p81413",
-        name: "Bali Zoo",
+        name: "Destinasi 7",
         open_hour: "07:00 - 15:00",
         description:
           "A beautiful destination with stunning views and exciting experiences.",
@@ -568,7 +568,7 @@ async function main() {
       },
       {
         id: "cmbi8isjb0007sd5at6jglve6",
-        name: "Mount Batur",
+        name: "Destinasi 8",
         open_hour: "09:00 - 18:00",
         description: "Perfect for family vacations and relaxing getaways.",
         image_urls: [
@@ -585,7 +585,7 @@ async function main() {
       },
       {
         id: "cmbi8isjf0008sd5aubbzynmi",
-        name: "Toya Devasya Hot Spring",
+        name: "Destinasi 9",
         open_hour: "09:00 - 18:00",
         description: "Known for its rich history and cultural attractions.",
         image_urls: [
@@ -602,7 +602,7 @@ async function main() {
       },
       {
         id: "cmbi8isji0009sd5a7fqniepz",
-        name: "Bali Bird Park",
+        name: "Destinasi 10",
         open_hour: "09:00 - 18:00",
         description:
           "A beautiful destination with stunning views and exciting experiences.",
@@ -617,7 +617,7 @@ async function main() {
       },
       {
         id: "cmbi8isjl000asd5asj3v6nk2",
-        name: "Kuta Beach - Bali",
+        name: "Destinasi 11",
         open_hour: "09:00 - 18:00",
         description:
           "A beautiful destination with stunning views and exciting experiences.",
@@ -632,7 +632,7 @@ async function main() {
       },
       {
         id: "cmbi8isjo000bsd5ai7m6zipc",
-        name: "Pandawa Beach",
+        name: "Destinasi 12",
         open_hour: "08:00 - 17:00",
         description: "Known for its rich history and cultural attractions.",
         image_urls: [
@@ -649,7 +649,7 @@ async function main() {
       },
       {
         id: "cmbi8isjr000csd5a71m65fum",
-        name: "Pantai Dreamland",
+        name: "Destinasi 13",
         open_hour: "09:00 - 18:00",
         description: "Perfect for family vacations and relaxing getaways.",
         image_urls: [
@@ -666,7 +666,7 @@ async function main() {
       },
       {
         id: "cmbi8isju000dsd5atex3sgoo",
-        name: "Sacred Monkey Forest Sanctuary",
+        name: "Destinasi 14",
         open_hour: "07:00 - 15:00",
         description: "Known for its rich history and cultural attractions.",
         image_urls: [
@@ -683,7 +683,7 @@ async function main() {
       },
       {
         id: "cmbi8isjw000esd5aucosltd9",
-        name: "Tegalalang Rice Terrace",
+        name: "Destinasi 15",
         open_hour: "07:00 - 15:00",
         description: "Perfect for family vacations and relaxing getaways.",
         image_urls: [
@@ -700,7 +700,7 @@ async function main() {
       },
       {
         id: "cmbi8isjy000fsd5a4vf1kq0o",
-        name: "Jatiluwih Green Land",
+        name: "Destinasi 16",
         open_hour: "07:00 - 15:00",
         description: "Known for its rich history and cultural attractions.",
         image_urls: ["https://dummyimage.com/500x500"],
@@ -714,7 +714,7 @@ async function main() {
       },
       {
         id: "cmbi8isk0000gsd5arosu6zlq",
-        name: "Sekumpul Waterfall",
+        name: "Destinasi 17",
         open_hour: "07:00 - 15:00",
         description:
           "A beautiful destination with stunning views and exciting experiences.",
@@ -732,7 +732,7 @@ async function main() {
       },
       {
         id: "cmbi8isk3000hsd5ay42g3e3k",
-        name: "Campuhan Ridge Walk",
+        name: "Destinasi 18",
         open_hour: "09:00 - 18:00",
         description: "Known for its rich history and cultural attractions.",
         image_urls: [
@@ -749,7 +749,7 @@ async function main() {
       },
       {
         id: "cmbi8isk6000isd5aip8we297",
-        name: "Tegenungan Waterfall",
+        name: "Destinasi 19",
         open_hour: "08:00 - 17:00",
         description: "Known for its rich history and cultural attractions.",
         image_urls: ["https://dummyimage.com/500x500"],
@@ -763,7 +763,7 @@ async function main() {
       },
       {
         id: "cmbi8isk9000jsd5anm9iar1l",
-        name: "Taro Village Experience",
+        name: "Destinasi 20",
         open_hour: "07:00 - 15:00",
         description: "Perfect for family vacations and relaxing getaways.",
         image_urls: ["https://dummyimage.com/500x500"],
@@ -777,7 +777,7 @@ async function main() {
       },
       {
         id: "cmbi8iskc000ksd5awh4mker0",
-        name: "Saraswati Temple",
+        name: "Destinasi 21",
         open_hour: "09:00 - 18:00",
         description:
           "A beautiful destination with stunning views and exciting experiences.",
@@ -792,7 +792,7 @@ async function main() {
       },
       {
         id: "cmbi8iske000lsd5aui7d4fr6",
-        name: "Elephant Cave",
+        name: "Destinasi 22",
         open_hour: "09:00 - 18:00",
         description:
           "A beautiful destination with stunning views and exciting experiences.",
@@ -810,7 +810,7 @@ async function main() {
       },
       {
         id: "cmbi8iski000msd5ahtmdhrsf",
-        name: "Neka Art Museum",
+        name: "Destinasi 23",
         open_hour: "08:00 - 17:00",
         description: "Perfect for family vacations and relaxing getaways.",
         image_urls: ["https://dummyimage.com/500x500"],
@@ -824,7 +824,7 @@ async function main() {
       },
       {
         id: "cmbi8iskk000nsd5a30b1c4xw",
-        name: "Museum Puri Lukisan",
+        name: "Destinasi 24",
         open_hour: "09:00 - 18:00",
         description:
           "A beautiful destination with stunning views and exciting experiences.",
@@ -842,7 +842,7 @@ async function main() {
       },
       {
         id: "cmbi8iskn000osd5a86dv4dfb",
-        name: "Don Antonio Blanco Museum",
+        name: "Destinasi 25",
         open_hour: "07:00 - 15:00",
         description: "Perfect for family vacations and relaxing getaways.",
         image_urls: ["https://dummyimage.com/500x500"],
@@ -856,7 +856,7 @@ async function main() {
       },
       {
         id: "cmbi8iskp000psd5abxpy8xfu",
-        name: "Kecak Fire & Trance Dance Pura Dalem Taman Kaja",
+        name: "Destinasi 26",
         open_hour: "07:00 - 15:00",
         description:
           "A beautiful destination with stunning views and exciting experiences.",
@@ -874,7 +874,7 @@ async function main() {
       },
       {
         id: "cmbi8iskr000qsd5a5sbbpb3x",
-        name: "Pantai Double Six",
+        name: "Destinasi 27",
         open_hour: "09:00 - 18:00",
         description:
           "A beautiful destination with stunning views and exciting experiences.",
@@ -892,7 +892,7 @@ async function main() {
       },
       {
         id: "cmbi8iskt000rsd5an1icyj0y",
-        name: "Purpa Fine Art Gallery Seminyak",
+        name: "Destinasi 28",
         open_hour: "07:00 - 15:00",
         description: "Known for its rich history and cultural attractions.",
         image_urls: [
@@ -909,7 +909,7 @@ async function main() {
       },
       {
         id: "cmbi8iskw000ssd5agzmyx3xe",
-        name: "Koral Restaurant",
+        name: "Destinasi 29",
         open_hour: "08:00 - 17:00",
         description:
           "A beautiful destination with stunning views and exciting experiences.",
@@ -924,7 +924,7 @@ async function main() {
       },
       {
         id: "cmbi8isky000tsd5aczxlb7zs",
-        name: "Ely's Kitchen Ubud",
+        name: "Destinasi 30",
         open_hour: "09:00 - 18:00",
         description:
           "A beautiful destination with stunning views and exciting experiences.",
@@ -942,7 +942,7 @@ async function main() {
       },
       {
         id: "cmbi8isl0000usd5away4mq9w",
-        name: "Boy'N'Cow",
+        name: "Destinasi 31",
         open_hour: "07:00 - 15:00",
         description: "Known for its rich history and cultural attractions.",
         image_urls: ["https://dummyimage.com/500x500"],
@@ -956,7 +956,7 @@ async function main() {
       },
       {
         id: "cmbi8isl2000vsd5arslka62p",
-        name: "Nostimo Greek Grill Bali",
+        name: "Destinasi 32",
         open_hour: "07:00 - 15:00",
         description: "Known for its rich history and cultural attractions.",
         image_urls: [
@@ -973,7 +973,7 @@ async function main() {
       },
       {
         id: "cmbi8isl5000wsd5adumf0yjo",
-        name: "Livingstone Cafe & Bakery",
+        name: "Destinasi 33",
         open_hour: "07:00 - 15:00",
         description: "Known for its rich history and cultural attractions.",
         image_urls: [
@@ -990,7 +990,7 @@ async function main() {
       },
       {
         id: "cmbi8isl8000xsd5au263xehh",
-        name: "Made's Warung",
+        name: "Destinasi 34",
         open_hour: "09:00 - 18:00",
         description: "Perfect for family vacations and relaxing getaways.",
         image_urls: [
@@ -1007,7 +1007,7 @@ async function main() {
       },
       {
         id: "cmbi8isla000ysd5az8prt5m7",
-        name: "Naughty Nuri's Seminyak",
+        name: "Destinasi 35",
         open_hour: "07:00 - 15:00",
         description: "Known for its rich history and cultural attractions.",
         image_urls: [
@@ -1024,7 +1024,7 @@ async function main() {
       },
       {
         id: "cmbi8isld000zsd5anodjgtyr",
-        name: "Bebek Tepi Sawah",
+        name: "Destinasi 36",
         open_hour: "07:00 - 15:00",
         description: "Perfect for family vacations and relaxing getaways.",
         image_urls: [
@@ -1041,7 +1041,7 @@ async function main() {
       },
       {
         id: "cmbi8islg0010sd5afti6dn62",
-        name: "Warung Babi Guling Ibu Oka 3",
+        name: "Destinasi 37",
         open_hour: "07:00 - 15:00",
         description: "Perfect for family vacations and relaxing getaways.",
         image_urls: [
@@ -1058,7 +1058,7 @@ async function main() {
       },
       {
         id: "cmbi8islj0011sd5aed26kfal",
-        name: "Nasi Ayam Kedewatan Ibu Mangku",
+        name: "Destinasi 38",
         open_hour: "09:00 - 18:00",
         description: "Known for its rich history and cultural attractions.",
         image_urls: [
