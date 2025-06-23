@@ -293,7 +293,7 @@ export const paymentRoute = new Elysia({
 					duration: EXPIRY_DATE_MIDTRANS,
 				},
 				callbacks: {
-					finish: "fe.trisnautama.site/car-travel",
+					finish: `${process.env.FRONTEND_URL}/payment/finish`,
 				},
 			};
 			const snapResponse = await midtrans.charge(parameter);
