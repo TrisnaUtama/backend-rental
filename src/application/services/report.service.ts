@@ -67,7 +67,7 @@ export class ReportService {
 				) {
 					confirmedBookings++;
 				}
-				if (booking.status === Booking_Status.CANCELED) {
+				if (booking.status === Booking_Status.REFUNDED) {
 					canceledBookings++;
 				}
 				const paidPayments = booking.Payments.filter(
@@ -175,7 +175,6 @@ export class ReportService {
 			if (!bookings) {
 				return undefined;
 			}
-
 			const monthNames = [
 				"January",
 				"February",
