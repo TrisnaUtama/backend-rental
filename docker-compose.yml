@@ -1,43 +1,62 @@
+# Nama file: docker-compose.testing.yml
 version: '3.9'
 
 services:
-  backend:
+  # Nama service diubah untuk menghindari konflik
+  backend_testing:
     build: .
+    # Container name diubah
+    container_name: backend_rental_testing
     ports:
-      - "8000:8000"
+      # Port diubah dari 8000 menjadi 8001 agar tidak bentrok dengan service lama
+      - "8001:8000"
     env_file:
-      - .env
+      # Menggunakan file environment yang berbeda, misal .env.testing
+      - .env.testing
     depends_on:
-      db:
+      # Menyesuaikan dengan nama service db yang baru
+      db_testing:
         condition: service_healthy
     volumes:
-      - /var/www/html/rental-storage:/var/www/html/rental-storage
+      # Menggunakan folder storage yang berbeda untuk testing
+      - /var/www/html/rental-storage-testing:/var/www/html/rental-storage
     restart: unless-stopped
     networks: 
-      - rental-network 
+      # Menggunakan network yang berbeda
+      - rental_testing_network
 
-  db:
+  # Nama service database diubah
+  db_testing:
     image: postgres:15
+    # Container name diubah
+    container_name: db_rental_testing
     environment:
-      POSTGRES_USER: rental
-      POSTGRES_PASSWORD: rental
-      POSTGRES_DB: rental
+      # --- KREDENSIAL DATABASE BARU UNTUK TESTING ---
+      POSTGRES_USER: rental_testing
+      POSTGRES_PASSWORD: rental_testing_password # Ganti dengan password yang aman
+      POSTGRES_DB: rental_testing
     ports:
-      - "5432:5432"
+      # Port diubah dari 5432 menjadi 5433 agar tidak bentrok
+      - "5433:5432"
     volumes:
-      - rental-pgdata:/var/lib/postgresql/data
+      # Menggunakan volume data yang berbeda untuk testing
+      - rental_pgdata_testing:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U rental"]
+      # Test disesuaikan dengan user baru
+      test: ["CMD-SHELL", "pg_isready -U rental_testing"]
       interval: 5s
       timeout: 5s
       retries: 5
     networks: 
-      - rental-network
+      # Menggunakan network yang berbeda
+      - rental_testing_network
 
 volumes:
-  rental-pgdata:
+  # Volume data baru untuk testing
+  rental_pgdata_testing:
 
 networks:
-  rental-network:
-    name: rental-network 
-    driver: bridge 
+  # Network baru untuk testing
+  rental_testing_network:
+    name: rental_testing_network
+    driver: bridge
