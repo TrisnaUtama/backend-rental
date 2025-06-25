@@ -17,7 +17,6 @@ enum Roles {
   SUPERADMIN
   ADMIN_OPERATIONAL
   ADMIN_FINANCE
-  DRIVER
   CUSTOMER
 }
 
@@ -69,14 +68,6 @@ enum Promo_Status {
   EXPIRED
   UNACTIVE
   CANCELED
-}
-
-enum Payment_Method {
-  CASH
-  BANK_TRANSFER
-  QRIS
-  EWALLET
-  CREDIT_CARD
 }
 
 enum Payment_Status {
