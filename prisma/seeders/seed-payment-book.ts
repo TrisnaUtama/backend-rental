@@ -8,41 +8,21 @@ import { faker } from "@faker-js/faker";
 import { prisma } from "../../src/infrastructure/utils/prisma";
 
 // --- KONFIGURASI GENERATOR ---
-const DAYS_TO_GENERATE = 365; // Menghasilkan data untuk 1 tahun terakhir
+const DAYS_TO_GENERATE = 365;
 const MIN_BOOKINGS_PER_DAY = 2;
 const MAX_BOOKINGS_PER_DAY = 10;
 
-// --- PROBABILITAS SKENARIO SESUAI STATUS YANG DIIZINKAN ---
+// --- PROBABILITAS SKENARIO ---
 const SCENARIOS: {
-  scenario: "SUCCESS_UPCOMING" | "SUCCESS_COMPLETED" | "PENDING" | "RECEIVED";
+  scenario: "SUCCESS_UPCOMING" | "SUCCESS_COMPLETED" | "PENDING" | "FAILED";
   bookingStatus: Booking_Status;
-  paymentStatus: Payment_Status | Payment_Status[]; // Bisa satu atau pilihan acak
+  paymentStatus: Payment_Status | Payment_Status[];
   weight: number;
 }[] = [
-  {
-    scenario: "SUCCESS_UPCOMING",
-    bookingStatus: "CONFIRMED",
-    paymentStatus: "PAID",
-    weight: 35,
-  },
-  {
-    scenario: "SUCCESS_COMPLETED",
-    bookingStatus: "COMPLETE",
-    paymentStatus: "PAID",
-    weight: 35,
-  },
-  {
-    scenario: "PENDING",
-    bookingStatus: "PAYMENT_PENDING",
-    paymentStatus: "PENDING",
-    weight: 15,
-  },
-  {
-    scenario: "RECEIVED",
-    bookingStatus: "RECEIVED",
-    paymentStatus: "PENDING",
-    weight: 15,
-  },
+  { scenario: "SUCCESS_UPCOMING", bookingStatus: "CONFIRMED", paymentStatus: "PAID", weight: 35 },
+  { scenario: "SUCCESS_COMPLETED", bookingStatus: "COMPLETE", paymentStatus: "PAID", weight: 35 },
+  { scenario: "PENDING", bookingStatus: "PAYMENT_PENDING", paymentStatus: "PENDING", weight: 15 },
+  { scenario: "FAILED", bookingStatus: "SUBMITTED", paymentStatus: ["FAILED", "EXPIRED", "CANCELED"], weight: 15 },
 ];
 
 const weightedScenarios = SCENARIOS.flatMap((s) => Array(s.weight).fill(s));
@@ -82,6 +62,7 @@ async function generateAndInsertBooking(
   const licences_id = `https://dummyimage.com/1024x768/cccccc/000000&text=Lisensi_${userIdentifier}.jpg`;
   const card_id = `https://dummyimage.com/1024x768/cccccc/000000&text=KTP_${userIdentifier}.jpg`;
 
+  // Objek ini hanya menampung field-field dari model Booking
   const bookingInput: any = {
     user_id,
     licences_id,
@@ -92,11 +73,12 @@ async function generateAndInsertBooking(
   };
 
   let total_price = new Prisma.Decimal(0);
+  let vehicleBookingData: any = null; // Variabel untuk menampung data relasi booking_vehicles
 
   // Tentukan tipe booking (Paket atau Kendaraan)
   if (Math.random() < 0.7 && travelPackages.length > 0) {
     const randomPackage = getRandomElement(travelPackages);
-    if (randomPackage.pax_options.length === 0) return; // Lewati jika paket tidak punya opsi pax
+    if (randomPackage.pax_options.length === 0) return;
     const randomPaxOption = getRandomElement(randomPackage.pax_options);
 
     bookingInput.travel_package_id = randomPackage.id;
@@ -112,11 +94,10 @@ async function generateAndInsertBooking(
     total_price = new Prisma.Decimal(randomPaxOption.price);
   } else {
     const randomVehicle = getRandomElement(vehicles);
-    bookingInput.vehicle_ids = [randomVehicle.id];
     const duration_days = faker.number.int({ min: 2, max: 7 });
     const start_date = faker.date.between({
       from: creationDateTime,
-      to: faker.date.future({ years: 6, refDate: creationDateTime }),
+      to: faker.date.future({ years: 1, refDate: creationDateTime }),
     });
     bookingInput.start_date = start_date;
     bookingInput.end_date = new Date(
@@ -125,6 +106,11 @@ async function generateAndInsertBooking(
     total_price = new Prisma.Decimal(randomVehicle.price_per_day).mul(
       duration_days
     );
+    
+    // FIX 2: Siapkan data untuk tabel relasi 'booking_vehicles'
+    vehicleBookingData = {
+        create: [{ vehicle_id: randomVehicle.id }]
+    };
   }
 
   if (Math.random() < 0.25 && promos.length > 0) {
@@ -133,11 +119,9 @@ async function generateAndInsertBooking(
   }
   bookingInput.total_price = total_price;
 
-  // Tentukan skenario dan status
   const chosenScenario = getRandomElement(weightedScenarios);
   bookingInput.status = chosenScenario.bookingStatus;
 
-  // Jika trip sudah selesai, ubah status jadi COMPLETE
   if (
     chosenScenario.scenario === "SUCCESS_COMPLETED" &&
     bookingInput.end_date < new Date()
@@ -165,12 +149,17 @@ async function generateAndInsertBooking(
     transaction_date: creationDateTime,
   };
 
+  const finalDataForPrisma = {
+    ...bookingInput,
+    Payments: {
+      create: [paymentData],
+    },
+    ...(vehicleBookingData && { booking_vehicles: vehicleBookingData }),
+  };
+
   try {
     await prisma.bookings.create({
-      data: {
-        ...bookingInput,
-        payment: { create: paymentData },
-      },
+      data: finalDataForPrisma,
     });
     console.log(
       `[${creationDay.toISOString().split("T")[0]}] Created [${
@@ -188,11 +177,12 @@ async function generateAndInsertBooking(
 export async function seedBookingAndPayments(prisma: PrismaClient) {
   console.log("🌱 Seeding bookings and payments...");
 
-  // 1. Ambil data prasyarat dari DB
   const users = await prisma.users.findMany({
     where: { role: "CUSTOMER" },
     select: { id: true },
   });
+
+  // FIX 3: Koreksi nama model dari `travel_Packages` menjadi `travelPackage` (sesuai konvensi Prisma)
   const travelPackages = await prisma.travel_Packages.findMany({
     where: { status: true },
     select: {
@@ -201,10 +191,12 @@ export async function seedBookingAndPayments(prisma: PrismaClient) {
       pax_options: { select: { id: true, price: true } },
     },
   });
+
   const vehicles = await prisma.vehicles.findMany({
     where: { status: "AVAILABLE" },
     select: { id: true, price_per_day: true },
   });
+
   const promos = await prisma.promos.findMany({
     where: { status: true },
     select: { id: true },
@@ -225,7 +217,6 @@ export async function seedBookingAndPayments(prisma: PrismaClient) {
     `   - Found: ${users.length} users, ${travelPackages.length} packages, ${vehicles.length} vehicles.`
   );
 
-  // 2. Loop dan generate data
   const today = new Date();
   const startDate = new Date(
     today.getTime() - DAYS_TO_GENERATE * 24 * 60 * 60 * 1000
