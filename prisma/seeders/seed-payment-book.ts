@@ -7,12 +7,10 @@ import {
 import { faker } from "@faker-js/faker";
 import { prisma } from "../../src/infrastructure/utils/prisma";
 
-// --- KONFIGURASI GENERATOR ---
 const DAYS_TO_GENERATE = 365;
 const MIN_BOOKINGS_PER_DAY = 2;
 const MAX_BOOKINGS_PER_DAY = 10;
 
-// --- PROBABILITAS SKENARIO ---
 const SCENARIOS: {
   scenario: "SUCCESS_UPCOMING" | "SUCCESS_COMPLETED" | "PENDING" | "FAILED";
   bookingStatus: Booking_Status;
@@ -22,7 +20,7 @@ const SCENARIOS: {
   { scenario: "SUCCESS_UPCOMING", bookingStatus: "CONFIRMED", paymentStatus: "PAID", weight: 35 },
   { scenario: "SUCCESS_COMPLETED", bookingStatus: "COMPLETE", paymentStatus: "PAID", weight: 35 },
   { scenario: "PENDING", bookingStatus: "PAYMENT_PENDING", paymentStatus: "PENDING", weight: 15 },
-  { scenario: "FAILED", bookingStatus: "SUBMITTED", paymentStatus: ["FAILED", "EXPIRED", "CANCELED"], weight: 15 },
+  { scenario: "FAILED", bookingStatus: "REJECTED_BOOKING", paymentStatus: ["FAILED", "EXPIRED", "CANCELED"], weight: 15 },
 ];
 
 const weightedScenarios = SCENARIOS.flatMap((s) => Array(s.weight).fill(s));
