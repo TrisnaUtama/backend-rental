@@ -165,5 +165,5 @@ export type UpdateRating = Partial<Rating>;
 export type UpdateAccomodation = Partial<Accommodations>;
 export type UpdateRescheduleRequest = Partial<RescheduleRequest>;
 export type UpdateBookingVehicle = Partial<Booking_Vehicles>;
-export type UpdateTravelItineraries = Prisma.RescheduleRequestUpdateInput;
+export type UpdateTravelItineraries = Partial<Travel_Itineraries>;
 export type UpdateRefund = Prisma.RefundsUpdateInput;
