@@ -431,7 +431,9 @@ export class BookingService {
 				);
 			}
 			const nonReschedulableStatuses: Booking_Status[] = [
-				"CANCELED",
+				"REFUNDED",
+				"RESCHEDULE_REQUESTED",
+				"REFUND_REQUESTED",
 				"REJECTED_BOOKING",
 			];
 			if (nonReschedulableStatuses.includes(existingBooking.status)) {
