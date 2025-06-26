@@ -9,7 +9,7 @@ import {
   Vehicle_Types,
 } from "@prisma/client";
 import { travelPackageService } from "../src/application/instances";
-import {
+import type {
   CreatePaxInput,
   CreateTravelItinerariesnput,
   CreateTravelPackage,
