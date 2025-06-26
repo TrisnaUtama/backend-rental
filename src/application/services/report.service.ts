@@ -579,7 +579,7 @@ export class ReportService {
 						) {
 							dailyData[dateKey].confirmedBookings++;
 						}
-						if (booking.status === Booking_Status.CANCELED) {
+						if (booking.status === Booking_Status.REFUNDED) {
 							dailyData[dateKey].canceledBookings++;
 						}
 
