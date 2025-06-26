@@ -2,11 +2,19 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { prisma } from "../src/infrastructure/utils/prisma";
 import {
   Fuel,
+  Prisma,
   RatedEntityType,
   Transmission,
   Vehicle_status,
   Vehicle_Types,
 } from "@prisma/client";
+import { travelPackageService } from "../src/application/instances";
+import type {
+  CreatePaxInput,
+  CreateTravelItinerariesnput,
+  CreateTravelPackage,
+  CreateTravelPackageDesinationInput,
+} from "../src/infrastructure/entity/types";
 
 async function main() {
   try {
@@ -448,641 +456,654 @@ async function main() {
 
     const destinations = [
       {
-        "id": "cmbi8isi90000sd5aj9o0k2gn",
-        "name": "Destinasi 1",
-        "open_hour": "08:00 - 17:00",
-        "description": "Known for its rich history and cultural attractions.",
-        "image_urls": [
+        id: "cmbi8isi90000sd5aj9o0k2gn",
+        name: "Destinasi 1",
+        open_hour: "08:00 - 17:00",
+        description: "Known for its rich history and cultural attractions.",
+        image_urls: [
           "https://finnsbeachclub.com/wp-content/uploads/2024/04/Seminyak-2-2.jpg",
-          "https://finnsbeachclub.com/wp-content/uploads/2024/04/Canggu-FINNS-2.jpg"
+          "https://finnsbeachclub.com/wp-content/uploads/2024/04/Canggu-FINNS-2.jpg",
         ],
-        "address": "Jl. Pariwisata No. 45, Daerah Liburan",
-        "category": "Neighborhoods",
-        "facilities": ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.657Z",
-        "updated_at": "2025-06-04T17:42:00.657Z",
-        "deleted_at": null
+        address: "Jl. Pariwisata No. 45, Daerah Liburan",
+        category: "Neighborhoods",
+        facilities: ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.657Z",
+        updated_at: "2025-06-04T17:42:00.657Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isip0001sd5af5wlxfl1",
-        "name": "Destinasi 2",
-        "open_hour": "09:00 - 18:00",
-        "description": "Perfect for family vacations and relaxing getaways.",
-        "image_urls": [
+        id: "cmbi8isip0001sd5af5wlxfl1",
+        name: "Destinasi 2",
+        open_hour: "09:00 - 18:00",
+        description: "Perfect for family vacations and relaxing getaways.",
+        image_urls: [
           "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/18/34/62/17/waterbom-bali.jpg?w=1200&h=-1&s=1",
-          "https://www.traveloka.com/id-id/explore/destination/waterpark-bali-acc/381016"
+          "https://www.traveloka.com/id-id/explore/destination/waterpark-bali-acc/381016",
         ],
-        "address": "Jl. Dummy No. 123, Kota Wisata",
-        "category": "Water Parks",
-        "facilities": ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.673Z",
-        "updated_at": "2025-06-04T17:42:00.673Z",
-        "deleted_at": null
+        address: "Jl. Dummy No. 123, Kota Wisata",
+        category: "Water Parks",
+        facilities: ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.673Z",
+        updated_at: "2025-06-04T17:42:00.673Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isju0002sd5a4qy9sut3",
-        "name": "Destinasi 3",
-        "open_hour": "08:00 - 17:00",
-        "description": "Perfect for family vacations and relaxing getaways.",
-        "image_urls": [
-          "https://a.cdn-hotels.com/gdcs/production129/d134/6991093f-56a9-4632-a797-a7238290f653.jpg"
+        id: "cmbi8isju0002sd5a4qy9sut3",
+        name: "Destinasi 3",
+        open_hour: "08:00 - 17:00",
+        description: "Perfect for family vacations and relaxing getaways.",
+        image_urls: [
+          "https://a.cdn-hotels.com/gdcs/production129/d134/6991093f-56a9-4632-a797-a7238290f653.jpg",
         ],
-        "address": "Jl. Dummy No. 123, Kota Wisata",
-        "category": "Beaches",
-        "facilities": ["Toilet", "Parkir", "Mushola"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.678Z",
-        "updated_at": "2025-06-04T17:42:00.678Z",
-        "deleted_at": null
+        address: "Jl. Dummy No. 123, Kota Wisata",
+        category: "Beaches",
+        facilities: ["Toilet", "Parkir", "Mushola"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.678Z",
+        updated_at: "2025-06-04T17:42:00.678Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isiy0003sd5azop7ryvg",
-        "name": "Destinasi 4",
-        "open_hour": "08:00 - 17:00",
-        "description": "A beautiful destination with stunning views and exciting experiences.",
-        "image_urls": [
+        id: "cmbi8isiy0003sd5azop7ryvg",
+        name: "Destinasi 4",
+        open_hour: "08:00 - 17:00",
+        description:
+          "A beautiful destination with stunning views and exciting experiences.",
+        image_urls: [
           "https://www.gotravelaindonesia.com/wp-content/uploads/Taman-Ujung-Karangasem-Bali.jpg",
-          "https://www.befreetour.com/img/artikel/artikel-8-tirta-gangga-istana-air-nan-cantik-di-bali-timur.jpg"
+          "https://www.befreetour.com/img/artikel/artikel-8-tirta-gangga-istana-air-nan-cantik-di-bali-timur.jpg",
         ],
-        "address": "Jl. Pariwisata No. 45, Daerah Liburan",
-        "category": "Historical & Heritage Tours",
-        "facilities": ["Toilet", "Parkir", "Mushola"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.683Z",
-        "updated_at": "2025-06-04T17:42:00.683Z",
-        "deleted_at": null
+        address: "Jl. Pariwisata No. 45, Daerah Liburan",
+        category: "Historical & Heritage Tours",
+        facilities: ["Toilet", "Parkir", "Mushola"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.683Z",
+        updated_at: "2025-06-04T17:42:00.683Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isj10004sd5adr8xfahb",
-        "name": "Destinasi 5",
-        "open_hour": "08:00 - 17:00",
-        "description": "A beautiful destination with stunning views and exciting experiences.",
-        "image_urls": [
+        id: "cmbi8isj10004sd5adr8xfahb",
+        name: "Destinasi 5",
+        open_hour: "08:00 - 17:00",
+        description:
+          "A beautiful destination with stunning views and exciting experiences.",
+        image_urls: [
           "https://static.promediateknologi.id/crop/0x0:0x0/750x500/webp/photo/p2/100/2023/09/06/IMG_20230906_221820-2212260799.jpg",
-          "https.asset.kompas.com/crops/p_s0rYa3p23M45Ca_t2WBvW5GF4=/0x0:1000x667/750x500/data/photo/2022/07/21/62d88a21d2e8b.jpg"
+          "https.asset.kompas.com/crops/p_s0rYa3p23M45Ca_t2WBvW5GF4=/0x0:1000x667/750x500/data/photo/2022/07/21/62d88a21d2e8b.jpg",
         ],
-        "address": "Jl. Pariwisata No. 45, Daerah Liburan",
-        "category": "Points of Interest & Landmarks",
-        "facilities": ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.686Z",
-        "updated_at": "2025-06-04T17:42:00.686Z",
-        "deleted_at": null
+        address: "Jl. Pariwisata No. 45, Daerah Liburan",
+        category: "Points of Interest & Landmarks",
+        facilities: ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.686Z",
+        updated_at: "2025-06-04T17:42:00.686Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isj50005sd5a907kkfl7",
-        "name": "Destinasi 6",
-        "open_hour": "09:00 - 18:00",
-        "description": "Perfect for family vacations and relaxing getaways.",
-        "image_urls": [
+        id: "cmbi8isj50005sd5a907kkfl7",
+        name: "Destinasi 6",
+        open_hour: "09:00 - 18:00",
+        description: "Perfect for family vacations and relaxing getaways.",
+        image_urls: [
           "https://upload.wikimedia.org/wikipedia/commons/4/4a/Pura_Ulun_Danu_Bratan_A.JPG",
-          "https://www.indonesia.travel/content/dam/indtravelrevamp/en/destinations/bali-nusa-tenggara/bali/bali/luhur-uluwatu-temple/luhur-uluwatu-temple-1.jpg"
+          "https://www.indonesia.travel/content/dam/indtravelrevamp/en/destinations/bali-nusa-tenggara/bali/bali/luhur-uluwatu-temple/luhur-uluwatu-temple-1.jpg",
         ],
-        "address": "Jl. Pariwisata No. 45, Daerah Liburan",
-        "category": "Religious Sites",
-        "facilities": ["Toilet", "Parkir", "Mushola"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.689Z",
-        "updated_at": "2025-06-04T17:42:00.689Z",
-        "deleted_at": null
+        address: "Jl. Pariwisata No. 45, Daerah Liburan",
+        category: "Religious Sites",
+        facilities: ["Toilet", "Parkir", "Mushola"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.689Z",
+        updated_at: "2025-06-04T17:42:00.689Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isj80006sd5a98p81413",
-        "name": "Destinasi 7",
-        "open_hour": "07:00 - 15:00",
-        "description": "A beautiful destination with stunning views and exciting experiences.",
-        "image_urls": [
+        id: "cmbi8isj80006sd5a98p81413",
+        name: "Destinasi 7",
+        open_hour: "07:00 - 15:00",
+        description:
+          "A beautiful destination with stunning views and exciting experiences.",
+        image_urls: [
           "https://www.safaribali.com/wp-content/uploads/2022/08/bali-safari-park-scaled.jpg",
-          "https://www.balizoo.co.id/storage/photos/shares/general/zoo-explorer-3.jpg"
+          "https://www.balizoo.co.id/storage/photos/shares/general/zoo-explorer-3.jpg",
         ],
-        "address": "Jl. Pelancong Raya No. 89, Tempat Indah",
-        "category": "Zoos",
-        "facilities": ["Toilet", "Parkir", "Mushola"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.693Z",
-        "updated_at": "2025-06-04T17:42:00.693Z",
-        "deleted_at": null
+        address: "Jl. Pelancong Raya No. 89, Tempat Indah",
+        category: "Zoos",
+        facilities: ["Toilet", "Parkir", "Mushola"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.693Z",
+        updated_at: "2025-06-04T17:42:00.693Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isjb0007sd5at6jglve6",
-        "name": "Destinasi 8",
-        "open_hour": "09:00 - 18:00",
-        "description": "Perfect for family vacations and relaxing getaways.",
-        "image_urls": [
+        id: "cmbi8isjb0007sd5at6jglve6",
+        name: "Destinasi 8",
+        open_hour: "09:00 - 18:00",
+        description: "Perfect for family vacations and relaxing getaways.",
+        image_urls: [
           "https://res.klook.com/image/upload/v1696492892/ghbrklfedepeyyyrbmmg.jpg",
-          "https://asset.kompas.com/crops/p855g-i34Jg2i1y1lYxM9kYg2gQ=/0x0:1000x667/750x500/data/photo/2022/01/21/61ea557a2455b.jpg"
+          "https://asset.kompas.com/crops/p855g-i34Jg2i1y1lYxM9kYg2gQ=/0x0:1000x667/750x500/data/photo/2022/01/21/61ea557a2455b.jpg",
         ],
-        "address": "Jl. Dummy No. 123, Kota Wisata",
-        "category": "Mountains",
-        "facilities": ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.696Z",
-        "updated_at": "2025-06-04T17:42:00.696Z",
-        "deleted_at": null
+        address: "Jl. Dummy No. 123, Kota Wisata",
+        category: "Mountains",
+        facilities: ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.696Z",
+        updated_at: "2025-06-04T17:42:00.696Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isjf0008sd5aubbzynmi",
-        "name": "Destinasi 9",
-        "open_hour": "09:00 - 18:00",
-        "description": "Known for its rich history and cultural attractions.",
-        "image_urls": [
+        id: "cmbi8isjf0008sd5aubbzynmi",
+        name: "Destinasi 9",
+        open_hour: "09:00 - 18:00",
+        description: "Known for its rich history and cultural attractions.",
+        image_urls: [
           "https://media-cdn.tripadvisor.com/media/photo-s/13/a4/09/a3/photo0jpg.jpg",
-          "https://media-cdn.tripadvisor.com/media/photo-s/11/2f/59/3e/putri-duyung-spa.jpg"
+          "https://media-cdn.tripadvisor.com/media/photo-s/11/2f/59/3e/putri-duyung-spa.jpg",
         ],
-        "address": "Jl. Dummy No. 123, Kota Wisata",
-        "category": "Spas",
-        "facilities": ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.700Z",
-        "updated_at": "2025-06-04T17:42:00.700Z",
-        "deleted_at": null
+        address: "Jl. Dummy No. 123, Kota Wisata",
+        category: "Spas",
+        facilities: ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.700Z",
+        updated_at: "2025-06-04T17:42:00.700Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isji0009sd5a7fqniepz",
-        "name": "Destinasi 10",
-        "open_hour": "09:00 - 18:00",
-        "description": "A beautiful destination with stunning views and exciting experiences.",
-        "image_urls": [
-          "https://www.gotravelaindonesia.com/wp-content/uploads/Taman-Nasional-Bali-Barat.jpg"
+        id: "cmbi8isji0009sd5a7fqniepz",
+        name: "Destinasi 10",
+        open_hour: "09:00 - 18:00",
+        description:
+          "A beautiful destination with stunning views and exciting experiences.",
+        image_urls: [
+          "https://www.gotravelaindonesia.com/wp-content/uploads/Taman-Nasional-Bali-Barat.jpg",
         ],
-        "address": "Jl. Pelancong Raya No. 89, Tempat Indah",
-        "category": "Nature & Wildlife Areas",
-        "facilities": ["Toilet", "Parkir", "Mushola"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.702Z",
-        "updated_at": "2025-06-04T17:42:00.702Z",
-        "deleted_at": null
+        address: "Jl. Pelancong Raya No. 89, Tempat Indah",
+        category: "Nature & Wildlife Areas",
+        facilities: ["Toilet", "Parkir", "Mushola"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.702Z",
+        updated_at: "2025-06-04T17:42:00.702Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isjl000asd5asj3v6nk2",
-        "name": "Destinasi 11",
-        "open_hour": "09:00 - 18:00",
-        "description": "A beautiful destination with stunning views and exciting experiences.",
-        "image_urls": [
-          "https://a.cdn-hotels.com/gdcs/production154/d970/a353272d-4537-4343-b141-525e378f85f3.jpg"
+        id: "cmbi8isjl000asd5asj3v6nk2",
+        name: "Destinasi 11",
+        open_hour: "09:00 - 18:00",
+        description:
+          "A beautiful destination with stunning views and exciting experiences.",
+        image_urls: [
+          "https://a.cdn-hotels.com/gdcs/production154/d970/a353272d-4537-4343-b141-525e378f85f3.jpg",
         ],
-        "address": "Jl. Dummy No. 123, Kota Wisata",
-        "category": "Beaches",
-        "facilities": ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.705Z",
-        "updated_at": "2025-06-04T17:42:00.705Z",
-        "deleted_at": null
+        address: "Jl. Dummy No. 123, Kota Wisata",
+        category: "Beaches",
+        facilities: ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.705Z",
+        updated_at: "2025-06-04T17:42:00.705Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isjo000bsd5ai7m6zipc",
-        "name": "Destinasi 12",
-        "open_hour": "08:00 - 17:00",
-        "description": "Known for its rich history and cultural attractions.",
-        "image_urls": [
+        id: "cmbi8isjo000bsd5ai7m6zipc",
+        name: "Destinasi 12",
+        open_hour: "08:00 - 17:00",
+        description: "Known for its rich history and cultural attractions.",
+        image_urls: [
           "https://a.cdn-hotels.com/gdcs/production148/d303/3e72b4ad-3443-4f05-b7e6-77a83777591e.jpg",
-          "https://a.cdn-hotels.com/gdcs/production13/d1659/491b8a53-8378-4a57-a9a3-239634e9d368.jpg"
+          "https://a.cdn-hotels.com/gdcs/production13/d1659/491b8a53-8378-4a57-a9a3-239634e9d368.jpg",
         ],
-        "address": "Jl. Pariwisata No. 45, Daerah Liburan",
-        "category": "Beaches",
-        "facilities": ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.708Z",
-        "updated_at": "2025-06-04T17:42:00.708Z",
-        "deleted_at": null
+        address: "Jl. Pariwisata No. 45, Daerah Liburan",
+        category: "Beaches",
+        facilities: ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.708Z",
+        updated_at: "2025-06-04T17:42:00.708Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isjr000csd5a71m65fum",
-        "name": "Destinasi 13",
-        "open_hour": "09:00 - 18:00",
-        "description": "Perfect for family vacations and relaxing getaways.",
-        "image_urls": [
+        id: "cmbi8isjr000csd5a71m65fum",
+        name: "Destinasi 13",
+        open_hour: "09:00 - 18:00",
+        description: "Perfect for family vacations and relaxing getaways.",
+        image_urls: [
           "https://www.indonesia.travel/content/dam/indtravelrevamp/en/destinations/bali-nusa-tenggara/bali/nusa-dua/nusa-dua-beach/Nusa-Dua-Beach_1.jpg",
-          "https://static.saltinourhair.com/wp-content/uploads/2019/07/23145448/things-to-do-nusa-penida-diamond-beach.jpg"
+          "https://static.saltinourhair.com/wp-content/uploads/2019/07/23145448/things-to-do-nusa-penida-diamond-beach.jpg",
         ],
-        "address": "Jl. Pariwisata No. 45, Daerah Liburan",
-        "category": "Beaches",
-        "facilities": ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.712Z",
-        "updated_at": "2025-06-04T17:42:00.712Z",
-        "deleted_at": null
+        address: "Jl. Pariwisata No. 45, Daerah Liburan",
+        category: "Beaches",
+        facilities: ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.712Z",
+        updated_at: "2025-06-04T17:42:00.712Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isju000dsd5atex3sgoo",
-        "name": "Destinasi 14",
-        "open_hour": "07:00 - 15:00",
-        "description": "Known for its rich history and cultural attractions.",
-        "image_urls": [
+        id: "cmbi8isju000dsd5atex3sgoo",
+        name: "Destinasi 14",
+        open_hour: "07:00 - 15:00",
+        description: "Known for its rich history and cultural attractions.",
+        image_urls: [
           "https://cdn.apk-dl.com/wp-content/uploads/2021/05/16-Tempat-Wisata-Alam-di-Bali-Paling-HITS-2021.jpg",
-          "https://www.befreetour.com/img/artikel/artikel-2-menikmati-keindahan-pulau-dewata-dengan-wisata-alam-bali.jpg"
+          "https://www.befreetour.com/img/artikel/artikel-2-menikmati-keindahan-pulau-dewata-dengan-wisata-alam-bali.jpg",
         ],
-        "address": "Jl. Pariwisata No. 45, Daerah Liburan",
-        "category": "Nature & Wildlife Areas",
-        "facilities": ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.714Z",
-        "updated_at": "2025-06-04T17:42:00.714Z",
-        "deleted_at": null
+        address: "Jl. Pariwisata No. 45, Daerah Liburan",
+        category: "Nature & Wildlife Areas",
+        facilities: ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.714Z",
+        updated_at: "2025-06-04T17:42:00.714Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isjw000esd5aucosltd9",
-        "name": "Destinasi 15",
-        "open_hour": "07:00 - 15:00",
-        "description": "Perfect for family vacations and relaxing getaways.",
-        "image_urls": [
+        id: "cmbi8isjw000esd5aucosltd9",
+        name: "Destinasi 15",
+        open_hour: "07:00 - 15:00",
+        description: "Perfect for family vacations and relaxing getaways.",
+        image_urls: [
           "https://www.wonderfulindonesia.id/wp-content/uploads/2021/11/1280px-Taman_Saraswati_Temple_Ubud_2017-09-01.jpg",
-          "https://i.ytimg.com/vi/pdwg_9VOaY4/maxresdefault.jpg"
+          "https://i.ytimg.com/vi/pdwg_9VOaY4/maxresdefault.jpg",
         ],
-        "address": "Jl. Pelancong Raya No. 89, Tempat Indah",
-        "category": "Points of Interest & Landmarks",
-        "facilities": ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.716Z",
-        "updated_at": "2025-06-04T17:42:00.716Z",
-        "deleted_at": null
+        address: "Jl. Pelancong Raya No. 89, Tempat Indah",
+        category: "Points of Interest & Landmarks",
+        facilities: ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.716Z",
+        updated_at: "2025-06-04T17:42:00.716Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isjy000fsd5a4vf1kq0o",
-        "name": "Destinasi 16",
-        "open_hour": "07:00 - 15:00",
-        "description": "Known for its rich history and cultural attractions.",
-        "image_urls": [
-          "https://www.touropia.com/gfx/d/tourist-attractions-in-bali/tegallalang_rice_terraces.jpg"
+        id: "cmbi8isjy000fsd5a4vf1kq0o",
+        name: "Destinasi 16",
+        open_hour: "07:00 - 15:00",
+        description: "Known for its rich history and cultural attractions.",
+        image_urls: [
+          "https://www.touropia.com/gfx/d/tourist-attractions-in-bali/tegallalang_rice_terraces.jpg",
         ],
-        "address": "Jl. Pelancong Raya No. 89, Tempat Indah",
-        "category": "Points of Interest & Landmarks",
-        "facilities": ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.719Z",
-        "updated_at": "2025-06-04T17:42:00.719Z",
-        "deleted_at": null
+        address: "Jl. Pelancong Raya No. 89, Tempat Indah",
+        category: "Points of Interest & Landmarks",
+        facilities: ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.719Z",
+        updated_at: "2025-06-04T17:42:00.719Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isk0000gsd5arosu6zlq",
-        "name": "Destinasi 17",
-        "open_hour": "07:00 - 15:00",
-        "description": "A beautiful destination with stunning views and exciting experiences.",
-        "image_urls": [
+        id: "cmbi8isk0000gsd5arosu6zlq",
+        name: "Destinasi 17",
+        open_hour: "07:00 - 15:00",
+        description:
+          "A beautiful destination with stunning views and exciting experiences.",
+        image_urls: [
           "https://images.squarespace-cdn.com/content/v1/5a224a7d4c326d17b0d778d1/1513257850543-F4O6PGLQ2Y0G9TJ242B2/Tegenungan-waterfall-bali.jpg",
-          "https://www.voyage-prive.fr/magazine-voyage/wp-content/uploads/2022/11/Cascade-de-Gitgit-Bali-Indonesie_shutterstock_1384021235.jpg"
+          "https://www.voyage-prive.fr/magazine-voyage/wp-content/uploads/2022/11/Cascade-de-Gitgit-Bali-Indonesie_shutterstock_1384021235.jpg",
         ],
-        "address": "Jl. Pelancong Raya No. 89, Tempat Indah",
-        "category": "Waterfalls",
-        "facilities": ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.721Z",
-        "updated_at": "2025-06-04T17:42:00.721Z",
-        "deleted_at": null
+        address: "Jl. Pelancong Raya No. 89, Tempat Indah",
+        category: "Waterfalls",
+        facilities: ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.721Z",
+        updated_at: "2025-06-04T17:42:00.721Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isk3000hsd5ay42g3e3k",
-        "name": "Destinasi 18",
-        "open_hour": "09:00 - 18:00",
-        "description": "Known for its rich history and cultural attractions.",
-        "image_urls": [
+        id: "cmbi8isk3000hsd5ay42g3e3k",
+        name: "Destinasi 18",
+        open_hour: "09:00 - 18:00",
+        description: "Known for its rich history and cultural attractions.",
+        image_urls: [
           "https://www.alongdustyroads.com/wp-content/uploads/2019/02/campuhan-ridge-walk-ubud-bali-guide-1.jpg",
-          "https://media.cntraveller.com/photos/611be8626107328543743c3d/master/w_1600%2Cc_limit/bali-hiking-trails-gettyimages-1201584803.jpg"
+          "https://media.cntraveller.com/photos/611be8626107328543743c3d/master/w_1600%2Cc_limit/bali-hiking-trails-gettyimages-1201584803.jpg",
         ],
-        "address": "Jl. Dummy No. 123, Kota Wisata",
-        "category": "Scenic Walking Areas",
-        "facilities": ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.724Z",
-        "updated_at": "2025-06-04T17:42:00.724Z",
-        "deleted_at": null
+        address: "Jl. Dummy No. 123, Kota Wisata",
+        category: "Scenic Walking Areas",
+        facilities: ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.724Z",
+        updated_at: "2025-06-04T17:42:00.724Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isk6000isd5aip8we297",
-        "name": "Destinasi 19",
-        "open_hour": "08:00 - 17:00",
-        "description": "Known for its rich history and cultural attractions.",
-        "image_urls": [
-          "https://www.theungasan.com/wp-content/uploads/2022/07/shutterstock_1170753046-1-scaled.jpg"
+        id: "cmbi8isk6000isd5aip8we297",
+        name: "Destinasi 19",
+        open_hour: "08:00 - 17:00",
+        description: "Known for its rich history and cultural attractions.",
+        image_urls: [
+          "https://www.theungasan.com/wp-content/uploads/2022/07/shutterstock_1170753046-1-scaled.jpg",
         ],
-        "address": "Jl. Pelancong Raya No. 89, Tempat Indah",
-        "category": "Waterfalls",
-        "facilities": ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.727Z",
-        "updated_at": "2025-06-04T17:42:00.727Z",
-        "deleted_at": null
+        address: "Jl. Pelancong Raya No. 89, Tempat Indah",
+        category: "Waterfalls",
+        facilities: ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.727Z",
+        updated_at: "2025-06-04T17:42:00.727Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isk9000jsd5anm9iar1l",
-        "name": "Destinasi 20",
-        "open_hour": "07:00 - 15:00",
-        "description": "Perfect for family vacations and relaxing getaways.",
-        "image_urls": [
-          "https://www.nowbali.co.id/wp-content/uploads/2022/02/West-Bali-National-Park-1-1024x683.jpg"
+        id: "cmbi8isk9000jsd5anm9iar1l",
+        name: "Destinasi 20",
+        open_hour: "07:00 - 15:00",
+        description: "Perfect for family vacations and relaxing getaways.",
+        image_urls: [
+          "https://www.nowbali.co.id/wp-content/uploads/2022/02/West-Bali-National-Park-1-1024x683.jpg",
         ],
-        "address": "Jl. Pelancong Raya No. 89, Tempat Indah",
-        "category": "Nature & Wildlife Areas",
-        "facilities": ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.730Z",
-        "updated_at": "2025-06-04T17:42:00.730Z",
-        "deleted_at": null
+        address: "Jl. Pelancong Raya No. 89, Tempat Indah",
+        category: "Nature & Wildlife Areas",
+        facilities: ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.730Z",
+        updated_at: "2025-06-04T17:42:00.730Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8iskc000ksd5awh4mker0",
-        "name": "Destinasi 21",
-        "open_hour": "09:00 - 18:00",
-        "description": "A beautiful destination with stunning views and exciting experiences.",
-        "image_urls": [
-          "https://www.tourfrombali.com/wp-content/uploads/2018/06/lempuyang-temple-tour-from-bali.jpg"
+        id: "cmbi8iskc000ksd5awh4mker0",
+        name: "Destinasi 21",
+        open_hour: "09:00 - 18:00",
+        description:
+          "A beautiful destination with stunning views and exciting experiences.",
+        image_urls: [
+          "https://www.tourfrombali.com/wp-content/uploads/2018/06/lempuyang-temple-tour-from-bali.jpg",
         ],
-        "address": "Jl. Pelancong Raya No. 89, Tempat Indah",
-        "category": "Religious Sites",
-        "facilities": ["Toilet", "Parkir", "Mushola"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.732Z",
-        "updated_at": "2025-06-04T17:42:00.732Z",
-        "deleted_at": null
+        address: "Jl. Pelancong Raya No. 89, Tempat Indah",
+        category: "Religious Sites",
+        facilities: ["Toilet", "Parkir", "Mushola"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.732Z",
+        updated_at: "2025-06-04T17:42:00.732Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8iske000lsd5aui7d4fr6",
-        "name": "Destinasi 22",
-        "open_hour": "09:00 - 18:00",
-        "description": "A beautiful destination with stunning views and exciting experiences.",
-        "image_urls": [
+        id: "cmbi8iske000lsd5aui7d4fr6",
+        name: "Destinasi 22",
+        open_hour: "09:00 - 18:00",
+        description:
+          "A beautiful destination with stunning views and exciting experiences.",
+        image_urls: [
           "https://media.tacdn.com/media/attractions-splice-spp-674x446/0c/34/83/8f.jpg",
-          "https://media-cdn.tripadvisor.com/media/photo-s/17/f1/49/a7/goa-gajah-elephant-cave.jpg"
+          "https://media-cdn.tripadvisor.com/media/photo-s/17/f1/49/a7/goa-gajah-elephant-cave.jpg",
         ],
-        "address": "Jl. Dummy No. 123, Kota Wisata",
-        "category": "Caverns & Caves",
-        "facilities": ["Toilet", "Parkir", "Mushola"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.735Z",
-        "updated_at": "2025-06-04T17:42:00.735Z",
-        "deleted_at": null
+        address: "Jl. Dummy No. 123, Kota Wisata",
+        category: "Caverns & Caves",
+        facilities: ["Toilet", "Parkir", "Mushola"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.735Z",
+        updated_at: "2025-06-04T17:42:00.735Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8iski000msd5ahtmdhrsf",
-        "name": "Destinasi 23",
-        "open_hour": "08:00 - 17:00",
-        "description": "Perfect for family vacations and relaxing getaways.",
-        "image_urls": [
-          "https://asset.kompas.com/crops/Yt-7J2n1-n5b_U1d-y4K1y8G8yY=/0x0:1364x909/750x500/data/photo/2023/05/23/646c879d9e6c4.jpg"
+        id: "cmbi8iski000msd5ahtmdhrsf",
+        name: "Destinasi 23",
+        open_hour: "08:00 - 17:00",
+        description: "Perfect for family vacations and relaxing getaways.",
+        image_urls: [
+          "https://asset.kompas.com/crops/Yt-7J2n1-n5b_U1d-y4K1y8G8yY=/0x0:1364x909/750x500/data/photo/2023/05/23/646c879d9e6c4.jpg",
         ],
-        "address": "Jl. Pelancong Raya No. 89, Tempat Indah",
-        "category": "Speciality Museums",
-        "facilities": ["Toilet", "Parkir", "Mushola"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.738Z",
-        "updated_at": "2025-06-04T17:42:00.738Z",
-        "deleted_at": null
+        address: "Jl. Pelancong Raya No. 89, Tempat Indah",
+        category: "Speciality Museums",
+        facilities: ["Toilet", "Parkir", "Mushola"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.738Z",
+        updated_at: "2025-06-04T17:42:00.738Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8iskk000nsd5a30b1c4xw",
-        "name": "Destinasi 24",
-        "open_hour": "09:00 - 18:00",
-        "description": "A beautiful destination with stunning views and exciting experiences.",
-        "image_urls": [
+        id: "cmbi8iskk000nsd5a30b1c4xw",
+        name: "Destinasi 24",
+        open_hour: "09:00 - 18:00",
+        description:
+          "A beautiful destination with stunning views and exciting experiences.",
+        image_urls: [
           "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0f/52/8f/a9/museum-pasifika.jpg?w=1200&h=-1&s=1",
-          "https://www.agungraigallery.com/uploads/images/gallery/gallery-2-1.jpg"
+          "https://www.agungraigallery.com/uploads/images/gallery/gallery-2-1.jpg",
         ],
-        "address": "Jl. Pelancong Raya No. 89, Tempat Indah",
-        "category": "Art Museums",
-        "facilities": ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.741Z",
-        "updated_at": "2025-06-04T17:42:00.741Z",
-        "deleted_at": null
+        address: "Jl. Pelancong Raya No. 89, Tempat Indah",
+        category: "Art Museums",
+        facilities: ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.741Z",
+        updated_at: "2025-06-04T17:42:00.741Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8iskn000osd5a86dv4dfb",
-        "name": "Destinasi 25",
-        "open_hour": "07:00 - 15:00",
-        "description": "Perfect for family vacations and relaxing getaways.",
-        "image_urls": [
-          "https://www.denkapratama.co.id/upload/article/25-objek-wisata-di-bali-paling-hits-2025-dari-alam-eksotis-hingga-destinasi-instagramable.jpg"
+        id: "cmbi8iskn000osd5a86dv4dfb",
+        name: "Destinasi 25",
+        open_hour: "07:00 - 15:00",
+        description: "Perfect for family vacations and relaxing getaways.",
+        image_urls: [
+          "https://www.denkapratama.co.id/upload/article/25-objek-wisata-di-bali-paling-hits-2025-dari-alam-eksotis-hingga-destinasi-instagramable.jpg",
         ],
-        "address": "Jl. Pariwisata No. 45, Daerah Liburan",
-        "category": "Art Museums",
-        "facilities": ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.743Z",
-        "updated_at": "2025-06-04T17:42:00.743Z",
-        "deleted_at": null
+        address: "Jl. Pariwisata No. 45, Daerah Liburan",
+        category: "Art Museums",
+        facilities: ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.743Z",
+        updated_at: "2025-06-04T17:42:00.743Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8iskp000psd5abxpy8xfu",
-        "name": "Destinasi 26",
-        "open_hour": "07:00 - 15:00",
-        "description": "A beautiful destination with stunning views and exciting experiences.",
-        "image_urls": [
+        id: "cmbi8iskp000psd5abxpy8xfu",
+        name: "Destinasi 26",
+        open_hour: "07:00 - 15:00",
+        description:
+          "A beautiful destination with stunning views and exciting experiences.",
+        image_urls: [
           "https://a.cdn-hotels.com/gdcs/production165/d63/73145d7a-4293-4a6c-8597-f542152b217a.jpg",
-          "https://a.cdn-hotels.com/gdcs/production159/d117/e8927a7c-851f-4b69-82af-5858c89423c7.jpg"
+          "https://a.cdn-hotels.com/gdcs/production159/d117/e8927a7c-851f-4b69-82af-5858c89423c7.jpg",
         ],
-        "address": "Jl. Pariwisata No. 45, Daerah Liburan",
-        "category": "Religious Sites",
-        "facilities": ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.746Z",
-        "updated_at": "2025-06-04T17:42:00.746Z",
-        "deleted_at": null
+        address: "Jl. Pariwisata No. 45, Daerah Liburan",
+        category: "Religious Sites",
+        facilities: ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.746Z",
+        updated_at: "2025-06-04T17:42:00.746Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8iskr000qsd5a5sbbpb3x",
-        "name": "Destinasi 27",
-        "open_hour": "09:00 - 18:00",
-        "description": "A beautiful destination with stunning views and exciting experiences.",
-        "image_urls": [
+        id: "cmbi8iskr000qsd5a5sbbpb3x",
+        name: "Destinasi 27",
+        open_hour: "09:00 - 18:00",
+        description:
+          "A beautiful destination with stunning views and exciting experiences.",
+        image_urls: [
           "https://www.water-sport-bali.com/wp-content/uploads/2021/10/Destinasi-Wisata-Alam-di-Bali.jpg",
-          "https://www.water-sport-bali.com/wp-content/uploads/2024/02/Pandawa-Beach-Bali.jpg"
+          "https://www.water-sport-bali.com/wp-content/uploads/2024/02/Pandawa-Beach-Bali.jpg",
         ],
-        "address": "Jl. Pelancong Raya No. 89, Tempat Indah",
-        "category": "Beaches",
-        "facilities": ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.748Z",
-        "updated_at": "2025-06-04T17:42:00.748Z",
-        "deleted_at": null
+        address: "Jl. Pelancong Raya No. 89, Tempat Indah",
+        category: "Beaches",
+        facilities: ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.748Z",
+        updated_at: "2025-06-04T17:42:00.748Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8iskt000rsd5an1icyj0y",
-        "name": "Destinasi 28",
-        "open_hour": "07:00 - 15:00",
-        "description": "Known for its rich history and cultural attractions.",
-        "image_urls": [
+        id: "cmbi8iskt000rsd5an1icyj0y",
+        name: "Destinasi 28",
+        open_hour: "07:00 - 15:00",
+        description: "Known for its rich history and cultural attractions.",
+        image_urls: [
           "https://static.wixstatic.com/media/a8a2c5_9b71e723226742a785eac44400e28d8b~mv2.jpg/v1/fill/w_640,h_428,fp_0.50_0.50,q_80,usm_0.66_1.00_0.01,enc_auto/a8a2c5_9b71e723226742a785eac44400e28d8b~mv2.jpg",
-          "https://www.nowbali.co.id/wp-content/uploads/2019/07/Nyoman-Gunarsa-Museum.jpg"
+          "https://www.nowbali.co.id/wp-content/uploads/2019/07/Nyoman-Gunarsa-Museum.jpg",
         ],
-        "address": "Jl. Pelancong Raya No. 89, Tempat Indah",
-        "category": "Art Galleries",
-        "facilities": ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.750Z",
-        "updated_at": "2025-06-04T17:42:00.750Z",
-        "deleted_at": null
+        address: "Jl. Pelancong Raya No. 89, Tempat Indah",
+        category: "Art Galleries",
+        facilities: ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.750Z",
+        updated_at: "2025-06-04T17:42:00.750Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8iskw000ssd5agzmyx3xe",
-        "name": "Destinasi 29",
-        "open_hour": "08:00 - 17:00",
-        "description": "A beautiful destination with stunning views and exciting experiences.",
-        "image_urls": [
-          "https://media-cdn.tripadvisor.com/media/photo-o/29/73/b4/17/caption.jpg"
+        id: "cmbi8iskw000ssd5agzmyx3xe",
+        name: "Destinasi 29",
+        open_hour: "08:00 - 17:00",
+        description:
+          "A beautiful destination with stunning views and exciting experiences.",
+        image_urls: [
+          "https://media-cdn.tripadvisor.com/media/photo-o/29/73/b4/17/caption.jpg",
         ],
-        "address": "Jl. Pelancong Raya No. 89, Tempat Indah",
-        "category": "Restaurant",
-        "facilities": ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.752Z",
-        "updated_at": "2025-06-04T17:42:00.752Z",
-        "deleted_at": null
+        address: "Jl. Pelancong Raya No. 89, Tempat Indah",
+        category: "Restaurant",
+        facilities: ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.752Z",
+        updated_at: "2025-06-04T17:42:00.752Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isky000tsd5aczxlb7zs",
-        "name": "Destinasi 30",
-        "open_hour": "09:00 - 18:00",
-        "description": "A beautiful destination with stunning views and exciting experiences.",
-        "image_urls": [
+        id: "cmbi8isky000tsd5aczxlb7zs",
+        name: "Destinasi 30",
+        open_hour: "09:00 - 18:00",
+        description:
+          "A beautiful destination with stunning views and exciting experiences.",
+        image_urls: [
           "https://www.raflessia.com/wp-content/uploads/2021/07/Restoran-di-Bali-1024x683-1.jpg",
-          "https://blog.tok pedi.com/wp-content/uploads/2020/02/7.-Mozaic-Restaurant-Gastronomique-@thefoodstroll.jpg"
+          "https://blog.tok pedi.com/wp-content/uploads/2020/02/7.-Mozaic-Restaurant-Gastronomique-@thefoodstroll.jpg",
         ],
-        "address": "Jl. Pariwisata No. 45, Daerah Liburan",
-        "category": "Restaurant",
-        "facilities": ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.754Z",
-        "updated_at": "2025-06-04T17:42:00.754Z",
-        "deleted_at": null
+        address: "Jl. Pariwisata No. 45, Daerah Liburan",
+        category: "Restaurant",
+        facilities: ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.754Z",
+        updated_at: "2025-06-04T17:42:00.754Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isl0000usd5away4mq9w",
-        "name": "Destinasi 31",
-        "open_hour": "07:00 - 15:00",
-        "description": "Known for its rich history and cultural attractions.",
-        "image_urls": [
-          "https://www.dewatatrans.com/wp-content/uploads/2022/01/Nook-Bali.jpg"
+        id: "cmbi8isl0000usd5away4mq9w",
+        name: "Destinasi 31",
+        open_hour: "07:00 - 15:00",
+        description: "Known for its rich history and cultural attractions.",
+        image_urls: [
+          "https://www.dewatatrans.com/wp-content/uploads/2022/01/Nook-Bali.jpg",
         ],
-        "address": "Jl. Pariwisata No. 45, Daerah Liburan",
-        "category": "Restaurant",
-        "facilities": ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.757Z",
-        "updated_at": "2025-06-04T17:42:00.757Z",
-        "deleted_at": null
+        address: "Jl. Pariwisata No. 45, Daerah Liburan",
+        category: "Restaurant",
+        facilities: ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.757Z",
+        updated_at: "2025-06-04T17:42:00.757Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isl2000vsd5arslka62p",
-        "name": "Destinasi 32",
-        "open_hour": "07:00 - 15:00",
-        "description": "Known for its rich history and cultural attractions.",
-        "image_urls": [
+        id: "cmbi8isl2000vsd5arslka62p",
+        name: "Destinasi 32",
+        open_hour: "07:00 - 15:00",
+        description: "Known for its rich history and cultural attractions.",
+        image_urls: [
           "https://blog.reservasi.com/wp-content/uploads/2018/03/shutterstock_1029272890.jpg",
-          "https://www.gotravelaindonesia.com/wp-content/uploads/Restoran-Romantis-di-Bali-1.jpg"
+          "https://www.gotravelaindonesia.com/wp-content/uploads/Restoran-Romantis-di-Bali-1.jpg",
         ],
-        "address": "Jl. Dummy No. 123, Kota Wisata",
-        "category": "Restaurant",
-        "facilities": ["Toilet", "Parkir", "Mushola"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.759Z",
-        "updated_at": "2025-06-04T17:42:00.759Z",
-        "deleted_at": null
+        address: "Jl. Dummy No. 123, Kota Wisata",
+        category: "Restaurant",
+        facilities: ["Toilet", "Parkir", "Mushola"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.759Z",
+        updated_at: "2025-06-04T17:42:00.759Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isl5000wsd5adumf0yjo",
-        "name": "Destinasi 33",
-        "open_hour": "07:00 - 15:00",
-        "description": "Known for its rich history and cultural attractions.",
-        "image_urls": [
+        id: "cmbi8isl5000wsd5adumf0yjo",
+        name: "Destinasi 33",
+        open_hour: "07:00 - 15:00",
+        description: "Known for its rich history and cultural attractions.",
+        image_urls: [
           "https://www.flokq.com/blog/wp-content/uploads/2020/11/nook-1024x1024.jpeg",
-          "https://www.dewatatrans.com/wp-content/uploads/2022/01/La-Favela.jpg"
+          "https://www.dewatatrans.com/wp-content/uploads/2022/01/La-Favela.jpg",
         ],
-        "address": "Jl. Pariwisata No. 45, Daerah Liburan",
-        "category": "Restaurant",
-        "facilities": ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.761Z",
-        "updated_at": "2025-06-04T17:42:00.761Z",
-        "deleted_at": null
+        address: "Jl. Pariwisata No. 45, Daerah Liburan",
+        category: "Restaurant",
+        facilities: ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.761Z",
+        updated_at: "2025-06-04T17:42:00.761Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isl8000xsd5au263xehh",
-        "name": "Destinasi 34",
-        "open_hour": "09:00 - 18:00",
-        "description": "Perfect for family vacations and relaxing getaways.",
-        "image_urls": [
+        id: "cmbi8isl8000xsd5au263xehh",
+        name: "Destinasi 34",
+        open_hour: "09:00 - 18:00",
+        description: "Perfect for family vacations and relaxing getaways.",
+        image_urls: [
           "https://www.vokasi.co.id/wp-content/uploads/2022/12/Restoran-Apung-di-Kintamani.jpg",
-          "https://media-cdn.tripadvisor.com/media/photo-o/1a/f7/28/7f/la-cebola-bali.jpg"
+          "https://media-cdn.tripadvisor.com/media/photo-o/1a/f7/28/7f/la-cebola-bali.jpg",
         ],
-        "address": "Jl. Pelancong Raya No. 89, Tempat Indah",
-        "category": "Restaurant",
-        "facilities": ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.764Z",
-        "updated_at": "2025-06-04T17:42:00.764Z",
-        "deleted_at": null
+        address: "Jl. Pelancong Raya No. 89, Tempat Indah",
+        category: "Restaurant",
+        facilities: ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.764Z",
+        updated_at: "2025-06-04T17:42:00.764Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isla000ysd5az8prt5m7",
-        "name": "Destinasi 35",
-        "open_hour": "07:00 - 15:00",
-        "description": "Known for its rich history and cultural attractions.",
-        "image_urls": [
+        id: "cmbi8isla000ysd5az8prt5m7",
+        name: "Destinasi 35",
+        open_hour: "07:00 - 15:00",
+        description: "Known for its rich history and cultural attractions.",
+        image_urls: [
           "https://i0.wp.com/blog.tripcetera.com/id/wp-content/uploads/2020/02/kelapa-muda.jpg",
-          "https://www.nativeindonesia.com/wp-content/uploads/2020/12/restoran-pinggir-pantai-di-bali.jpg"
+          "https://www.nativeindonesia.com/wp-content/uploads/2020/12/restoran-pinggir-pantai-di-bali.jpg",
         ],
-        "address": "Jl. Pelancong Raya No. 89, Tempat Indah",
-        "category": "Restaurant",
-        "facilities": ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.767Z",
-        "updated_at": "2025-06-04T17:42:00.767Z",
-        "deleted_at": null
+        address: "Jl. Pelancong Raya No. 89, Tempat Indah",
+        category: "Restaurant",
+        facilities: ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.767Z",
+        updated_at: "2025-06-04T17:42:00.767Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8isld000zsd5anodjgtyr",
-        "name": "Destinasi 36",
-        "open_hour": "07:00 - 15:00",
-        "description": "Perfect for family vacations and relaxing getaways.",
-        "image_urls": [
+        id: "cmbi8isld000zsd5anodjgtyr",
+        name: "Destinasi 36",
+        open_hour: "07:00 - 15:00",
+        description: "Perfect for family vacations and relaxing getaways.",
+        image_urls: [
           "https://blog.antavaya.com/wp-content/uploads/2019/11/sundara-four-seasons-jimbaran-1-750x450-1.jpg",
-          "https://www.lendbiz.co.id/files/uploads/blogs/8-rekomendasi-restoran-di-bali-dengan-pemandangan-yang-eksotis-dan-mewah-1.jpg"
+          "https://www.lendbiz.co.id/files/uploads/blogs/8-rekomendasi-restoran-di-bali-dengan-pemandangan-yang-eksotis-dan-mewah-1.jpg",
         ],
-        "address": "Jl. Pelancong Raya No. 89, Tempat Indah",
-        "category": "Restaurant",
-        "facilities": ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.769Z",
-        "updated_at": "2025-06-04T17:42:00.769Z",
-        "deleted_at": null
+        address: "Jl. Pelancong Raya No. 89, Tempat Indah",
+        category: "Restaurant",
+        facilities: ["Pemandu Wisata", "Pusat Informasi", "Tempat Istirahat"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.769Z",
+        updated_at: "2025-06-04T17:42:00.769Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8islg0010sd5afti6dn62",
-        "name": "Destinasi 37",
-        "open_hour": "07:00 - 15:00",
-        "description": "Perfect for family vacations and relaxing getaways.",
-        "image_urls": [
+        id: "cmbi8islg0010sd5afti6dn62",
+        name: "Destinasi 37",
+        open_hour: "07:00 - 15:00",
+        description: "Perfect for family vacations and relaxing getaways.",
+        image_urls: [
           "https://media-cdn.tripadvisor.com/media/photo-o/1b/9a/c3/82/shisha-time.jpg",
-          "https://s-light.tiket.photos/t/01E25EBZS3W0FY9GTG6C42E1SE/rsfit19201280-sm/background/2020/01/08/5b51a1d6-b184-4860-9154-884878a99478-1578479717088-75b8a53677e486259e450b441f3e30f5.jpg"
+          "https://s-light.tiket.photos/t/01E25EBZS3W0FY9GTG6C42E1SE/rsfit19201280-sm/background/2020/01/08/5b51a1d6-b184-4860-9154-884878a99478-1578479717088-75b8a53677e486259e450b441f3e30f5.jpg",
         ],
-        "address": "Jl. Dummy No. 123, Kota Wisata",
-        "category": "Restaurant",
-        "facilities": ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.773Z",
-        "updated_at": "2025-06-04T17:42:00.773Z",
-        "deleted_at": null
+        address: "Jl. Dummy No. 123, Kota Wisata",
+        category: "Restaurant",
+        facilities: ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.773Z",
+        updated_at: "2025-06-04T17:42:00.773Z",
+        deleted_at: null,
       },
       {
-        "id": "cmbi8islj0011sd5aed26kfal",
-        "name": "Destinasi 38",
-        "open_hour": "09:00 - 18:00",
-        "description": "Known for its rich history and cultural attractions.",
-        "image_urls": [
+        id: "cmbi8islj0011sd5aed26kfal",
+        name: "Destinasi 38",
+        open_hour: "09:00 - 18:00",
+        description: "Known for its rich history and cultural attractions.",
+        image_urls: [
           "https://q-xx.bstatic.com/xdata/images/hotel/max1024x768/336423943.jpg?k=b4e99b2446f3458e0c4d156c1f1f93f7787bf44d8d4c9d91f1b5b5b5e7d5efc0&o=",
-          "https://media-cdn.tripadvisor.com/media/photo-o/1b/89/3b/41/getlstd-property-photo.jpg"
+          "https://media-cdn.tripadvisor.com/media/photo-o/1b/89/3b/41/getlstd-property-photo.jpg",
         ],
-        "address": "Jl. Pelancong Raya No. 89, Tempat Indah",
-        "category": "Restaurant",
-        "facilities": ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
-        "status": true,
-        "created_at": "2025-06-04T17:42:00.775Z",
-        "updated_at": "2025-06-04T17:42:00.775Z",
-        "deleted_at": null
-      }
-    ]
+        address: "Jl. Pelancong Raya No. 89, Tempat Indah",
+        category: "Restaurant",
+        facilities: ["Wi-Fi", "Restoran", "Pusat Oleh-Oleh"],
+        status: true,
+        created_at: "2025-06-04T17:42:00.775Z",
+        updated_at: "2025-06-04T17:42:00.775Z",
+        deleted_at: null,
+      },
+    ];
 
     const vehiclesData = [
       {
@@ -1351,10 +1372,10 @@ async function main() {
         status: true,
       },
       {
-        code: "BALIDEWATA",
+        code: "JOGJAIstimewa",
         description:
           "Potongan harga Rp 75.000 untuk rental mobil di area Yogyakarta. Jelajahi Jogja tanpa batas!",
-        discount_value: 10, 
+        discount_value: 10,
         start_date: new Date("2025-06-01T00:00:00Z"),
         end_date: new Date("2025-06-30T23:59:59Z"),
         min_booking_amount: 400000.0,
@@ -1521,7 +1542,303 @@ async function main() {
         data: acc,
       });
     }
-    console.log("Finished seeding accommodations.");
+
+    const existingDestinations = await prisma.destinations.findMany({
+      select: { id: true, category: true },
+    });
+    const existingAccommodations = await prisma.accommodations.findMany({
+      select: { id: true, name: true },
+    });
+
+    if (existingDestinations.length < 20) {
+      throw new Error(
+        "Not enough destinations found. Please run the main seeder first."
+      );
+    }
+
+    if (existingAccommodations.length < 5) {
+      throw new Error(
+        "Not enough Bali accommodations found. Please run the main seeder first."
+      );
+    }
+
+    // Helper untuk mengambil ID Akomodasi Bali dengan aman
+    const getBaliAccomodationId = (name: string, fallbackIndex: number) => {
+      return (
+        existingAccommodations.find((acc) =>
+          acc.name.toLowerCase().includes(name.toLowerCase())
+        )?.id || existingAccommodations[fallbackIndex].id
+      );
+    };
+
+    // Helper untuk mengambil ID Destinasi berdasarkan kategori
+    const getDestinationIdByCategory = (category: string, index: number) => {
+      const filtered = existingDestinations.filter(
+        (d) => d.category === category
+      );
+      return filtered[index % filtered.length].id;
+    };
+
+    // --- Kumpulan data untuk 5 Travel Package ---
+    const travelPackagesData = [];
+
+    // --- 1. Paket: Ultimate Bali Beach & Luxury Escape ---
+    const dests1 = [
+      getDestinationIdByCategory("Beaches", 0),
+      getDestinationIdByCategory("Spas", 0),
+      getDestinationIdByCategory("Restaurant", 5),
+      getDestinationIdByCategory("Water Parks", 0),
+      getDestinationIdByCategory("Beaches", 1),
+    ];
+    travelPackagesData.push({
+      payload: {
+        name: "Ultimate Bali Beach & Luxury Escape 5D4N",
+        image:
+          "https://www.ritzcarlton.com/content/dam/the-ritz-carlton/hotels/dpssw/dpssw-cliff-villa-pool-view-50669259.jpg",
+        duration: 5,
+        description:
+          "Indulge in the ultimate luxury on Bali's most beautiful beaches. This package offers a stay at a 5-star resort, spa treatments, and exquisite dining experiences.",
+        accommodation_id: getBaliAccomodationId("ritz-carlton", 0),
+      },
+      destinations: dests1.map((id) => ({ destination_id: id })),
+      pax: [
+        { pax: 2, price: new Prisma.Decimal(12500000) },
+        { pax: 4, price: new Prisma.Decimal(22000000) },
+      ],
+      itineraries: [
+        {
+          day_number: 1,
+          destination_id: dests1[0],
+          description:
+            "Arrival, check-in to your luxury villa in Nusa Dua, and enjoy the private beach.",
+        },
+        {
+          day_number: 2,
+          destination_id: dests1[1],
+          description:
+            "Morning relaxation followed by an afternoon of rejuvenating spa treatments.",
+        },
+        {
+          day_number: 3,
+          destination_id: dests1[2],
+          description:
+            "Explore Seminyak's high-end boutiques and enjoy a sunset dinner at a famous beach club.",
+        },
+        {
+          day_number: 4,
+          destination_id: dests1[3],
+          description:
+            "A day of fun at Waterbom Bali, one of Asia's best water parks.",
+        },
+        {
+          day_number: 5,
+          destination_id: dests1[4],
+          description: "Final breakfast with an ocean view before departure.",
+        },
+      ],
+    });
+
+    // --- 2. Paket: Spiritual Ubud & Cultural Immersion ---
+    const dests2 = [
+      getDestinationIdByCategory("Scenic Walking Areas", 0),
+      getDestinationIdByCategory("Religious Sites", 0),
+      getDestinationIdByCategory("Art Galleries", 0),
+      getDestinationIdByCategory("Waterfalls", 0),
+    ];
+    travelPackagesData.push({
+      payload: {
+        name: "Spiritual Ubud & Cultural Immersion 4D3N",
+        image:
+          "https://www.fourseasons.com/alt/img-opt/~70.1530.0,0000-0,0000-1600,0000-900,0000/publish/content/dam/fourseasons/images/web/SAY/SAY_004_original.jpg",
+        duration: 4,
+        description:
+          "Discover the heart and soul of Bali in Ubud. This journey takes you through lush rice terraces, sacred temples, and vibrant art villages.",
+        accommodation_id: getBaliAccomodationId("sayan", 1),
+      },
+      destinations: dests2.map((id) => ({ destination_id: id })),
+      pax: [
+        { pax: 1, price: new Prisma.Decimal(6800000) },
+        { pax: 2, price: new Prisma.Decimal(11500000) },
+      ],
+      itineraries: [
+        {
+          day_number: 1,
+          destination_id: dests2[0],
+          description:
+            "Arrive in Ubud, check into a serene resort. Enjoy an evening walk through Campuhan Ridge.",
+        },
+        {
+          day_number: 2,
+          destination_id: dests2[1],
+          description:
+            "Visit the sacred Tirta Empul temple for a spiritual cleansing experience and explore the Goa Gajah 'Elephant Cave'.",
+        },
+        {
+          day_number: 3,
+          destination_id: dests2[2],
+          description:
+            "Explore the Ubud Art Market and visit a local art gallery to see the works of Balinese artists.",
+        },
+        {
+          day_number: 4,
+          destination_id: dests2[3],
+          description:
+            "Visit a hidden waterfall like Tegenungan for a refreshing morning swim before heading to the airport.",
+        },
+      ],
+    });
+
+    // --- 3. Paket: Nusa Islands Paradise Hopping ---
+    const dests3 = [
+      getDestinationIdByCategory("Beaches", 2), // Simulate Kelingking Beach
+      getDestinationIdByCategory("Points of Interest & Landmarks", 1), // Simulate Broken Beach
+      getDestinationIdByCategory("Beaches", 3), // Simulate Diamond Beach
+    ];
+    travelPackagesData.push({
+      payload: {
+        name: "Nusa Islands Paradise Hopping 3D2N",
+        image:
+          "https://static.saltinourhair.com/wp-content/uploads/2019/07/23145448/things-to-do-nusa-penida-diamond-beach.jpg",
+        duration: 3,
+        description:
+          "Escape to the breathtaking beauty of the Nusa Islands. Witness dramatic cliffs, pristine white-sand beaches, and crystal-clear waters perfect for snorkeling.",
+        accommodation_id: null, // Asumsi akomodasi di pulau diatur terpisah/termasuk
+      },
+      destinations: dests3.map((id) => ({ destination_id: id })),
+      pax: [
+        { pax: 2, price: new Prisma.Decimal(3500000) },
+        { pax: 4, price: new Prisma.Decimal(6500000) },
+      ],
+      itineraries: [
+        {
+          day_number: 1,
+          destination_id: dests3[0],
+          description:
+            "Fast boat to Nusa Penida. Explore the west coast, including the iconic Kelingking Beach viewpoint.",
+        },
+        {
+          day_number: 2,
+          destination_id: dests3[1],
+          description:
+            "Snorkeling day trip to see manta rays, followed by a visit to Angel's Billabong and Broken Beach.",
+        },
+        {
+          day_number: 3,
+          destination_id: dests3[2],
+          description:
+            "Explore the stunning eastern coastline, including Diamond Beach, before returning to the mainland.",
+        },
+      ],
+    });
+
+    // --- 4. Paket: North Bali's Hidden Waterfalls & Lakes ---
+    const dests4 = [
+      getDestinationIdByCategory("Religious Sites", 5), // Ulun Danu Beratan
+      getDestinationIdByCategory("Waterfalls", 1),
+      getDestinationIdByCategory("Nature & Wildlife Areas", 1),
+      getDestinationIdByCategory("Mountains", 0),
+    ];
+    travelPackagesData.push({
+      payload: {
+        name: "North Bali's Hidden Waterfalls & Lakes 4D3N",
+        image:
+          "https://upload.wikimedia.org/wikipedia/commons/4/4a/Pura_Ulun_Danu_Bratan_A.JPG",
+        duration: 4,
+        description:
+          "Journey to the cooler climates of North Bali. Discover majestic waterfalls, serene mountain lakes, and the iconic Ulun Danu Beratan temple.",
+        accommodation_id: getBaliAccomodationId("apurva kempinski", 3),
+      },
+      destinations: dests4.map((id) => ({ destination_id: id })),
+      pax: [
+        { pax: 2, price: new Prisma.Decimal(4200000) },
+        { pax: 4, price: new Prisma.Decimal(7800000) },
+      ],
+      itineraries: [
+        {
+          day_number: 1,
+          destination_id: dests4[0],
+          description:
+            "Travel from South Bali to the Bedugul area. Visit the iconic Pura Ulun Danu Beratan on Lake Bratan.",
+        },
+        {
+          day_number: 2,
+          destination_id: dests4[1],
+          description:
+            "Full-day waterfall trekking to explore the magnificent Gitgit and Sekumpul waterfalls.",
+        },
+        {
+          day_number: 3,
+          destination_id: dests4[2],
+          description:
+            "Explore the West Bali National Park, a haven for biodiversity and wildlife.",
+        },
+        {
+          day_number: 4,
+          destination_id: dests4[3],
+          description:
+            "Hike to see the sunrise over Mount Batur before traveling back south for departure.",
+        },
+      ],
+    });
+
+    
+    const dests5 = [
+      getDestinationIdByCategory("Restaurant", 0),
+      getDestinationIdByCategory("Beaches", 4), 
+      getDestinationIdByCategory("Restaurant", 10),
+      getDestinationIdByCategory("Restaurant", 11),
+    ];
+    travelPackagesData.push({
+      payload: {
+        name: "Bali Culinary & Sunset Chase 3D2N",
+        image:
+          "https://www.marriott.com/content/dam/marriott-digital/w/dpswh/en_us/photos/2023/w-bali-seminyak-exterior-2-2050-16923.jpeg",
+        duration: 3,
+        description:
+          "A dream for foodies and sunset lovers. Taste your way through Bali's best cafes and restaurants, and end each day with a spectacular sunset view.",
+        accommodation_id: getBaliAccomodationId("w bali", 4),
+      },
+      destinations: dests5.map((id) => ({ destination_id: id })),
+      pax: [{ pax: 2, price: new Prisma.Decimal(7200000) }],
+      itineraries: [
+        {
+          day_number: 1,
+          destination_id: dests5[0],
+          description:
+            "Check into your stylish Seminyak hotel. Begin your culinary tour with dinner at a renowned local restaurant.",
+        },
+        {
+          day_number: 2,
+          destination_id: dests5[1],
+          description:
+            "Morning Balinese cooking class. In the afternoon, relax at a famous beach club and watch the iconic sunset.",
+        },
+        {
+          day_number: 3,
+          destination_id: dests5[3],
+          description:
+            "Cafe hopping in the trendy Canggu area before your flight home.",
+        },
+      ],
+    });
+
+    for (const [index, data] of travelPackagesData.entries()) {
+      console.log(
+        `[${index + 1}/${travelPackagesData.length}] Seeding travel package: "${
+          data.payload.name
+        }"...`
+      );
+      await travelPackageService.create(
+        data.payload as CreateTravelPackage,
+        data.destinations as CreateTravelPackageDesinationInput[],
+        data.pax as CreatePaxInput[],
+        data.itineraries as CreateTravelItinerariesnput[]
+      );
+    }
+
+    console.log(
+      `Successfully seeded ${travelPackagesData.length} travel packages.`
+    );
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
       console.error("Prisma Client Known Request Error in main:", error);
