@@ -1351,7 +1351,7 @@ async function main() {
         status: true,
       },
       {
-        code: "BALIDEWATA",
+        code: "JOGJAIstimewa",
         description:
           "Potongan harga Rp 75.000 untuk rental mobil di area Yogyakarta. Jelajahi Jogja tanpa batas!",
         discount_value: 10, 
