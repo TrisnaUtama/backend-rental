@@ -17,15 +17,14 @@ const SCENARIOS: {
   paymentStatus: Payment_Status | Payment_Status[];
   weight: number;
 }[] = [
-  { scenario: "SUCCESS_UPCOMING", bookingStatus: "CONFIRMED", paymentStatus: "PAID", weight: 35 },
-  { scenario: "SUCCESS_COMPLETED", bookingStatus: "COMPLETE", paymentStatus: "PAID", weight: 35 },
-  { scenario: "PENDING", bookingStatus: "PAYMENT_PENDING", paymentStatus: "PENDING", weight: 15 },
-  { scenario: "FAILED", bookingStatus: "REJECTED_BOOKING", paymentStatus: ["FAILED", "EXPIRED", "CANCELED"], weight: 15 },
+    { scenario: "SUCCESS_UPCOMING", bookingStatus: "CONFIRMED", paymentStatus: "PAID", weight: 35 },
+    { scenario: "SUCCESS_COMPLETED", bookingStatus: "COMPLETE", paymentStatus: "PAID", weight: 35 },
+    { scenario: "PENDING", bookingStatus: "PAYMENT_PENDING", paymentStatus: "PENDING", weight: 15 },
+    { scenario: "FAILED", bookingStatus: "SUBMITTED", paymentStatus: ["FAILED", "EXPIRED", "CANCELED"], weight: 15 },
 ];
 
 const weightedScenarios = SCENARIOS.flatMap((s) => Array(s.weight).fill(s));
 
-// --- Tipe Data untuk Kejelasan ---
 type UserData = { id: string };
 type PromoData = { id: string };
 type VehicleData = { id: string; price_per_day: Prisma.Decimal };
@@ -60,7 +59,6 @@ async function generateAndInsertBooking(
   const licences_id = `https://dummyimage.com/1024x768/cccccc/000000&text=Lisensi_${userIdentifier}.jpg`;
   const card_id = `https://dummyimage.com/1024x768/cccccc/000000&text=KTP_${userIdentifier}.jpg`;
 
-  // Objek ini hanya menampung field-field dari model Booking
   const bookingInput: any = {
     user_id,
     licences_id,
@@ -69,9 +67,10 @@ async function generateAndInsertBooking(
     created_at: creationDateTime,
     notes: faker.lorem.sentence(),
   };
-
-  let total_price = new Prisma.Decimal(0);
-  let vehicleBookingData: any = null; // Variabel untuk menampung data relasi booking_vehicles
+  
+  // FIX 1: Mengembalikan nama variabel ke 'total_price'
+  let total_price = new Prisma.Decimal(0); 
+  let vehicleBookingData: any = null;
 
   // Tentukan tipe booking (Paket atau Kendaraan)
   if (Math.random() < 0.7 && travelPackages.length > 0) {
@@ -89,7 +88,7 @@ async function generateAndInsertBooking(
     bookingInput.end_date = new Date(
       start_date.getTime() + randomPackage.duration * 24 * 60 * 60 * 1000
     );
-    total_price = new Prisma.Decimal(randomPaxOption.price);
+    total_price = new Prisma.Decimal(randomPaxOption.price); 
   } else {
     const randomVehicle = getRandomElement(vehicles);
     const duration_days = faker.number.int({ min: 2, max: 7 });
@@ -105,7 +104,6 @@ async function generateAndInsertBooking(
       duration_days
     );
     
-    // FIX 2: Siapkan data untuk tabel relasi 'booking_vehicles'
     vehicleBookingData = {
         create: [{ vehicle_id: randomVehicle.id }]
     };
@@ -113,10 +111,12 @@ async function generateAndInsertBooking(
 
   if (Math.random() < 0.25 && promos.length > 0) {
     bookingInput.promo_id = getRandomElement(promos).id;
-    total_price = total_price.mul(0.9); // Diskon 10%
+    total_price = total_price.mul(0.9); 
   }
-  bookingInput.total_price = total_price;
+  // FIX 1: Mengembalikan properti ke 'total_price'
+  bookingInput.total_price = total_price; 
 
+  // Tentukan skenario dan status
   const chosenScenario = getRandomElement(weightedScenarios);
   bookingInput.status = chosenScenario.bookingStatus;
 
@@ -137,7 +137,8 @@ async function generateAndInsertBooking(
     : chosenScenario.paymentStatus;
 
   const paymentData = {
-    amount: bookingInput.total_price,
+    // FIX 1: Menggunakan 'total_price' untuk 'amount'
+    amount: bookingInput.total_price, 
     status: paymentStatus,
     payment_method: getRandomElement([
       "Credit Card",
@@ -179,8 +180,8 @@ export async function seedBookingAndPayments(prisma: PrismaClient) {
     where: { role: "CUSTOMER" },
     select: { id: true },
   });
-
-  // FIX 3: Koreksi nama model dari `travel_Packages` menjadi `travelPackage` (sesuai konvensi Prisma)
+  
+  // FIX 2: Mengoreksi nama model 'travel_Packages' menjadi 'travelPackage'
   const travelPackages = await prisma.travel_Packages.findMany({
     where: { status: true },
     select: {

@@ -3,7 +3,7 @@ import { seedUsers } from "./seeders/seed-user";
 import { seedBasicData } from "./seeders/seed-basic-data";
 import { seedTravelPackages } from "./seeders/seed.-travel-package";
 import { seedRatings } from "./seeders/seed-rating";
-import { seedBookingAndPayments } from "./seeders/seed-payment-book";
+// import { seedBookingAndPayments } from "./seeders/seed-payment-book";
 
 const prisma = new PrismaClient();
 
@@ -15,7 +15,7 @@ async function main() {
   const allDestinations = await prisma.destinations.findMany();
   await seedRatings(prisma, customers, allDestinations);
   await seedTravelPackages(prisma);
-  await seedBookingAndPayments(prisma);
+  // await seedBookingAndPayments(prisma);
 
   console.log("🎉 Seeding process completed successfully!");
 }
