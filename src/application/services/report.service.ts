@@ -511,7 +511,7 @@ export class ReportService {
 		}
 	}
 
-	async getUsersAndDriversReport(role?: Roles) {
+	async getUsersReport(role?: Roles) {
 		try {
 			const users = await this.userRepo.getAll();
 			if (!users) {

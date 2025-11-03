@@ -6,7 +6,7 @@ import { TYPES } from "../types";
 
 @injectable()
 export class ErrorHandler {
-	private logger: ILogger;
+	private logger: ILogger	
 	constructor(@inject(TYPES.logger) logger: ILogger) {
 		this.logger = logger;
 	}

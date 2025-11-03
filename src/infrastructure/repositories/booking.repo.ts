@@ -280,7 +280,6 @@ export class BookingRepository implements IBookings {
 	async create(payload: CreateBooking, tx?: Prisma.TransactionClient) {
 		try {
 			const client = tx || this.prisma;
-
 			return await client.bookings.create({ data: payload });
 		} catch (error) {
 			this.errorHandler.handleRepositoryError(error);
