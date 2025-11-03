@@ -76,6 +76,6 @@ app
 	)
 	.listen({ port: 8000, hostname: "0.0.0.0" });
 
-console.log(`🦊 🦊 Main ap ${app.server?.hostname}:${app.server?.port} 🦊 🦊`);
+console.log(`🦊 🦊 Testing in server : ${app.server?.hostname}:${app.server?.port} 🦊 🦊`);
 
 export { StandardResponse };
