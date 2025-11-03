@@ -25,24 +25,21 @@ const app = new Elysia();
 app
 	.onError(({ code, error, set }) => {
 		console.error("Elysia Error caught:", code, error);
-
 		if (code === "VALIDATION") {
 			set.status = 422;
 			return StandardResponse.error("Validation Failed", 422, error.message);
 		}
-
 		if (error instanceof BaseHttpError) {
 			set.status = error.statusCode;
 			return StandardResponse.error(error.message, error.statusCode);
 		}
-
 		set.status = 500;
 		return StandardResponse.error("Internal Server Error", 500);
 	})
 
 	.use(
 		cors({
-			origin: "https://fe.trisnautama.site",
+			origin: "localhost:5173",
 			methods: ["GET", "POST", "PATCH", "DELETE"],
 			allowedHeaders: ["Content-Type", "Authorization"],
 			credentials: true,
@@ -80,7 +77,7 @@ app
 	.listen({ port: 8000, hostname: "0.0.0.0" });
 
 console.log(
-	`🦊 🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port} 🦊 🦊`,
+	`🦊 🦊 Testing in server : ${app.server?.hostname}:${app.server?.port} 🦊 🦊`,
 );
 
 export { StandardResponse };

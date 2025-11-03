@@ -510,7 +510,7 @@ export const reportRoute = new Elysia({
 
 				const role = query.role as Roles | undefined;
 
-				const result = await reportService.getUsersAndDriversReport(role);
+				const result = await reportService.getUsersReport(role);
 
 				if (result === undefined) {
 					set.status = 500;
