@@ -124,9 +124,9 @@ export class UserService {
 		} else if (fileExtension === "xlsx" || fileExtension === "xls") {
 			usersData = this.parseExcel(fileBuffer);
 		} else {
-			throw this.response.badRequest(
-				"Unsupported file type. Please upload a CSV or Excel file.",
-			);
+			// throw this.response.badRequest(
+			// 	"Unsupported file type. Please upload a CSV or Excel file.",
+			// );
 		}
 
 		const creationResults = [];
