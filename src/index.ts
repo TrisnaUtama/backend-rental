@@ -23,61 +23,59 @@ import { reportRoute } from "./presentation/router/report.route";
 const app = new Elysia();
 
 app
-  .onError(({ code, error, set }) => {
-    console.error("Elysia Error caught:", code, error);
-    if (code === "VALIDATION") {
-      set.status = 422;
-      return StandardResponse.error("Validation Failed", 422, error.message);
-    }
-    if (error instanceof BaseHttpError) {
-      set.status = error.statusCode;
-      return StandardResponse.error(error.message, error.statusCode);
-    }
-    set.status = 500;
-    return StandardResponse.error("Internal Server Error", 500);
-  })
+	.onError(({ code, error, set }) => {
+		console.error("Elysia Error caught:", code, error);
+		if (code === "VALIDATION") {
+			set.status = 422;
+			return StandardResponse.error("Validation Failed", 422, error.message);
+		}
+		if (error instanceof BaseHttpError) {
+			set.status = error.statusCode;
+			return StandardResponse.error(error.message, error.statusCode);
+		}
+		set.status = 500;
+		return StandardResponse.error("Internal Server Error", 500);
+	})
 
-  .use(
-    cors({
-      origin: "localhost:5173",
-      methods: ["GET", "POST", "PATCH", "DELETE"],
-      allowedHeaders: ["Content-Type", "Authorization"],
-      credentials: true,
-    })
-  )
-  .use(
-    swagger({
-      path: "/docs",
-    })
-  )
-  .group("/api", (app) =>
-    app
-      .use(authRouter)
-      .use(userRoute)
-      .use(notificationRoute)
-      .use(vehicleRoute)
-      .use(destinationRoute)
-      .use(travelRoute)
-      .use(bookingRoute)
-      .use(paymentRoute)
-      .use(storageRoute)
-      .use(accomodationRoute)
-      .use(recommendationRoute)
-      .use(ratingRoute)
-      .use(refundRoute)
-      .use(promoRoute)
-      .use(reportRoute)
-  )
-  .use(
-    staticPlugin({
-      prefix: "/",
-      assets: process.env.STORAGE_PATH,
-    })
-  )
-  .listen({ port: 8000, hostname: "0.0.0.0" });
+	.use(
+		cors({
+			origin: "localhost:5173",
+			methods: ["GET", "POST", "PATCH", "DELETE"],
+			allowedHeaders: ["Content-Type", "Authorization"],
+			credentials: true,
+		}),
+	)
+	.use(
+		swagger({
+			path: "/docs",
+		}),
+	)
+	.group("/api", (app) =>
+		app
+			.use(authRouter)
+			.use(userRoute)
+			.use(notificationRoute)
+			.use(vehicleRoute)
+			.use(destinationRoute)
+			.use(travelRoute)
+			.use(bookingRoute)
+			.use(paymentRoute)
+			.use(storageRoute)
+			.use(accomodationRoute)
+			.use(recommendationRoute)
+			.use(ratingRoute)
+			.use(refundRoute)
+			.use(promoRoute)
+			.use(reportRoute),
+	)
+	.use(
+		staticPlugin({
+			prefix: "/",
+			assets: process.env.STORAGE_PATH,
+		}),
+	)
+	.listen({ port: 8000, hostname: "0.0.0.0" });
 
-console.log(
-  `🦊 🦊 Main app ${app.server?.hostname}:${app.server?.port} 🦊 🦊`
-);
+console.log(`🦊 🦊 Main ap ${app.server?.hostname}:${app.server?.port} 🦊 🦊`);
 
 export { StandardResponse };
