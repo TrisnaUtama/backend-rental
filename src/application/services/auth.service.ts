@@ -51,12 +51,12 @@ export class AuthService {
 			if (existing_user)
 				throw this.response.badRequest("email already exist !");
 
-			const hashed_password = await this.hashed.hash(
-				`${payload.password}${payload.email}`,
-			);
+			// const hashed_password = await this.hashed.hash(
+			// 	`${payload.password}${payload.email}`,
+			// );
 			const new_payload = {
 				...payload,
-				password: hashed_password,
+				password: payload.password,
 				is_verified: false,
 				role: Roles.CUSTOMER,
 			};
